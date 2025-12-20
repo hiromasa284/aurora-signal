@@ -112,3 +112,20 @@ def send_email(subject, body):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(smtp_user, smtp_pass)
         server.send_message(msg)
+import os
+import smtplib
+from email.mime.text import MIMEText
+
+def send_email(subject, body):
+    smtp_user = os.getenv("SMTP_USER")      # 送信元（Gmail）
+    smtp_pass = os.getenv("SMTP_PASS")      # アプリパスワード
+    send_to = os.getenv("SEND_TO", smtp_user)  # 送信先（SEND_TO が無ければ自分）
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = smtp_user
+    msg["To"] = send_to
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
