@@ -1,0 +1,31 @@
+name: Aurora Signal
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # 毎時0分に実行
+  workflow_dispatch:      # 手動実行も可能
+
+jobs:
+  run-signal:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: pip install requests pandas numpy
+
+      - name: Run script
+        env:
+          ALPHA_KEY: ${{ secrets.ALPHA_KEY }}
+          NEWS_KEY: ${{ secrets.NEWS_KEY }}
+          FMP_KEY: ${{ secrets.FMP_KEY }}
+          SENDGRID_KEY: ${{ secrets.SENDGRID_KEY }}
+          SEND_TO: ${{ secrets.SEND_TO }}
+        run: python aurora_signal.py
