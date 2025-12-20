@@ -134,3 +134,11 @@ import json
 def save_signal_json(signals):
     with open("signal.json", "w") as f:
         json.dump(signals, f, indent=4)
+signals = {}
+
+for ticker in TICKERS:
+    data = get_stock_data(ticker)
+    signal = check_signal(data)
+    signals[ticker] = signal
+
+save_signal_json(signals)
