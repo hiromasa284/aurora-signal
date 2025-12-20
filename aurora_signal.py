@@ -129,3 +129,8 @@ def send_email(subject, body):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(smtp_user, smtp_pass)
         server.send_message(msg)
+import json
+
+def save_signal_json(signals):
+    with open("signal.json", "w") as f:
+        json.dump(signals, f, indent=4)
