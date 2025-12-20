@@ -1,80 +1,99 @@
 import os
+import json
 import requests
 import pandas as pd
+import numpy as np
+from datetime import datetime
+from email.mime.text import MIMEText
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+import base64
 
-# 環境変数からAPIキーと送信先メールを取得
-ALPHA_KEY = os.getenv("ALPHA_KEY")
-NEWS_KEY = os.getenv("NEWS_KEY")
-FMP_KEY = os.getenv("FMP_KEY")
-SENDGRID_KEY = os.getenv("SENDGRID_KEY")
-SEND_TO = os.getenv("SEND_TO")
-
-# 株価データ取得（Alpha Vantage）
-def get_price(symbol="AUR"):
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={ALPHA_KEY}"
-    data = requests.get(url).json()["Time Series (Daily)"]
-    df = pd.DataFrame(data).T.astype(float)
-    df.index = pd.to_datetime(df.index)
-    return df.sort_index()
+# 株価取得（Alpha Vantage）
+def get_price(symbol):
+    key = os.getenv("ALPHA_KEY")
+    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={key}"
+    r = requests.get(url).json()
+    data = r.get("Time Series (Daily)", {})
+    df = pd.DataFrame.from_dict(data, orient="index").sort_index()
+    df = df.astype(float)
+    return df
 
 # ニュース取得（NewsAPI）
-def get_news():
-    url = f"https://newsapi.org/v2/everything?q=Aurora+Innovation&apiKey={NEWS_KEY}"
-    return requests.get(url).json()["articles"]
+def get_news(symbol):
+    key = os.getenv("NEWS_KEY")
+    url = f"https://newsapi.org/v2/everything?q={symbol}&language=en&sortBy=publishedAt&apiKey={key}"
+    r = requests.get(url).json()
+    return r.get("articles", [])
 
-# ニューススコア判定
+# ニューススコア（簡易判定）
 def news_score(articles):
-    pos = ["approval", "partnership", "contract", "launch", "expansion"]
-    neg = ["accident", "ban", "suspend", "investigation", "recall"]
     score = 0
-    for a in articles:
-        text = (a["title"] + " " + a.get("description", "")).lower()
-        if any(p in text for p in pos):
+    for a in articles[:5]:
+        title = a.get("title", "").lower()
+        if "upgrade" in title or "surge" in title or "beat" in title:
             score += 1
-        if any(n in text for n in neg):
+        elif "downgrade" in title or "miss" in title or "fall" in title:
             score -= 1
     return score
 
 # 決算データ取得（FMP）
-def get_financials(symbol="AUR"):
-    url = f"https://financialmodelingprep.com/api/v3/income-statement/{symbol}?apikey={FMP_KEY}"
-    return requests.get(url).json()
-
-# シグナル判定ロジック
-def check_signal():
-    price = get_price()
-    last = price.iloc[-1]
-    high_30 = price["2. high"].tail(30).max()
-    avg_vol = price["5. volume"].tail(30).mean()
-
-    cond_price = last["4. close"] > high_30
-    cond_vol = last["5. volume"] > 2 * avg_vol
-
-    score = news_score(get_news())
-    cond_news = score >= 1
-
-    fin = get_financials()
-    rev_now = fin[0]["revenue"]
-    rev_prev = fin[1]["revenue"]
-    cond_fund = (rev_now - rev_prev) / rev_prev > 0.5
-
-    return cond_price and cond_vol and cond_news and cond_fund
-
-# メール送信（SendGrid）
-def send_email(msg):
-    url = "https://api.sendgrid.com/v3/mail/send"
-    headers = {
-        "Authorization": f"Bearer {SENDGRID_KEY}",
-        "Content-Type": "application/json"
+def get_fundamentals(symbol):
+    key = os.getenv("FMP_KEY")
+    url = f"https://financialmodelingprep.com/api/v3/income-statement/{symbol}?limit=2&apikey={key}"
+    r = requests.get(url).json()
+    if len(r) < 2:
+        return None
+    latest, prev = r[0], r[1]
+    growth = (latest["revenue"] - prev["revenue"]) / prev["revenue"]
+    return {
+        "eps": latest.get("eps"),
+        "revenue_growth": growth,
+        "netIncome": latest.get("netIncome")
     }
-    data = {
-        "personalizations": [{"to": [{"email": SEND_TO}]}],
-        "from": {"email": "alert@aurora-signal.com"},
-        "subject": "AURORA SIGNAL ALERT",
-        "content": [{"type": "text/plain", "value": msg}]
-    }
-    requests.post(url, headers=headers, json=data)
 
-# メイン処理
-if check_signal():
-    send_email("AUR: 20% UP シグナル点灯")
+# Gmail API でメール送信
+def send_email(subject, body):
+    creds_json = os.getenv("GMAIL_CREDENTIALS")
+    creds = service_account.Credentials.from_service_account_info(
+        json.loads(creds_json),
+        scopes=["https://www.googleapis.com/auth/gmail.send"]
+    )
+    service = build("gmail", "v1", credentials=creds)
+
+    message = MIMEText(body)
+    message["to"] = os.getenv("SEND_TO")
+    message["from"] = "me"
+    message["subject"] = subject
+
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
+    service.users().messages().send(userId="me", body={"raw": raw}).execute()
+
+# メインロジック
+def main():
+    symbol = "AUR"
+    price_df = get_price(symbol)
+    latest = price_df.iloc[-1]["4. close"]
+    prev = price_df.iloc[-2]["4. close"]
+    price_change = (latest - prev) / prev
+
+    articles = get_news(symbol)
+    score = news_score(articles)
+
+    fundamentals = get_fundamentals(symbol)
+    growth = fundamentals["revenue_growth"] if fundamentals else 0
+
+    if price_change > 0.2 or score >= 2 or growth > 0.3:
+        body = f"""Aurora Signal Alert 🚨
+
+Symbol: {symbol}
+Price Change: {price_change:.2%}
+News Score: {score}
+Revenue Growth: {growth:.2%}
+
+Triggered at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
+"""
+        send_email(f"{symbol}: Signal Triggered", body)
+
+if __name__ == "__main__":
+    main()
