@@ -97,3 +97,4 @@ Triggered at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 if __name__ == "__main__":
     main()
+send_email("Aurora Signal Test", "This is a test email from GitHub Actions.")
