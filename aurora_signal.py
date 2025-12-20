@@ -97,4 +97,18 @@ Triggered at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
 
 if __name__ == "__main__":
     main()
-send_email("Aurora Signal Test", "This is a test email from GitHub Actions.")
+import smtplib
+from email.mime.text import MIMEText
+
+def send_email(subject, body):
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_pass = os.getenv("SMTP_PASS")
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = smtp_user
+    msg["To"] = smtp_user
+
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        server.login(smtp_user, smtp_pass)
+        server.send_message(msg)
