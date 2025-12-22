@@ -47,3 +47,19 @@ jobs:
             git commit -m "Update signal.json"
             git push origin main
           )
+def safe_run():
+    try:
+        result = scan_all(tickers)
+        print(f"アラート銘柄数: {len(result)}")
+
+        body = format_alerts_for_email("signal.json")
+        send_email("Aurora Signal 最新アラート", body)
+
+    except Exception as e:
+        error_body = f"Aurora Signal 実行中にエラーが発生しました。\n\n{str(e)}"
+        send_email("Aurora Signal エラー通知", error_body)
+        raise
+
+
+if __name__ == "__main__":
+    safe_run()
