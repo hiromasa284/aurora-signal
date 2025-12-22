@@ -1,3 +1,4 @@
+TICKERS = ["AAPL", "MSFT", "TSLA"]
 import os
 import json
 import requests
