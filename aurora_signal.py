@@ -1,4 +1,18 @@
-TICKERS = ["AAPL", "MSFT", "TSLA"]
+def get_stock_data(ticker):
+    # 仮のデータ（本番では API から取得）
+    return {
+        "close": 150.0,
+        "rsi": 55.0
+    }
+
+def check_signal(data):
+    if data["rsi"] > 70:
+        return "SELL"
+    elif data["rsi"] < 30:
+        return "BUY"
+    else:
+        return "HOLD"
+        TICKERS = ["AAPL", "MSFT", "TSLA"]
 import os
 import json
 import requests
