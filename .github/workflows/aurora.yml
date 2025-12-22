@@ -63,3 +63,24 @@ def safe_run():
 
 if __name__ == "__main__":
     safe_run()
+      - name: Send failure notification
+        if: failure()
+        env:
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SEND_TO:   ${{ secrets.SEND_TO }}
+        run: |
+          python - << 'EOF'
+from email.mime.text import MIMEText
+import smtplib, os
+
+msg = MIMEText("Aurora Signal の GitHub Actions が失敗しました。", "plain", "utf-8")
+msg["Subject"] = "Aurora Signal - GitHub Actions エラー"
+msg["From"] = os.environ["SMTP_USER"]
+msg["To"] = os.environ["SEND_TO"]
+
+with smtplib.SMTP("smtp.gmail.com", 587) as s:
+    s.starttls()
+    s.login(os.environ["SMTP_USER"], os.environ["SMTP_PASS"])
+    s.send_message(msg)
+EOF
