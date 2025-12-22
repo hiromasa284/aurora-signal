@@ -6,7 +6,7 @@ on:
   workflow_dispatch:     # 手動実行も可能
 
 permissions:
-  contents: write  # signal.json を push するために必要
+  contents: write        # signal.json を push するために必要
 
 jobs:
   run-signal:
@@ -41,6 +41,7 @@ jobs:
         run: |
           git config --global user.name "Aurora Bot"
           git config --global user.email "aurora@example.com"
+          git pull origin main --rebase
           git add signal.json
           git commit -m "Update signal.json"
           git push origin main
