@@ -2,8 +2,11 @@ name: Aurora Signal
 
 on:
   schedule:
-    - cron: "0 * * * *"   # 毎時0分に実行
-  workflow_dispatch:      # 手動実行も可能
+    - cron: "0 * * * *"  # 毎時0分に実行
+  workflow_dispatch:     # 手動実行も可能
+
+permissions:
+  contents: write  # signal.json を push するために必要
 
 jobs:
   run-signal:
@@ -30,4 +33,14 @@ jobs:
           FMP_KEY: ${{ secrets.FMP_KEY }}
           GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
           SEND_TO: ${{ secrets.SEND_TO }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
         run: python aurora_signal.py
+
+      - name: Commit and push signal.json
+        run: |
+          git config --global user.name "Aurora Bot"
+          git config --global user.email "aurora@example.com"
+          git add signal.json
+          git commit -m "Update signal.json"
+          git push origin main
