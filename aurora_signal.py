@@ -143,3 +143,18 @@ for ticker in TICKERS:
     signals[ticker] = signal
 
 save_signal_json(signals)
+def get_stock_data(ticker):
+    # 仮のデータ構造（本番では API から取得）
+    return {
+        "close": 150.0,
+        "rsi": 55.0
+    }
+
+def check_signal(data):
+    # 仮のシグナル判定
+    if data["rsi"] > 70:
+        return "SELL"
+    elif data["rsi"] < 30:
+        return "BUY"
+    else:
+        return "HOLD"
