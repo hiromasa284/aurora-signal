@@ -142,9 +142,3 @@ for ticker in TICKERS:
     signals[ticker] = signal
 
 save_signal_json(signals)
-  run: |
-    git config --global user.name "Aurora Bot"
-    git config --global user.email "aurora@example.com"
-    git add signal.json
-    git commit -m "Update signal.json"
-    git push origin main
