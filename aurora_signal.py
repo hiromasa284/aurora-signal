@@ -1,3 +1,4 @@
+TICKERS = ["AAPL", "MSFT", "TSLA"]
 def get_stock_data(ticker):
     # 仮のデータ（本番では API から取得）
     return {
