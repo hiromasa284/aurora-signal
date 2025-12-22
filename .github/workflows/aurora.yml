@@ -84,3 +84,7 @@ with smtplib.SMTP("smtp.gmail.com", 587) as s:
     s.login(os.environ["SMTP_USER"], os.environ["SMTP_PASS"])
     s.send_message(msg)
 EOF
+      - name: Backup signal.json
+        run: |
+          mkdir -p backup
+          cp signal.json backup/signal_$(date +'%Y%m%d_%H%M').json
