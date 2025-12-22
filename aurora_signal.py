@@ -173,3 +173,13 @@ def check_signal(data):
         return "BUY"
     else:
         return "HOLD"
+import json
+
+signals = {
+    "AAPL": {"signal": "BUY", "rsi": 28.5, "price": 147.23},
+    "MSFT": {"signal": "HOLD", "rsi": 52.1, "price": 310.45},
+    "TSLA": {"signal": "SELL", "rsi": 72.8, "price": 245.67}
+}
+
+with open("signal.json", "w") as f:
+    json.dump(signals, f, indent=2)
