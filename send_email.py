@@ -20,7 +20,7 @@ def send_email(subject, body, to_email):
             server.login(smtp_user, smtp_pass)
             server.sendmail(smtp_user, to_email, msg.as_string())
             print("メール送信に成功しました！")
-       except Exception as e:
+    except Exception as e:
         print(f"メール送信中にエラーが発生しました: {e}")
         raise  # エラーを再スローしてGitHub Actionsに通知
 
