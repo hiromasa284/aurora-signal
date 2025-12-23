@@ -1,3 +1,28 @@
+def send_email(subject, body):
+    smtp_user = os.getenv("SMTP_USER")
+    smtp_pass = os.getenv("SMTP_PASS")
+
+    # デバッグ用ログ
+    print(f"SMTP_USER: {smtp_user}")
+    print(f"SMTP_PASS: {'***' if smtp_pass else 'None'}")
+
+    # 必須項目の確認
+    if not smtp_user or not smtp_pass:
+        raise ValueError("SMTP_USER または SMTP_PASS が設定されていません")
+
+    msg = MIMEText(body)
+    msg["Subject"] = subject
+    msg["From"] = smtp_user
+    msg["To"] = os.getenv("SEND_TO", smtp_user)
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(smtp_user, smtp_pass)
+            server.send_message(msg)
+            print("メール送信に成功しました！")
+    except Exception as e:
+        print(f"メール送信中にエラーが発生しました: {e}")
+
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
