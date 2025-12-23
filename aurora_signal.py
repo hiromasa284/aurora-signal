@@ -3,8 +3,8 @@ import json
 import requests
 import pandas as pd
 from email.mime.text import MIMEText
-import smtplib
 from datetime import datetime
+import smtplib
 
 # 株価取得（Alpha Vantage）
 def get_price(symbol):
@@ -16,25 +16,24 @@ def get_price(symbol):
     df = df.astype(float)
     return df
 
-# RSI計算（例: 14日間）
+# RSI計算
 def calculate_rsi(data, window=14):
     delta = data["4. close"].diff()
     gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
     rs = gain / loss
     rsi = 100 - (100 / (1 + rs))
-    return rsi.iloc[-1]  # 最新のRSIを返す
+    return rsi.iloc[-1]
 
-# 複数指標を使用してシグナルを判定
+# シグナル判定
 def check_signal(data):
     rsi = data["rsi"]
     price = data["close"]
     moving_avg = data.get("moving_avg", 150)  # 仮の移動平均値
-    macd_signal = data.get("macd_signal", 1)  # 仮のMACDシグナル
 
-    if rsi <= 30 and price < moving_avg and macd_signal > 0:
+    if rsi <= 30 and price < moving_avg:
         return "BUY"
-    elif rsi >= 70 and price > moving_avg and macd_signal < 0:
+    elif rsi >= 70 and price > moving_avg:
         return "SELL"
     else:
         return "HOLD"
@@ -87,13 +86,11 @@ def main():
         latest_price = price_data.iloc[-1]["4. close"]
         rsi = calculate_rsi(price_data)
         moving_avg = price_data["4. close"].rolling(window=14).mean().iloc[-1]
-        macd_signal = 1  # 仮のMACDシグナル（本番では計算）
 
         data = {
             "close": latest_price,
             "rsi": rsi,
-            "moving_avg": moving_avg,
-            "macd_signal": macd_signal
+            "moving_avg": moving_avg
         }
 
         # シグナル判定
