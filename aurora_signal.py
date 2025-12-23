@@ -7,6 +7,12 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import smtplib
 
+# CSV から銘柄リストを読み込む
+def load_tickers():
+    jp = pd.read_csv("tickers_jp.csv")["symbol"].dropna().tolist()
+    us = pd.read_csv("tickers_us.csv")["symbol"].dropna().tolist()
+    return list(dict.fromkeys(jp + us))  # 重複除去して順番維持
+
 # 株価取得（Alpha Vantage）
 def get_price(symbol):
     key = os.getenv("ALPHA_KEY")
@@ -18,7 +24,6 @@ def get_price(symbol):
         return pd.DataFrame()
     df = pd.DataFrame.from_dict(data, orient="index").sort_index()
     df = df.astype(float)
-    print(f"{symbol} のデータフレーム: {df.head()}")  # デバッグ用
     return df
 
 # RSI計算
@@ -44,19 +49,18 @@ def check_signal(data):
     else:
         return "HOLD"
 
-# 勝率と期待値を計算
+# 勝率と期待値
 def calculate_expected_value(data):
     win_prob = 1 / data["rsi"]
     expected_value = win_prob * data["close"]
     return expected_value
 
-# アラート結果をフィルタリング
+# BUY/SELL のみ抽出
 def filter_alerts(alerts):
     return {ticker: info for ticker, info in alerts.items() if info["signal"] in ["BUY", "SELL"]}
 
-# メール本文を整形
+# メール本文整形
 def format_alerts_for_email(signals):
-    print(f"整形前のシグナル: {signals}")  # デバッグ用
     body = "以下は最新のアラート情報です：\n\n"
     for ticker, info in signals.items():
         body += f"銘柄: {ticker}\n"
@@ -74,40 +78,29 @@ def send_email(subject, body, to_email=None):
     smtp_pass = os.getenv("SMTP_PASS")
     to_email = to_email or os.getenv("SEND_TO", smtp_user)
 
-    print(f"メール件名: {subject}")
-    print(f"メール本文:\n{body}")  # デバッグ用
-
-    if not smtp_user or not smtp_pass:
-        raise ValueError("SMTP_USER または SMTP_PASS が設定されていません")
-
     msg = MIMEMultipart()
     msg["From"] = smtp_user
     msg["To"] = to_email
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain"))
 
-    try:
-        with smtplib.SMTP("smtp.gmail.com", 587) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_pass)
-            server.sendmail(smtp_user, to_email, msg.as_string())
-            print("メール送信に成功しました！")
-    except Exception as e:
-        print(f"メール送信中にエラーが発生しました: {e}")
-        raise
+    with smtplib.SMTP("smtp.gmail.com", 587) as server:
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, to_email, msg.as_string())
+
+# ★ CSV から銘柄リストを読み込む（ここが重要）
+TICKERS = load_tickers()
 
 # メインロジック
 def main():
-    TICKERS = ["AAPL", "MSFT", "TSLA"]
     signals = {}
 
     for ticker in TICKERS:
         try:
-            print(f"{ticker} のデータを取得中...")
             price_data = get_price(ticker)
 
             if price_data.empty or len(price_data) < 2:
-                print(f"データが不足しています: {ticker}")
                 continue
 
             latest_price = price_data.iloc[-1]["4. close"]
