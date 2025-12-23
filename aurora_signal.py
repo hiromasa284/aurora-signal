@@ -9,10 +9,21 @@ import smtplib
 
 # CSV から銘柄リストを読み込む
 def load_tickers():
-    # 両方ともヘッダーなし
-    jp = pd.read_csv("tickers_jp.csv", header=None)[0].dropna().tolist()
-    us = pd.read_csv("tickers_us.csv", header=None)[0].dropna().tolist()
-    return list(dict.fromkeys(jp + us))
+    # 日本株
+    jp_df = pd.read_csv("tickers_jp.csv")
+    jp_symbols = jp_df["symbol"].dropna().tolist()
+    jp_names = dict(zip(jp_df["symbol"], jp_df["name"]))
+
+    # 米国株
+    us_df = pd.read_csv("tickers_us.csv")
+    us_symbols = us_df["symbol"].dropna().tolist()
+    us_names = dict(zip(us_df["symbol"], us_df["name"]))
+
+    # 結合
+    symbols = list(dict.fromkeys(jp_symbols + us_symbols))
+    names = {**jp_names, **us_names}
+
+    return symbols, names
 
 # 株価取得（Alpha Vantage）
 def get_price(symbol):
