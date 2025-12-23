@@ -9,7 +9,7 @@ import smtplib
 
 # CSV から銘柄リストを読み込む
 def load_tickers():
-    jp = pd.read_csv("tickers_jp.csv")["symbol"].dropna().tolist()
+    jp = pd.read_csv("tickers_jp.csv", header=None)[0]
     us = pd.read_csv("tickers_us.csv")["symbol"].dropna().tolist()
     return list(dict.fromkeys(jp + us))  # 重複除去して順番維持
 
