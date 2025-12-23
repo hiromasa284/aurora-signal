@@ -1,216 +1,279 @@
 symbol,name
-1332.T,Nippon Suisan Kaisha Ltd.
-1333.T,Maruha Nichiro Corp.
-1605.T,Inpex Corp.
-1721.T,Comsys Holdings Corp.
-1801.T,Taisei Corp.
-1802.T,Obayashi Corp.
-1803.T,Shimizu Corp.
-1925.T,Daiwa House Industry Co. Ltd.
-1928.T,Sekisui House Ltd.
-1963.T,Nikko Co.
-2002.T,Nisshin Seifun Group Inc.
-2269.T,Meiji Holdings Co. Ltd.
-2282.T,Nippon Ham Co. Ltd.
-2413.T,M3 Inc.
-2432.T,DeNA Co. Ltd.
-2501.T,Sapporo Holdings Ltd.
-2502.T,Asahi Group Holdings Ltd.
-2503.T,Kirin Holdings Co. Ltd.
-2531.T,Takara Holdings Inc.
-2768.T,Sojitz Corp.
-2801.T,Kikkoman Corp.
-2802.T,Ajinomoto Co. Inc.
-2871.T,Nichirei Corp.
-2914.T,Japan Tobacco Inc.
-3086.T,J. Front Retailing Co. Ltd.
-3099.T,Isetan Mitsukoshi Holdings Ltd.
-3101.T,Toray Industries Inc.
-3103.T,Unitika Ltd.
-3401.T,Teijin Ltd.
-3402.T,Asahi Kasei Corp.
-3861.T,Oji Holdings Corp.
-3863.T,Nippon Paper Industries Co. Ltd.
-4004.T,Showa Denko K.K.
-4005.T,Sumitomo Chemical Co. Ltd.
-4021.T,Nissan Chemical Corp.
-4042.T,Tosoh Corp.
-4043.T,Tokuyama Corp.
-4061.T,DIC Corp.
-4063.T,Shin-Etsu Chemical Co. Ltd.
-4151.T,Kyowa Kirin Co. Ltd.
-4183.T,Mitsui Chemicals Inc.
-4188.T,Mitsubishi Chemical Group Corp.
-4208.T,Ube Corp.
-4272.T,Nippon Kayaku Co. Ltd.
-4324.T,Japan Exchange Group Inc.
-4452.T, Kao Corp.
-4502.T,Takeda Pharmaceutical Co. Ltd.
-4503.T,Astellas Pharma Inc.
-4506.T,Sumitomo Pharma Co. Ltd.
-4507.T,Shionogi & Co. Ltd.
-4519.T,Chugai Pharmaceutical Co. Ltd.
-4523.T,Eisai Co. Ltd.
-4543.T,Thermo Co. Ltd.
-4568.T,Daiichi Sankyo Co. Ltd.
-4578.T,Otsuka Holdings Co. Ltd.
-4631.T,DIC Corp.
-4661.T,Oriental Land Co. Ltd.
-4689.T,Z Holdings Corp.
-4704.T,Trend Micro Inc.
-4751.T,CyberAgent Inc.
-4755.T,Rakuten Group Inc.
-4901.T,Fujifilm Holdings Corp.
-4911.T,Shiseido Co. Ltd.
-5020.T,ENEOS Holdings Inc.
-5101.T,Yokohama Rubber Co. Ltd.
-5108.T,Bridgestone Corp.
-5201.T,AGC Inc.
-5202.T,Nippon Sheet Glass Co. Ltd.
-5214.T,Nippon Electric Glass Co. Ltd.
-5232.T,Sumitomo Osaka Cement Co. Ltd.
-5233.T,Taisei Cement Co. Ltd.
-5301.T,TOKAI Carbon Co. Ltd.
-5332.T,TOTO Ltd.
-5333.T,Noritake Co. Ltd.
-5401.T,Nippon Steel Corp.
-5406.T,Kobe Steel Ltd.
-5411.T,JFE Holdings Inc.
-5541.T,Pacific Metals Co. Ltd.
-5631.T,Japan Steel Works Ltd.
-5703.T,Nippon Light Metal Holdings Co. Ltd.
-5706.T,Mitsui Mining & Smelting Co. Ltd.
-5707.T,Toho Zinc Co. Ltd.
-5711.T,Mitsubishi Materials Corp.
-5713.T,Sumitomo Metal Mining Co. Ltd.
-5714.T,Dowa Holdings Co. Ltd.
-5801.T,Furukawa Electric Co. Ltd.
-5802.T,Sumitomo Electric Industries Ltd.
-5803.T,Fujikura Ltd.
-5901.T,Toyo Seikan Group Holdings Ltd.
-6098.T,Recruit Holdings Co. Ltd.
-6103.T,Okuma Corp.
-6113.T,Amada Co. Ltd.
-6301.T,Komatsu Ltd.
-6302.T,Sumitomo Heavy Industries Ltd.
-6305.T,Hitachi Construction Machinery Co. Ltd.
-6326.T,Kubota Corp.
-6361.T,Ebara Corp.
-6367.T,Daikin Industries Ltd.
-6471.T,Nippon Thompson Co. Ltd.
-6472.T,Nachi-Fujikoshi Corp.
-6473.T,JTEKT Corp.
-6479.T,MinebeaMitsumi Inc.
-6501.T,Hitachi Ltd.
-6503.T,Mitsubishi Electric Corp.
-6504.T,Fuji Electric Co. Ltd.
-6506.T,Yaskawa Electric Corp.
-6645.T,Omron Corp.
-6674.T,GS Yuasa Corp.
-6701.T,NEC Corp.
-6702.T,Fujitsu Ltd.
-6703.T,OKI Electric Industry Co. Ltd.
-6723.T,Renesas Electronics Corp.
-6752.T,Panasonic Holdings Corp.
-6758.T,Sony Group Corp.
-6762.T,TDK Corp.
-6770.T,Alps Alpine Co. Ltd.
-6841.T,Yokogawa Electric Corp.
-6857.T,Advantest Corp.
-6902.T,Denso Corp.
-6952.T,Casio Computer Co. Ltd.
-6954.T,Fanuc Corp.
-6971.T,Kyocera Corp.
-6976.T,Taisei Corp.
-6981.T,Murata Manufacturing Co. Ltd.
-6988.T,Nitto Denko Corp.
-7003.T,Mitsui E&S Holdings Co. Ltd.
-7011.T,Hitachi Zosen Corp.
-7012.T,Kawasaki Heavy Industries Ltd.
-7013.T,IHI Corp.
-7201.T,Nissan Motor Co. Ltd.
-7202.T,Isuzu Motors Ltd.
-7203.T,Toyota Motor Corp.
-7205.T,Hino Motors Ltd.
-7211.T,Mitsubishi Motors Corp.
-7261.T,Mazda Motor Corp.
-7267.T, Honda Motor Co. Ltd.
-7269.T,Suzuki Motor Corp.
-7270.T,Subaru Corp.
-7272.T,Yamaha Motor Co. Ltd.
-7731.T,Nikon Corp.
-7733.T,Ono Sokki Co. Ltd.
-7735.T,Screen Holdings Co. Ltd.
-7751.T,Canon Inc.
-7752.T,Ricoh Co. Ltd.
-7762.T,Citizen Watch Co. Ltd.
-7832.T,Bandai Namco Holdings Inc.
-7911.T,Topcon Corp.
-7912.T,Dai Nippon Printing Co. Ltd.
-7951.T,Yamaha Corp.
-8001.T,Itochu Corp.
-8002.T,Marubeni Corp.
-8015.T,Toyota Tsusho Corp.
-8031.T,Mitsui & Co. Ltd.
-8035.T,Tokyo Electron Ltd.
-8053.T,Sumitomo Corp.
-8058.T,Mitsubishi Corp.
-8113.T,Uni-Charm Corp.
-8252.T,Marui Group Co. Ltd.
-8253.T,Izumi Co. Ltd.
-8267.T,Aeon Co. Ltd.
-8303.T,Shinsei Bank Ltd.
-8304.T,Aozora Bank Ltd.
-8306.T,Mitsubishi UFJ Financial Group Inc.
-8308.T,Resona Holdings Inc.
-8309.T,Sumitomo Mitsui Trust Holdings Inc.
-8316.T,Sumitomo Mitsui Financial Group Inc.
-8331.T,Chiba Bank Ltd.
-8354.T,Fukuoka Financial Group Inc.
-8355.T,Shizuoka Bank Ltd.
-8411.T,Mizuho Financial Group Inc.
-8591.T,ORIX Corp.
-8601.T,Daiwa Securities Group Inc.
-8604.T,Nomura Holdings Inc.
-8630.T,NKSJ Holdings Inc.
-8725.T,MS&AD Insurance Group Holdings Inc.
-8750.T,Dai-ichi Life Holdings Inc.
-8766.T,Tokio Marine Holdings Inc.
-8795.T,T&D Holdings Inc.
-8801.T,Mitsui Fudosan Co. Ltd.
-8802.T,Mitsubishi Estate Co. Ltd.
-8804.T,Tokyo Tatemono Co. Ltd.
-8830.T,Sumitomo Realty & Development Co. Ltd.
-9001.T,Tokyo Metro Co. Ltd.
-9005.T,Tokyu Corp.
-9007.T,Odakyu Electric Railway Co. Ltd.
-9008.T,Keio Corp.
-9009.T,Keisei Electric Railway Co. Ltd.
-9020.T,East Japan Railway Co.
-9021.T,West Japan Railway Co.
-9022.T,Central Japan Railway Co.
-9062.T,Japan Freight Railway Co.
-9064.T,Yamato Holdings Co. Ltd.
-9101.T,Nippon Yusen K.K.
-9104.T,Mitsui O.S.K. Lines Ltd.
-9107.T,Kawasaki Kisen Kaisha Ltd.
-9201.T,Japan Airlines Co. Ltd.
-9202.T,ANA Holdings Inc.
-9301.T,Mitsubishi Logistics Corp.
-9412.T,SKY Perfect JSAT Holdings Inc.
-9432.T,Nippon Telegraph and Telephone Corp.
-9433.T,KDDI Corp.
-9434.T,SoftBank Corp.
-9501.T,Tokyo Electric Power Co. Holdings Inc.
-9502.T,Chubu Electric Power Co. Inc.
-9503.T,Kansai Electric Power Co. Inc.
-9531.T,Tokyo Gas Co. Ltd.
-9532.T,Osaka Gas Co. Ltd.
-9602.T,Toho Co. Ltd.
-9613.T,NTT Data Group Corp.
-9681.T,Tokyo Dome Corp.
-9735.T,SECOM Co. Ltd.
-9766.T,Konami Group Corp.
-9983.T,Fast Retailing Co. Ltd.
-9984.T,SoftBank Group Corp.
-9989.T,Sundrug Co. Ltd.
+1332.T	Nippon Suisan Kaisha Ltd.
+1333.T	Maruha Nichiro Corp.
+1605.T	Inpex Corp.
+1721.T	Comsys Holdings Corp.
+1801.T	Taisei Corp.
+1802.T	Obayashi Corp.
+1803.T	Shimizu Corp.
+1925.T	Daiwa House Industry Co. Ltd.
+1928.T	Sekisui House Ltd.
+1963.T	Nikko Co.
+2002.T	Nisshin Seifun Group Inc.
+2269.T	Meiji Holdings Co. Ltd.
+2282.T	Nippon Ham Co. Ltd.
+2413.T	M3 Inc.
+2432.T	DeNA Co. Ltd.
+2501.T	Sapporo Holdings Ltd.
+2502.T	Asahi Group Holdings Ltd.
+2503.T	Kirin Holdings Co. Ltd.
+2531.T	Takara Holdings Inc.
+2768.T	Sojitz Corp.
+2801.T	Kikkoman Corp.
+2802.T	Ajinomoto Co. Inc.
+2871.T	Nichirei Corp.
+2914.T	Japan Tobacco Inc.
+3086.T	J. Front Retailing Co. Ltd.
+3099.T	Isetan Mitsukoshi Holdings Ltd.
+3101.T	Toray Industries Inc.
+3103.T	Unitika Ltd.
+3401.T	Teijin Ltd.
+3402.T	Asahi Kasei Corp.
+3861.T	Oji Holdings Corp.
+3863.T	Nippon Paper Industries Co. Ltd.
+4004.T	Showa Denko K.K.
+4005.T	Sumitomo Chemical Co. Ltd.
+4021.T	Nissan Chemical Corp.
+4042.T	Tosoh Corp.
+4043.T	Tokuyama Corp.
+4061.T	DIC Corp.
+4063.T	Shin-Etsu Chemical Co. Ltd.
+4151.T	Kyowa Kirin Co. Ltd.
+4183.T	Mitsui Chemicals Inc.
+4188.T	Mitsubishi Chemical Group Corp.
+4208.T	Ube Corp.
+4272.T	Nippon Kayaku Co. Ltd.
+4324.T	Dentsu Group Inc.
+4452.T	Kao Corp.
+4502.T	Takeda Pharmaceutical Co. Ltd.
+4503.T	Astellas Pharma Inc.
+4506.T	Sumitomo Pharma Co. Ltd.
+4507.T	Shionogi & Co. Ltd.
+4519.T	Chugai Pharmaceutical Co. Ltd.
+4523.T	Eisai Co. Ltd.
+4543.T	Terumo Corp.
+4568.T	Daiichi Sankyo Co. Ltd.
+4578.T	Otsuka Holdings Co. Ltd.
+4631.T	DIC Corp.
+4661.T	Oriental Land Co. Ltd.
+4689.T	Z Holdings Corp.
+4704.T	Trend Micro Inc.
+4751.T	CyberAgent Inc.
+4755.T	Rakuten Group Inc.
+4901.T	Fujifilm Holdings Corp.
+4911.T	Shiseido Co. Ltd.
+5020.T	ENEOS Holdings Inc.
+5101.T	Yokohama Rubber Co. Ltd.
+5108.T	Bridgestone Corp.
+5201.T	AGC Inc.
+5202.T	Nippon Sheet Glass Co. Ltd.
+5214.T	Nippon Electric Glass Co. Ltd.
+5232.T	Sumitomo Osaka Cement Co. Ltd.
+5233.T	Taisei Cement Co. Ltd.
+5301.T	TOKAI Carbon Co. Ltd.
+5332.T	TOTO Ltd.
+5333.T	Noritake Co. Ltd.
+5401.T	Nippon Steel Corp.
+5406.T	Kobe Steel Ltd.
+5411.T	JFE Holdings Inc.
+5541.T	Pacific Metals Co. Ltd.
+5631.T	Japan Steel Works Ltd.
+5703.T	Nippon Light Metal Holdings Co. Ltd.
+5706.T	Mitsui Mining & Smelting Co. Ltd.
+5707.T	Toho Zinc Co. Ltd.
+5711.T	Mitsubishi Materials Corp.
+5713.T	Sumitomo Metal Mining Co. Ltd.
+5714.T	Dowa Holdings Co. Ltd.
+5801.T	Furukawa Electric Co. Ltd.
+5802.T	Sumitomo Electric Industries Ltd.
+5803.T	Fujikura Ltd.
+5901.T	Toyo Seikan Group Holdings Ltd.
+6098.T	Recruit Holdings Co. Ltd.
+6103.T	Okuma Corp.
+6113.T	Amada Co. Ltd.
+6301.T	Komatsu Ltd.
+6302.T	Sumitomo Heavy Industries Ltd.
+6305.T	Hitachi Construction Machinery Co. Ltd.
+6326.T	Kubota Corp.
+6361.T	Ebara Corp.
+6367.T	Daikin Industries Ltd.
+6471.T	Nippon Thompson Co. Ltd.
+6472.T	Nachi-Fujikoshi Corp.
+6473.T	JTEKT Corp.
+6479.T	MinebeaMitsumi Inc.
+6501.T	Hitachi Ltd.
+6503.T	Mitsubishi Electric Corp.
+6504.T	Fuji Electric Co. Ltd.
+6506.T	Yaskawa Electric Corp.
+6645.T	Omron Corp.
+6674.T	GS Yuasa Corp.
+6701.T	NEC Corp.
+6702.T	Fujitsu Ltd.
+6703.T	OKI Electric Industry Co. Ltd.
+6723.T	Renesas Electronics Corp.
+6752.T	Panasonic Holdings Corp.
+6758.T	Sony Group Corp.
+6762.T	TDK Corp.
+6770.T	Alps Alpine Co. Ltd.
+6841.T	Yokogawa Electric Corp.
+6857.T	Advantest Corp.
+6902.T	Denso Corp.
+6902.T	Denso Corp.
+6952.T	Casio Computer Co. Ltd.
+6954.T	Fanuc Corp.
+6971.T	Kyocera Corp.
+6976.T	Taisei Corp.
+6981.T	Murata Manufacturing Co. Ltd.
+6988.T	Nitto Denko Corp.
+7003.T	Mitsui E&S Holdings Co. Ltd.
+7011.T	Hitachi Zosen Corp.
+7012.T	Kawasaki Heavy Industries Ltd.
+7013.T	IHI Corp.
+7201.T	Nissan Motor Co. Ltd.
+7202.T	Isuzu Motors Ltd.
+7203.T	Toyota Motor Corp.
+7205.T	Hino Motors Ltd.
+7211.T	Mitsubishi Motors Corp.
+7261.T	Mazda Motor Corp.
+7267.T	Honda Motor Co. Ltd.
+7269.T	Suzuki Motor Corp.
+7270.T	Subaru Corp.
+7272.T	Yamaha Motor Co. Ltd.
+7731.T	Nikon Corp.
+7733.T	Ono Sokki Co. Ltd.
+7735.T	Screen Holdings Co. Ltd.
+7751.T	Canon Inc.
+7752.T	Ricoh Co. Ltd.
+7762.T	Citizen Watch Co. Ltd.
+7832.T	Bandai Namco Holdings Inc.
+7911.T	Topcon Corp.
+7912.T	Dai Nippon Printing Co. Ltd.
+7951.T	Yamaha Corp.
+8001.T	Itochu Corp.
+8002.T	Marubeni Corp.
+8015.T	Toyota Tsusho Corp.
+8031.T	Mitsui & Co. Ltd.
+8035.T	Tokyo Electron Ltd.
+8053.T	Sumitomo Corp.
+8058.T	Mitsubishi Corp.
+8113.T	Uni-Charm Corp.
+8252.T	Marui Group Co. Ltd.
+8253.T	Izumi Co. Ltd.
+8267.T	Aeon Co. Ltd.
+8303.T	Shinsei Bank Ltd.
+8304.T	Aozora Bank Ltd.
+8306.T	Mitsubishi UFJ Financial Group Inc.
+8308.T	Resona Holdings Inc.
+8309.T	Sumitomo Mitsui Trust Holdings Inc.
+8316.T	Sumitomo Mitsui Financial Group Inc.
+8331.T	Chiba Bank Ltd.
+8354.T	Fukuoka Financial Group Inc.
+8355.T	Shizuoka Bank Ltd.
+8411.T	Mizuho Financial Group Inc.
+8591.T	ORIX Corp.
+8601.T	Daiwa Securities Group Inc.
+8604.T	Nomura Holdings Inc.
+8630.T	NKSJ Holdings Inc.
+8725.T	MS&AD Insurance Group Holdings Inc.
+8750.T	Dai-ichi Life Holdings Inc.
+8766.T	Tokio Marine Holdings Inc.
+8795.T	T&D Holdings Inc.
+8801.T	Mitsui Fudosan Co. Ltd.
+8802.T	Mitsubishi Estate Co. Ltd.
+8804.T	Tokyo Tatemono Co. Ltd.
+8830.T	Sumitomo Realty & Development Co. Ltd.
+9001.T	Tokyo Metro Co. Ltd.
+9005.T	Tokyu Corp.
+9007.T	Odakyu Electric Railway Co. Ltd.
+9008.T	Keio Corp.
+9009.T	Keisei Electric Railway Co. Ltd.
+9020.T	East Japan Railway Co.
+9021.T	West Japan Railway Co.
+9022.T	Central Japan Railway Co.
+9062.T	Japan Freight Railway Co.
+9064.T	Yamato Holdings Co. Ltd.
+9101.T	Nippon Yusen K.K.
+9104.T	Mitsui O.S.K. Lines Ltd.
+9107.T	Kawasaki Kisen Kaisha Ltd.
+9201.T	Japan Airlines Co. Ltd.
+9202.T	ANA Holdings Inc.
+9301.T	Mitsubishi Logistics Corp.
+9412.T	SKY Perfect JSAT Holdings Inc.
+9432.T	Nippon Telegraph and Telephone Corp.
+9433.T	KDDI Corp.
+9434.T	SoftBank Corp.
+9501.T	Tokyo Electric Power Co. Holdings Inc.
+9502.T	Chubu Electric Power Co. Inc.
+9503.T	Kansai Electric Power Co. Inc.
+9531.T	Tokyo Gas Co. Ltd.
+9532.T	Osaka Gas Co. Ltd.
+9602.T	Toho Co. Ltd.
+9613.T	NTT Data Group Corp.
+9681.T	Tokyo Dome Corp.
+9735.T	SECOM Co. Ltd.
+9766.T	Konami Group Corp.
+9983.T	Fast Retailing Co. Ltd.
+9984.T	SoftBank Group Corp.
+9989.T	Sundrug Co. Ltd.
+285A.T	Kioxia Holdings Corp.
+6146.T	Disco Corp.
+6920.T	Lasertec Corp.
+8136.T	Sanrio Co. Ltd.
+6861.T	Keyence Corp.
+7003.T	Mitsui E&S Holdings Co. Ltd.
+8136.T	Sanrio Co. Ltd.
+485A.T	PowerX Inc.
+6525.T	Kokusai Electric Corp.
+7148.T	FPG Inc.
+6629.T	T-Horizon Inc.
+6330.T	Toyo Engineering Corp.
+477A.T	Startland Inc.
+7138.T	TORICO Co. Ltd.
+3350.T	MetaPlaza Inc.
+6178.T	Japan Post Holdings Co. Ltd.
+9107.T	Kawasaki Kisen Kaisha Ltd.
+4004.T	Resonac Holdings Corp.
+7936.T	Asics Corp.
+8227.T	Shimamura Co. Ltd.
+8604.T	Nomura Holdings Inc.
+6361.T	Ebara Corp.
+6366.T	Chiyoda Corp.
+7309.T	Shimano Inc.
+6016.T	Japan Engine Corp.
+5831.T	Shizuoka Financial Group Inc.
+5110.T	Sumitomo Rubber Industries Ltd.
+6963.T	Rohm Co. Ltd.
+7181.T	Japan Post Insurance Co. Ltd.
+3391.T	Tsuruha Holdings Inc.
+9041.T	Kintetsu Group Holdings Co. Ltd.
+4324.T	Dentsu Group Inc.
+4833.T	Defactostandard Ltd.
+9719.T	SCSK Corp.
+7282.T	Toyota Industries Corp.
+5344.T	Maruwa Co. Ltd.
+3563.T	Food & Life Companies Ltd.
+5334.T	NGK Spark Plug Co. Ltd.
+6814.T	Furuno Electric Co. Ltd.
+6590.T	Shibaura Mechatronics Corp.
+1928.T	Sekisui House Ltd.
+4684.T	Obic Co. Ltd.
+6869.T	Sysmex Corp.
+5817.T	JMACS Japan Co. Ltd.
+6871.T	Japan Micro Co. Ltd.
+215A.T	Timee Inc.
+6315.T	TOWA Corp.
+4307.T	Nomura Research Institute Ltd.
+9042.T	Hankyu Hanshin Holdings Inc.
+3099.T	Isetan Mitsukoshi Holdings Ltd.
+2413.T	M3 Inc.
+7911.T	Topcon Corp.
+247A.T	AI Robot Inc.
+5032.T	Anycolor Inc.
+3197.T	Skylarc Holdings Co. Ltd.
+5838.T	Rakuten Bank Ltd.
+4385.T	Mercari Inc.
+9023.T	Tokyo Metro Co. Ltd.
+8697.T	Japan Exchange Group Inc.
+4784.T	GMO Internet Group Inc.
+3110.T	Nittobo Holdings Inc.
+7532.T	Pan Pacific International Holdings Corp.
