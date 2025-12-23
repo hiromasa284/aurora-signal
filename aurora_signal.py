@@ -68,14 +68,22 @@ def send_email(subject, body):
     smtp_pass = os.getenv("SMTP_PASS")
     send_to = os.getenv("SEND_TO", smtp_user)
 
+    # 必須項目の確認
+    if not smtp_user or not smtp_pass:
+        raise ValueError("SMTP_USER または SMTP_PASS が設定されていません")
+
     msg = MIMEText(body)
     msg["Subject"] = subject
     msg["From"] = smtp_user
     msg["To"] = send_to
 
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(smtp_user, smtp_pass)
-        server.send_message(msg)
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(smtp_user, smtp_pass)
+            server.send_message(msg)
+            print("メール送信に成功しました！")
+    except Exception as e:
+        print(f"メール送信中にエラーが発生しました: {e}")
 
 # メインロジック
 def main():
