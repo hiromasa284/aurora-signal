@@ -22,20 +22,21 @@ jobs:
           python-version: "3.10"
 
       - name: Install dependencies
-        run: |
-          pip install requests pandas numpy
-          pip install google-api-python-client google-auth google-auth-oauthlib
+        run: pip install -r requirements.txt
 
       - name: Run script
         env:
           ALPHA_KEY: ${{ secrets.ALPHA_KEY }}
           NEWS_KEY: ${{ secrets.NEWS_KEY }}
           FMP_KEY: ${{ secrets.FMP_KEY }}
-          GMAIL_CREDENTIALS: ${{ secrets.GMAIL_CREDENTIALS }}
-          SEND_TO: ${{ secrets.SEND_TO }}
+        run: python aurora_signal.py
+
+      - name: Send email with results
+        env:
           SMTP_USER: ${{ secrets.SMTP_USER }}
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
-        run: python aurora_signal.py
+          SEND_TO: ${{ secrets.SEND_TO }}
+        run: python send_email.py
 
       - name: Commit and push signal.json
         run: |
@@ -47,44 +48,12 @@ jobs:
             git commit -m "Update signal.json"
             git push origin main
           )
-def safe_run():
-    try:
-        result = scan_all(tickers)
-        print(f"アラート銘柄数: {len(result)}")
 
-        body = format_alerts_for_email("signal.json")
-        send_email("Aurora Signal 最新アラート", body)
-
-    except Exception as e:
-        error_body = f"Aurora Signal 実行中にエラーが発生しました。\n\n{str(e)}"
-        send_email("Aurora Signal エラー通知", error_body)
-        raise
-
-
-if __name__ == "__main__":
-    safe_run()
-      - name: Send failure notification
-        if: failure()
-        env:
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
-          SEND_TO:   ${{ secrets.SEND_TO }}
-        run: |
-          python - << 'EOF'
-from email.mime.text import MIMEText
-import smtplib, os
-
-msg = MIMEText("Aurora Signal の GitHub Actions が失敗しました。", "plain", "utf-8")
-msg["Subject"] = "Aurora Signal - GitHub Actions エラー"
-msg["From"] = os.environ["SMTP_USER"]
-msg["To"] = os.environ["SEND_TO"]
-
-with smtplib.SMTP("smtp.gmail.com", 587) as s:
-    s.starttls()
-    s.login(os.environ["SMTP_USER"], os.environ["SMTP_PASS"])
-    s.send_message(msg)
-EOF
       - name: Backup signal.json
         run: |
           mkdir -p backup
           cp signal.json backup/signal_$(date +'%Y%m%d_%H%M').json
+
+      - name: Clean old backups
+        run: |
+          find backup/ -type f -mtime +7 -exec rm {} \;
