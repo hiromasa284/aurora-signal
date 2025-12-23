@@ -52,14 +52,16 @@ def check_signal(data):
     rsi = data["rsi"]
     price = data["close"]
     moving_avg = data.get("moving_avg", 150)
-    price_change = data.get("price_change", 0)
 
-    if rsi <= 25 and price < moving_avg and price_change < -0.05:
+    # BUY条件（少し甘め）
+    if rsi <= 35 and price < moving_avg:
         return "BUY"
-    elif rsi >= 75 and price > moving_avg and price_change > 0.05:
+
+    # SELL条件（少し甘め）
+    elif rsi >= 65 and price > moving_avg:
         return "SELL"
-    else:
-        return "HOLD"
+
+    return "HOLD"
 
 # 勝率と期待値
 def calculate_expected_value(data):
