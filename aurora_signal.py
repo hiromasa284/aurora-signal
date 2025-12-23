@@ -12,6 +12,8 @@ def get_price(symbol):
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={key}"
     r = requests.get(url).json()
     data = r.get("Time Series (Daily)", {})
+    if not data:  # データが空の場合
+        return pd.DataFrame()
     df = pd.DataFrame.from_dict(data, orient="index").sort_index()
     df = df.astype(float)
     return df
@@ -81,28 +83,37 @@ def main():
     signals = {}
 
     for ticker in TICKERS:
-        # 株価データ取得
-        price_data = get_price(ticker)
-        latest_price = price_data.iloc[-1]["4. close"]
-        rsi = calculate_rsi(price_data)
-        moving_avg = price_data["4. close"].rolling(window=14).mean().iloc[-1]
+        try:
+            print(f"{ticker} のデータを取得中...")
+            price_data = get_price(ticker)
 
-        data = {
-            "close": latest_price,
-            "rsi": rsi,
-            "moving_avg": moving_avg
-        }
+            # データが空または行数が不足している場合はスキップ
+            if price_data.empty or len(price_data) < 2:
+                print(f"データが不足しています: {ticker}")
+                continue
 
-        # シグナル判定
-        signal = check_signal(data)
-        expected_value = calculate_expected_value(data)
+            latest_price = price_data.iloc[-1]["4. close"]
+            rsi = calculate_rsi(price_data)
+            moving_avg = price_data["4. close"].rolling(window=14).mean().iloc[-1]
 
-        signals[ticker] = {
-            "signal": signal,
-            "rsi": rsi,
-            "close": latest_price,
-            "expected_value": expected_value
-        }
+            data = {
+                "close": latest_price,
+                "rsi": rsi,
+                "moving_avg": moving_avg
+            }
+
+            # シグナル判定
+            signal = check_signal(data)
+            expected_value = calculate_expected_value(data)
+
+            signals[ticker] = {
+                "signal": signal,
+                "rsi": rsi,
+                "close": latest_price,
+                "expected_value": expected_value
+            }
+        except Exception as e:
+            print(f"エラーが発生しました（{ticker}）: {e}")
 
     # 期待値でソート
     sorted_signals = sorted(signals.items(), key=lambda x: x[1]["expected_value"], reverse=True)
