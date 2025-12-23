@@ -1,29 +1,10 @@
-TICKERS = ["AAPL", "MSFT", "TSLA"]
-def get_stock_data(ticker):
-    # 仮のデータ（本番では API から取得）
-    return {
-        "close": 150.0,
-        "rsi": 55.0
-    }
-
-def check_signal(data):
-    if data["rsi"] > 70:
-        return "SELL"
-    elif data["rsi"] < 30:
-        return "BUY"
-    else:
-        return "HOLD"
-        TICKERS = ["AAPL", "MSFT", "TSLA"]
 import os
 import json
 import requests
 import pandas as pd
-import numpy as np
-from datetime import datetime
 from email.mime.text import MIMEText
-from google.oauth2 import service_account
-from googleapiclient.discovery import build
-import base64
+import smtplib
+from datetime import datetime
 
 # 株価取得（Alpha Vantage）
 def get_price(symbol):
@@ -35,107 +16,56 @@ def get_price(symbol):
     df = df.astype(float)
     return df
 
-# ニュース取得（NewsAPI）
-def get_news(symbol):
-    key = os.getenv("NEWS_KEY")
-    url = f"https://newsapi.org/v2/everything?q={symbol}&language=en&sortBy=publishedAt&apiKey={key}"
-    r = requests.get(url).json()
-    return r.get("articles", [])
+# RSI計算（例: 14日間）
+def calculate_rsi(data, window=14):
+    delta = data["4. close"].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
+    rs = gain / loss
+    rsi = 100 - (100 / (1 + rs))
+    return rsi.iloc[-1]  # 最新のRSIを返す
 
-# ニューススコア（簡易判定）
-def news_score(articles):
-    score = 0
-    for a in articles[:5]:
-        title = a.get("title", "").lower()
-        if "upgrade" in title or "surge" in title or "beat" in title:
-            score += 1
-        elif "downgrade" in title or "miss" in title or "fall" in title:
-            score -= 1
-    return score
+# 複数指標を使用してシグナルを判定
+def check_signal(data):
+    rsi = data["rsi"]
+    price = data["close"]
+    moving_avg = data.get("moving_avg", 150)  # 仮の移動平均値
+    macd_signal = data.get("macd_signal", 1)  # 仮のMACDシグナル
 
-# 決算データ取得（FMP）
-def get_fundamentals(symbol):
-    key = os.getenv("FMP_KEY")
-    url = f"https://financialmodelingprep.com/api/v3/income-statement/{symbol}?limit=2&apikey={key}"
-    r = requests.get(url).json()
-    if len(r) < 2:
-        return None
-    latest, prev = r[0], r[1]
-    growth = (latest["revenue"] - prev["revenue"]) / prev["revenue"]
-    return {
-        "eps": latest.get("eps"),
-        "revenue_growth": growth,
-        "netIncome": latest.get("netIncome")
-    }
+    if rsi <= 30 and price < moving_avg and macd_signal > 0:
+        return "BUY"
+    elif rsi >= 70 and price > moving_avg and macd_signal < 0:
+        return "SELL"
+    else:
+        return "HOLD"
 
-# Gmail API でメール送信
-def send_email(subject, body):
-    creds_json = os.getenv("GMAIL_CREDENTIALS")
-    creds = service_account.Credentials.from_service_account_info(
-        json.loads(creds_json),
-        scopes=["https://www.googleapis.com/auth/gmail.send"]
-    )
-    service = build("gmail", "v1", credentials=creds)
+# 勝率と期待値を計算
+def calculate_expected_value(data):
+    win_prob = 1 / data["rsi"]  # 仮の勝率（RSIが低いほど勝率が高いと仮定）
+    expected_value = win_prob * data["close"]  # 仮の期待値計算
+    return expected_value
 
-    message = MIMEText(body)
-    message["to"] = os.getenv("SEND_TO")
-    message["from"] = "me"
-    message["subject"] = subject
+# アラート結果をフィルタリング
+def filter_alerts(alerts):
+    return {ticker: info for ticker, info in alerts.items() if info["signal"] in ["BUY", "SELL"]}
 
-    raw = base64.urlsafe_b64encode(message.as_bytes()).decode()
-    service.users().messages().send(userId="me", body={"raw": raw}).execute()
+# メール本文を整形
+def format_alerts_for_email(signals):
+    body = "以下は最新のアラート情報です：\n\n"
+    for ticker, info in signals.items():
+        body += f"銘柄: {ticker}\n"
+        body += f"  シグナル: {info['signal']}\n"
+        body += f"  RSI: {info['rsi']}\n"
+        body += f"  価格: {info['close']}\n"
+        body += f"  期待値: {info['expected_value']:.2f}\n"
+        body += "-" * 20 + "\n"
+    return body
 
-# メインロジック
-def main():
-    symbol = "AUR"
-    price_df = get_price(symbol)
-    latest = price_df.iloc[-1]["4. close"]
-    prev = price_df.iloc[-2]["4. close"]
-    price_change = (latest - prev) / prev
-
-    articles = get_news(symbol)
-    score = news_score(articles)
-
-    fundamentals = get_fundamentals(symbol)
-    growth = fundamentals["revenue_growth"] if fundamentals else 0
-
-    if price_change > 0.2 or score >= 2 or growth > 0.3:
-        body = f"""Aurora Signal Alert 🚨
-
-Symbol: {symbol}
-Price Change: {price_change:.2%}
-News Score: {score}
-Revenue Growth: {growth:.2%}
-
-Triggered at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
-"""
-        send_email(f"{symbol}: Signal Triggered", body)
-
-if __name__ == "__main__":
-    main()
-import smtplib
-from email.mime.text import MIMEText
-
+# メール送信
 def send_email(subject, body):
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
-
-    msg = MIMEText(body)
-    msg["Subject"] = subject
-    msg["From"] = smtp_user
-    msg["To"] = smtp_user
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-        server.login(smtp_user, smtp_pass)
-        server.send_message(msg)
-import os
-import smtplib
-from email.mime.text import MIMEText
-
-def send_email(subject, body):
-    smtp_user = os.getenv("SMTP_USER")      # 送信元（Gmail）
-    smtp_pass = os.getenv("SMTP_PASS")      # アプリパスワード
-    send_to = os.getenv("SEND_TO", smtp_user)  # 送信先（SEND_TO が無ければ自分）
+    send_to = os.getenv("SEND_TO", smtp_user)
 
     msg = MIMEText(body)
     msg["Subject"] = subject
@@ -145,41 +75,50 @@ def send_email(subject, body):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
         server.login(smtp_user, smtp_pass)
         server.send_message(msg)
-import json
 
-def save_signal_json(signals):
-    with open("signal.json", "w") as f:
-        json.dump(signals, f, indent=4)
-signals = {}
+# メインロジック
+def main():
+    TICKERS = ["AAPL", "MSFT", "TSLA"]
+    signals = {}
 
-for ticker in TICKERS:
-    data = get_stock_data(ticker)
-    signal = check_signal(data)
-    signals[ticker] = signal
+    for ticker in TICKERS:
+        # 株価データ取得
+        price_data = get_price(ticker)
+        latest_price = price_data.iloc[-1]["4. close"]
+        rsi = calculate_rsi(price_data)
+        moving_avg = price_data["4. close"].rolling(window=14).mean().iloc[-1]
+        macd_signal = 1  # 仮のMACDシグナル（本番では計算）
 
-save_signal_json(signals)
-def get_stock_data(ticker):
-    # 仮のデータ構造（本番では API から取得）
-    return {
-        "close": 150.0,
-        "rsi": 55.0
-    }
+        data = {
+            "close": latest_price,
+            "rsi": rsi,
+            "moving_avg": moving_avg,
+            "macd_signal": macd_signal
+        }
 
-def check_signal(data):
-    # 仮のシグナル判定
-    if data["rsi"] > 70:
-        return "SELL"
-    elif data["rsi"] < 30:
-        return "BUY"
-    else:
-        return "HOLD"
-import json
+        # シグナル判定
+        signal = check_signal(data)
+        expected_value = calculate_expected_value(data)
 
-signals = {
-    "AAPL": {"signal": "BUY", "rsi": 28.5, "price": 147.23},
-    "MSFT": {"signal": "HOLD", "rsi": 52.1, "price": 310.45},
-    "TSLA": {"signal": "SELL", "rsi": 72.8, "price": 245.67}
-}
+        signals[ticker] = {
+            "signal": signal,
+            "rsi": rsi,
+            "close": latest_price,
+            "expected_value": expected_value
+        }
 
-with open("signal.json", "w") as f:
-    json.dump(signals, f, indent=2)
+    # 期待値でソート
+    sorted_signals = sorted(signals.items(), key=lambda x: x[1]["expected_value"], reverse=True)
+    top_signals = {k: v for k, v in sorted_signals[:3]}  # 上位3件を選択
+
+    # フィルタリング（BUYとSELLのみ）
+    filtered_signals = filter_alerts(top_signals)
+
+    # メール本文を作成
+    email_body = format_alerts_for_email(filtered_signals)
+
+    # メール送信
+    send_email("最新の株価アラート", email_body)
+
+if __name__ == "__main__":
+    main()
