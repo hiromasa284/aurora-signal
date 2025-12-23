@@ -9,13 +9,9 @@ import smtplib
 
 # CSV から銘柄リストを読み込む
 def load_tickers():
-    # 日本株はヘッダーなし
+    # 両方ともヘッダーなし
     jp = pd.read_csv("tickers_jp.csv", header=None)[0].dropna().tolist()
-
-    # 米国株は symbol 列がある
-    us = pd.read_csv("tickers_us.csv")["symbol"].dropna().tolist()
-
-    # 重複除去して順番維持
+    us = pd.read_csv("tickers_us.csv", header=None)[0].dropna().tolist()
     return list(dict.fromkeys(jp + us))
 
 # 株価取得（Alpha Vantage）
