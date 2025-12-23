@@ -3,6 +3,7 @@ import json
 import requests
 import pandas as pd
 from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import smtplib
 
@@ -32,10 +33,12 @@ def check_signal(data):
     rsi = data["rsi"]
     price = data["close"]
     moving_avg = data.get("moving_avg", 150)  # 仮の移動平均値
+    price_change = data.get("price_change", 0)  # 仮の価格変動率
 
-    if rsi <= 30 and price < moving_avg:
+    # 修正後の条件
+    if rsi <= 25 and price < moving_avg and price_change < -0.05:
         return "BUY"
-    elif rsi >= 70 and price > moving_avg:
+    elif rsi >= 75 and price > moving_avg and price_change > 0.05:
         return "SELL"
     else:
         return "HOLD"
@@ -58,32 +61,41 @@ def format_alerts_for_email(signals):
         body += f"  シグナル: {info['signal']}\n"
         body += f"  RSI: {info['rsi']}\n"
         body += f"  価格: {info['close']}\n"
+        body += f"  移動平均: {info.get('moving_avg', 'N/A')}\n"
         body += f"  期待値: {info['expected_value']:.2f}\n"
         body += "-" * 20 + "\n"
     return body
 
 # メール送信
-def send_email(subject, body):
+def send_email(subject, body, to_email=None):
     smtp_user = os.getenv("SMTP_USER")
     smtp_pass = os.getenv("SMTP_PASS")
-    send_to = os.getenv("SEND_TO", smtp_user)
+    to_email = to_email or os.getenv("SEND_TO", smtp_user)
+
+    # デバッグ用ログ
+    print(f"SMTP_USER: {smtp_user}")
+    print(f"SMTP_PASS: {'***' if smtp_pass else 'None'}")
+    print(f"TO_EMAIL: {to_email}")
 
     # 必須項目の確認
     if not smtp_user or not smtp_pass:
         raise ValueError("SMTP_USER または SMTP_PASS が設定されていません")
 
-    msg = MIMEText(body)
-    msg["Subject"] = subject
+    msg = MIMEMultipart()
     msg["From"] = smtp_user
-    msg["To"] = send_to
+    msg["To"] = to_email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
 
     try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
+            server.starttls()
             server.login(smtp_user, smtp_pass)
-            server.send_message(msg)
+            server.sendmail(smtp_user, to_email, msg.as_string())
             print("メール送信に成功しました！")
     except Exception as e:
         print(f"メール送信中にエラーが発生しました: {e}")
+        raise
 
 # メインロジック
 def main():
@@ -103,11 +115,13 @@ def main():
             latest_price = price_data.iloc[-1]["4. close"]
             rsi = calculate_rsi(price_data)
             moving_avg = price_data["4. close"].rolling(window=14).mean().iloc[-1]
+            price_change = (latest_price - price_data.iloc[-2]["4. close"]) / price_data.iloc[-2]["4. close"]
 
             data = {
                 "close": latest_price,
                 "rsi": rsi,
-                "moving_avg": moving_avg
+                "moving_avg": moving_avg,
+                "price_change": price_change
             }
 
             # シグナル判定
@@ -118,6 +132,7 @@ def main():
                 "signal": signal,
                 "rsi": rsi,
                 "close": latest_price,
+                "moving_avg": moving_avg,
                 "expected_value": expected_value
             }
         except Exception as e:
