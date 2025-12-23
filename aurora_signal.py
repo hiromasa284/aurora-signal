@@ -13,10 +13,12 @@ def get_price(symbol):
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={key}"
     r = requests.get(url).json()
     data = r.get("Time Series (Daily)", {})
-    if not data:  # データが空の場合
+    if not data:
+        print(f"{symbol} のデータが取得できませんでした")
         return pd.DataFrame()
     df = pd.DataFrame.from_dict(data, orient="index").sort_index()
     df = df.astype(float)
+    print(f"{symbol} のデータフレーム: {df.head()}")  # デバッグ用
     return df
 
 # RSI計算
@@ -32,10 +34,9 @@ def calculate_rsi(data, window=14):
 def check_signal(data):
     rsi = data["rsi"]
     price = data["close"]
-    moving_avg = data.get("moving_avg", 150)  # 仮の移動平均値
-    price_change = data.get("price_change", 0)  # 仮の価格変動率
+    moving_avg = data.get("moving_avg", 150)
+    price_change = data.get("price_change", 0)
 
-    # 修正後の条件
     if rsi <= 25 and price < moving_avg and price_change < -0.05:
         return "BUY"
     elif rsi >= 75 and price > moving_avg and price_change > 0.05:
@@ -45,8 +46,8 @@ def check_signal(data):
 
 # 勝率と期待値を計算
 def calculate_expected_value(data):
-    win_prob = 1 / data["rsi"]  # 仮の勝率（RSIが低いほど勝率が高いと仮定）
-    expected_value = win_prob * data["close"]  # 仮の期待値計算
+    win_prob = 1 / data["rsi"]
+    expected_value = win_prob * data["close"]
     return expected_value
 
 # アラート結果をフィルタリング
@@ -55,6 +56,7 @@ def filter_alerts(alerts):
 
 # メール本文を整形
 def format_alerts_for_email(signals):
+    print(f"整形前のシグナル: {signals}")  # デバッグ用
     body = "以下は最新のアラート情報です：\n\n"
     for ticker, info in signals.items():
         body += f"銘柄: {ticker}\n"
@@ -72,12 +74,9 @@ def send_email(subject, body, to_email=None):
     smtp_pass = os.getenv("SMTP_PASS")
     to_email = to_email or os.getenv("SEND_TO", smtp_user)
 
-    # デバッグ用ログ
-    print(f"SMTP_USER: {smtp_user}")
-    print(f"SMTP_PASS: {'***' if smtp_pass else 'None'}")
-    print(f"TO_EMAIL: {to_email}")
+    print(f"メール件名: {subject}")
+    print(f"メール本文:\n{body}")  # デバッグ用
 
-    # 必須項目の確認
     if not smtp_user or not smtp_pass:
         raise ValueError("SMTP_USER または SMTP_PASS が設定されていません")
 
@@ -107,7 +106,6 @@ def main():
             print(f"{ticker} のデータを取得中...")
             price_data = get_price(ticker)
 
-            # データが空または行数が不足している場合はスキップ
             if price_data.empty or len(price_data) < 2:
                 print(f"データが不足しています: {ticker}")
                 continue
@@ -124,7 +122,6 @@ def main():
                 "price_change": price_change
             }
 
-            # シグナル判定
             signal = check_signal(data)
             expected_value = calculate_expected_value(data)
 
@@ -138,17 +135,16 @@ def main():
         except Exception as e:
             print(f"エラーが発生しました（{ticker}）: {e}")
 
-    # 期待値でソート
     sorted_signals = sorted(signals.items(), key=lambda x: x[1]["expected_value"], reverse=True)
-    top_signals = {k: v for k, v in sorted_signals[:3]}  # 上位3件を選択
+    top_signals = {k: v for k, v in sorted_signals[:3]}
 
-    # フィルタリング（BUYとSELLのみ）
     filtered_signals = filter_alerts(top_signals)
 
-    # メール本文を作成
-    email_body = format_alerts_for_email(filtered_signals)
+    if filtered_signals:
+        email_body = format_alerts_for_email(filtered_signals)
+    else:
+        email_body = "該当するアラート情報はありませんでした。"
 
-    # メール送信
     send_email("最新の株価アラート", email_body)
 
 if __name__ == "__main__":
