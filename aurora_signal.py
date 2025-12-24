@@ -255,5 +255,9 @@ def main():
 # ★ CSV から銘柄リストを読み込む（main の後ろに置く）
 TICKERS, NAMES = load_tickers()
 
+# ★ CSV から銘柄リストを読み込む（main の後ろに置く）
+TICKERS, NAMES = load_tickers()
+
 if __name__ == "__main__":
+    evaluate_past_signals()   # ← これを追加
     main()
