@@ -107,6 +107,23 @@ def format_alerts_for_email(signals):
         body += "-" * 20 + "\n"
     return body
 
+def calculate_stars(expected_value):
+    """
+    期待値スコアに応じて星を付与する関数
+    """
+    if expected_value >= 50:
+        return "★★★★★"
+    elif expected_value >= 40:
+        return "★★★★☆"
+    elif expected_value >= 30:
+        return "★★★☆☆"
+    elif expected_value >= 20:
+        return "★★☆☆☆"
+    elif expected_value >= 10:
+        return "★☆☆☆☆"
+    else:
+        return "☆☆☆☆☆"
+
 # メール送信
 def send_email(subject, body, to_email=None):
     smtp_user = os.getenv("SMTP_USER")
