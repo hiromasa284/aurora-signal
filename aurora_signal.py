@@ -251,6 +251,28 @@ def calculate_win_rates():
         "sell_avg_drop": sell_avg_drop
     }
 
+def format_alerts_for_email(signals):
+    body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
+
+    for ticker, info in signals.items():
+        body += f"■ {ticker}\n"
+        body += f"  シグナル: {info['signal']}\n"
+        body += f"  RSI: {info['rsi']:.2f}\n"
+        body += f"  終値: {info['close']:.2f}\n"
+        body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
+        body += f"  期待値スコア: {info['expected_value']:.2f}\n"
+        body += "--------------------\n"
+
+    # ★ 勝率サマリーを追加
+    stats = calculate_win_rates()
+    body += "\n【過去シグナルの成績（1日後）】\n"
+    body += f"BUY 勝率: {stats['buy_win_rate']}%\n"
+    body += f"SELL 勝率: {stats['sell_win_rate']}%\n"
+    body += f"平均反発率: +{stats['buy_avg_gain']}%\n"
+    body += f"平均下落率: {stats['sell_avg_drop']}%\n"
+
+    return body
+
 # メール本文整形
 def main():
     signals = {}
