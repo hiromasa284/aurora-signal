@@ -251,17 +251,48 @@ def calculate_win_rates():
         "sell_avg_drop": sell_avg_drop
     }
 
+def rank_signal(expected_value, win_rate):
+    total_score = expected_value * (win_rate / 100)
+
+    if total_score >= 300 and win_rate >= 70:
+        return "S"
+    elif total_score >= 150 and win_rate >= 55:
+        return "A"
+    else:
+        return "B"
+
 def format_alerts_for_email(signals):
     body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
 
+   def format_alerts_for_email(signals):
+    body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
+
+    # ★ 勝率を先に取得
+    win_rates = calculate_win_rates()
+    buy_win = win_rates["buy_win_rate"]
+    sell_win = win_rates["sell_win_rate"]
+
+    # ★ ランク付けしながら銘柄を表示
     for ticker, info in signals.items():
-        body += f"■ {ticker}\n"
+        win_rate = buy_win if info["signal"] == "BUY" else sell_win
+        rank = rank_signal(info["expected_value"], win_rate)
+
+        body += f"■ {ticker}（{rank}ランク）\n"
         body += f"  シグナル: {info['signal']}\n"
         body += f"  RSI: {info['rsi']:.2f}\n"
         body += f"  終値: {info['close']:.2f}\n"
         body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
         body += f"  期待値スコア: {info['expected_value']:.2f}\n"
         body += "--------------------\n"
+
+    # ★ 勝率サマリー
+    body += "\n【過去シグナルの成績（1日後）】\n"
+    body += f"BUY 勝率: {buy_win}%\n"
+    body += f"SELL 勝率: {sell_win}%\n"
+    body += f"平均反発率: +{win_rates['buy_avg_gain']}%\n"
+    body += f"平均下落率: {win_rates['sell_avg_drop']}%\n"
+
+    return body
 
     # ★ 勝率サマリーを追加
     stats = calculate_win_rates()
