@@ -180,6 +180,11 @@ def evaluate_past_signals():
 
             entry["result_1d"] = judge(price_0d, price_1d, signal)
             entry["result_3d"] = judge(price_0d, price_3d, signal)
+
+            # ★ これを追加
+            entry["price_1d"] = price_1d
+            entry["price_3d"] = price_3d
+           
             updated = True
 
         except Exception as e:
