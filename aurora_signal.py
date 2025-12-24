@@ -115,10 +115,15 @@ def check_signal(data):
 
 # 勝率と期待値（シンプルな形は一旦維持）
 def calculate_expected_value(data):
-    # RSI が極端なほど妙味が高いとみなす簡易モデル
+    """
+    RSI が極端なほど妙味が高いとみなすモデル。
+    50 からの乖離を二乗して、極端値を強調。
+    """
     rsi = data["rsi"]
-   edge = ((abs(50 - rsi) / 50) ** 2)
-   expected_value = edge * price
+    price = data["close"]
+
+    edge = (abs(50 - rsi) / 50) ** 2
+    expected_value = edge * price
     return expected_value
 
 # BUY/SELL のみ抽出
@@ -204,6 +209,7 @@ def main():
             price_data = get_price(ticker)
 
             if price_data.empty or len(price_data) < 50:
+                # 50日移動平均を使うので、最低50本必要
                 continue
 
             latest_price = price_data.iloc[-1]["4. close"]
@@ -228,6 +234,28 @@ def main():
             }
         except Exception as e:
             print(f"エラーが発生しました（{ticker}）: {e}")
+
+    # ★ BUY/SELL/HOLD 含めて今回の全シグナルを履歴に保存
+    if signals:
+        save_signal_history(signals, run_timestamp=run_timestamp)
+
+    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
+    filtered_signals = filter_alerts(signals)
+
+    if filtered_signals:
+        # その中から期待値スコア順に上位3つ
+        sorted_signals = sorted(
+            filtered_signals.items(),
+            key=lambda x: x[1]["expected_value"],
+            reverse=True
+        )
+        top_signals = dict(sorted_signals[:3])
+        email_body = format_alerts_for_email(top_signals)
+    else:
+        # 本当に何も出なかった日は「今日は無理に触らない日」と割り切る
+        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+
+    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
     # ★ ここで履歴を保存（BUY/SELL/HOLD 含めて全部）
     if signals:
