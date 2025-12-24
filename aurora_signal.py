@@ -9,6 +9,54 @@ import smtplib
 
 HISTORY_FILE = "signal_history.json"  # リポジトリ直下に保存
 
+def load_signal_history():
+    """
+    過去のシグナル履歴を読み込む。
+    ファイルが存在しなければ空のリストを返す。
+    """
+    if not os.path.exists(HISTORY_FILE):
+        return []
+
+    try:
+        with open(HISTORY_FILE, "r", encoding="utf-8") as f:
+            data = json.load(f)
+            if isinstance(data, list):
+                return data
+            else:
+                return []
+    except Exception as e:
+        print(f"signal_history.json の読み込み中にエラー: {e}")
+        return []
+
+
+def save_signal_history(signals, run_timestamp=None):
+    """
+    今回の実行で得られた全シグナルを signal_history.json に追記保存する。
+    signals: {ticker: {signal, rsi, close, moving_avg, expected_value}}
+    """
+    if run_timestamp is None:
+        run_timestamp = datetime.utcnow().isoformat()
+
+    history = load_signal_history()
+
+    for ticker, info in signals.items():
+        record = {
+            "timestamp": run_timestamp,
+            "ticker": ticker,
+            "signal": info.get("signal"),
+            "rsi": info.get("rsi"),
+            "close": info.get("close"),
+            "moving_avg": info.get("moving_avg"),
+            "expected_value": info.get("expected_value"),
+        }
+        history.append(record)
+
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"signal_history.json の書き込み中にエラー: {e}")
+
 # CSV から銘柄リストを読み込む
 def load_tickers():
     # 日本株
