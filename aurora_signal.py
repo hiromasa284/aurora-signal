@@ -28,7 +28,6 @@ def load_signal_history():
         print(f"signal_history.json の読み込み中にエラー: {e}")
         return []
 
-
 def save_signal_history(signals, run_timestamp=None):
     """
     今回の実行で得られた全シグナルを signal_history.json に追記保存する。
@@ -251,21 +250,8 @@ def calculate_win_rates():
         "sell_avg_drop": sell_avg_drop
     }
 
-def rank_signal(expected_value, win_rate):
-    total_score = expected_value * (win_rate / 100)
-
-    if total_score >= 300 and win_rate >= 70:
-        return "S"
-    elif total_score >= 150 and win_rate >= 55:
-        return "A"
-    else:
-        return "B"
-
 def format_alerts_for_email(signals):
     body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
-
-
-
     
     # ★ 勝率サマリーを追加
     stats = calculate_win_ratdef format_alerts_for_email(signals):
