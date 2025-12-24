@@ -140,7 +140,6 @@ def main():
             price_data = get_price(ticker)
 
             if price_data.empty or len(price_data) < 50:
-                # 50日移動平均を使うので、最低50本必要
                 continue
 
             latest_price = price_data.iloc[-1]["4. close"]
@@ -170,11 +169,10 @@ def main():
     if signals:
         save_signal_history(signals, run_timestamp=run_timestamp)
 
-    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
+    # BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
 
     if filtered_signals:
-        # その中から期待値スコア順に上位3つ
         sorted_signals = sorted(
             filtered_signals.items(),
             key=lambda x: x[1]["expected_value"],
@@ -183,83 +181,14 @@ def main():
         top_signals = dict(sorted_signals[:3])
         email_body = format_alerts_for_email(top_signals)
     else:
-        # 本当に何も出なかった日は「今日は無理に触らない日」と割り切る
         email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
-    # ★ メール送信も最後に1回だけ
+    # ★ メール送信（1回だけ）
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
-def calculate_stars(expected_value):
-    """
-    期待値スコアに応じて星を付与する関数
-    """
-    if expected_value >= 50:
-        return "★★★★★"
-    elif expected_value >= 40:
-        return "★★★★☆"
-    elif expected_value >= 30:
-        return "★★★☆☆"
-    elif expected_value >= 20:
-        return "★★☆☆☆"
-    elif expected_value >= 10:
-        return "★☆☆☆☆"
-    else:
-        return "☆☆☆☆☆"
 
-# メール送信
-def send_email(subject, body, to_email=None):
-    smtp_user = os.getenv("SMTP_USER")
-    smtp_pass = os.getenv("SMTP_PASS")
-    to_email = to_email or os.getenv("SEND_TO", smtp_user)
-
-    msg = MIMEMultipart()
-    msg["From"] = smtp_user
-    msg["To"] = to_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain"))
-
-    with smtplib.SMTP("smtp.gmail.com", 587) as server:
-        server.starttls()
-        server.login(smtp_user, smtp_pass)
-        server.sendmail(smtp_user, to_email, msg.as_string())
-
-# ★ CSV から銘柄リストを読み込む
+# ★ CSV から銘柄リストを読み込む（main の後ろに置く）
 TICKERS, NAMES = load_tickers()
-
-
-    # ★ ここで履歴を保存（BUY/SELL/HOLD 含めて全部）
-    if signals:
-        save_signal_history(signals, run_timestamp=run_timestamp)
-
-    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
-    filtered_signals = filter_alerts(signals)
-
-    if filtered_signals:
-        sorted_signals = sorted(
-            filtered_signals.items(),
-            key=lambda x: x[1]["expected_value"],
-            reverse=True
-        )
-        top_signals = dict(sorted_signals[:3])
-        email_body = format_alerts_for_email(top_signals)
-    else:
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
-
-    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
-
-    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
-    filtered_signals = filter_alerts(signals)
-
-    if filtered_signals:
-        # その中から期待値スコア順に上位3つ
-        sorted_signals = sorted(filtered_signals.items(), key=lambda x: x[1]["expected_value"], reverse=True)
-        top_signals = dict(sorted_signals[:3])
-        email_body = format_alerts_for_email(top_signals)
-    else:
-        # 本当に何も出なかった日は「今日は無理に触らない日」と割り切る
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
-
-    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
 if __name__ == "__main__":
     main()
