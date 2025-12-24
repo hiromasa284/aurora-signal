@@ -197,13 +197,13 @@ TICKERS, NAMES = load_tickers()
 # メインロジック
 def main():
     signals = {}
+    run_timestamp = datetime.utcnow().isoformat()
 
     for ticker in TICKERS:
         try:
             price_data = get_price(ticker)
 
             if price_data.empty or len(price_data) < 50:
-                # 50日移動平均を使うので、最低50本必要
                 continue
 
             latest_price = price_data.iloc[-1]["4. close"]
@@ -228,6 +228,26 @@ def main():
             }
         except Exception as e:
             print(f"エラーが発生しました（{ticker}）: {e}")
+
+    # ★ ここで履歴を保存（BUY/SELL/HOLD 含めて全部）
+    if signals:
+        save_signal_history(signals, run_timestamp=run_timestamp)
+
+    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
+    filtered_signals = filter_alerts(signals)
+
+    if filtered_signals:
+        sorted_signals = sorted(
+            filtered_signals.items(),
+            key=lambda x: x[1]["expected_value"],
+            reverse=True
+        )
+        top_signals = dict(sorted_signals[:3])
+        email_body = format_alerts_for_email(top_signals)
+    else:
+        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+
+    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
     # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
     filtered_signals = filter_alerts(signals)
