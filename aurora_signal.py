@@ -304,6 +304,16 @@ def format_alerts_for_email(signals):
 
     return body
 
+def rank_signal(expected_value, win_rate):
+    total_score = expected_value * (win_rate / 100)
+
+    if total_score >= 300 and win_rate >= 70:
+        return "S"
+    elif total_score >= 150 and win_rate >= 55:
+        return "A"
+    else:
+        return "B"
+
 # メール本文整形
 def main():
     signals = {}
