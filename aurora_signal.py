@@ -67,8 +67,8 @@ def check_signal(data):
 def calculate_expected_value(data):
     # RSI が極端なほど妙味が高いとみなす簡易モデル
     rsi = data["rsi"]
-    edge = abs(50 - rsi) / 50  # 50 からの乖離率
-    expected_value = edge * data["close"]
+   edge = ((abs(50 - rsi) / 50) ** 2)
+   expected_value = edge * price
     return expected_value
 
 # BUY/SELL のみ抽出
