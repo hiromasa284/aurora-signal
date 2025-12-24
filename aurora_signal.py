@@ -7,6 +7,8 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import smtplib
 
+HISTORY_FILE = "signal_history.json"  # リポジトリ直下に保存
+
 # CSV から銘柄リストを読み込む
 def load_tickers():
     # 日本株
