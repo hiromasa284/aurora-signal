@@ -195,6 +195,57 @@ def evaluate_past_signals():
         except Exception as e:
             print(f"[保存エラー] signal_history.json: {e}")
 
+def calculate_win_rates():
+    """
+    signal_history.json から勝率と平均反発率を集計する。
+    """
+    history = load_signal_history()
+
+    buy_total = sell_total = 0
+    buy_win = sell_win = 0
+    buy_gain_sum = sell_drop_sum = 0.0
+
+    for entry in history:
+        signal = entry.get("signal")
+        r1 = entry.get("result_1d")
+
+        # 翌日価格が記録されていない場合はスキップ
+        if r1 not in ["WIN", "LOSE"]:
+            continue
+
+        price_0d = entry.get("close")
+        price_1d = entry.get("price_1d", None)
+
+        # price_1d を保存していない場合は計算できないのでスキップ
+        if price_1d is None:
+            continue
+
+        change_pct = ((price_1d - price_0d) / price_0d) * 100
+
+        if signal == "BUY":
+            buy_total += 1
+            if r1 == "WIN":
+                buy_win += 1
+            buy_gain_sum += change_pct
+
+        elif signal == "SELL":
+            sell_total += 1
+            if r1 == "WIN":
+                sell_win += 1
+            sell_drop_sum += change_pct
+
+    buy_win_rate = round((buy_win / buy_total * 100), 1) if buy_total else 0
+    sell_win_rate = round((sell_win / sell_total * 100), 1) if sell_total else 0
+    buy_avg_gain = round((buy_gain_sum / buy_total), 2) if buy_total else 0
+    sell_avg_drop = round((sell_drop_sum / sell_total), 2) if sell_total else 0
+
+    return {
+        "buy_win_rate": buy_win_rate,
+        "sell_win_rate": sell_win_rate,
+        "buy_avg_gain": buy_avg_gain,
+        "sell_avg_drop": sell_avg_drop
+    }
+
 # メール本文整形
 def main():
     signals = {}
