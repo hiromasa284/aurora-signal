@@ -350,5 +350,5 @@ def main():
 TICKERS, NAMES = load_tickers()
 
 if __name__ == "__main__":
-    evaluate_past_signals()   # ← これを追加
+    evaluate_past_signals()   
     main()
