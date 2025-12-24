@@ -254,7 +254,10 @@ def format_alerts_for_email(signals):
     body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
     
     # ★ 勝率サマリーを追加
-    stats = calculate_win_ratdef format_alerts_for_email(signals):
+    stats = calculate_win_rates()
+
+def format_alerts_for_email(signals):
+    ...
     body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
 
     win_rates = calculate_win_rates()
