@@ -302,10 +302,6 @@ def main():
     # ★ メール送信（1回だけ）
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
-
-# ★ CSV から銘柄リストを読み込む（main の後ろに置く）
-TICKERS, NAMES = load_tickers()
-
 # ★ CSV から銘柄リストを読み込む（main の後ろに置く）
 TICKERS, NAMES = load_tickers()
 
