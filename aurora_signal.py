@@ -226,63 +226,6 @@ def send_email(subject, body, to_email=None):
 # ★ CSV から銘柄リストを読み込む
 TICKERS, NAMES = load_tickers()
 
-# メインロジック
-def main():
-    signals = {}
-    run_timestamp = datetime.utcnow().isoformat()
-
-    for ticker in TICKERS:
-        try:
-            price_data = get_price(ticker)
-
-            if price_data.empty or len(price_data) < 50:
-                # 50日移動平均を使うので、最低50本必要
-                continue
-
-            latest_price = price_data.iloc[-1]["4. close"]
-            rsi = calculate_rsi(price_data)
-            moving_avg = price_data["4. close"].rolling(window=50).mean().iloc[-1]
-
-            data = {
-                "close": latest_price,
-                "rsi": rsi,
-                "moving_avg": moving_avg,
-            }
-
-            signal = check_signal(data)
-            expected_value = calculate_expected_value(data)
-
-            signals[ticker] = {
-                "signal": signal,
-                "rsi": rsi,
-                "close": latest_price,
-                "moving_avg": moving_avg,
-                "expected_value": expected_value
-            }
-        except Exception as e:
-            print(f"エラーが発生しました（{ticker}）: {e}")
-
-    # ★ BUY/SELL/HOLD 含めて今回の全シグナルを履歴に保存
-    if signals:
-        save_signal_history(signals, run_timestamp=run_timestamp)
-
-    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
-    filtered_signals = filter_alerts(signals)
-
-    if filtered_signals:
-        # その中から期待値スコア順に上位3つ
-        sorted_signals = sorted(
-            filtered_signals.items(),
-            key=lambda x: x[1]["expected_value"],
-            reverse=True
-        )
-        top_signals = dict(sorted_signals[:3])
-        email_body = format_alerts_for_email(top_signals)
-    else:
-        # 本当に何も出なかった日は「今日は無理に触らない日」と割り切る
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
-
-    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
     # ★ ここで履歴を保存（BUY/SELL/HOLD 含めて全部）
     if signals:
