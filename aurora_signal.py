@@ -352,3 +352,26 @@ TICKERS, NAMES = load_tickers()
 if __name__ == "__main__":
     evaluate_past_signals()   
     main()
+
+def send_email(subject, body):
+    sender = os.getenv("EMAIL_SENDER")
+    recipient = os.getenv("EMAIL_RECIPIENT")
+    password = os.getenv("EMAIL_PASSWORD")
+
+    if not sender or not recipient or not password:
+        print("メール送信に必要な環境変数が不足しています")
+        return
+
+    msg = MIMEMultipart()
+    msg["From"] = sender
+    msg["To"] = recipient
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender, password)
+            server.send_message(msg)
+        print("メール送信に成功しました")
+    except Exception as e:
+        print(f"メール送信中にエラー: {e}")
