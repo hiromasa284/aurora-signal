@@ -77,14 +77,33 @@ def filter_alerts(alerts):
 
 # メール本文整形
 def format_alerts_for_email(signals):
+    """
+    アラート情報を整形してメール本文を作成する関数
+    """
     body = "以下は最新のハイコンフィデンス・シグナルです：\n\n"
     for ticker, info in signals.items():
-        body += f"銘柄: {ticker}\n"
+        # 銘柄名とティッカーシンボル
+        name = NAMES.get(ticker, "N/A")  # 銘柄名を取得
+        body += f"銘柄: {name} ({ticker})\n"
+
+        # シグナル
         body += f"  シグナル: {info['signal']}\n"
+
+        # RSI
         body += f"  RSI: {info['rsi']:.2f}\n"
+
+        # 価格
         body += f"  価格: {info['close']}\n"
+
+        # 移動平均
         body += f"  移動平均(50日): {info.get('moving_avg', 'N/A')}\n"
-        body += f"  期待値スコア: {info['expected_value']:.2f}\n"
+
+        # 期待値スコアと星の評価
+        expected_value = info['expected_value']
+        stars = calculate_stars(expected_value)  # 星を計算
+        body += f"  期待値スコア: {expected_value:.2f} ({stars})\n"
+
+        # 区切り線
         body += "-" * 20 + "\n"
     return body
 
