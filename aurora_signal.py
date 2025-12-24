@@ -130,6 +130,71 @@ def calculate_expected_value(data):
 def filter_alerts(alerts):
     return {ticker: info for ticker, info in alerts.items() if info["signal"] in ["BUY", "SELL"]}
 
+def evaluate_past_signals():
+    """
+    過去のシグナル履歴を読み込み、
+    翌日・3日後の価格を取得して、
+    BUY/SELL の成否を判定する。
+    """
+    history = load_signal_history()
+    updated = False
+
+    for entry in history:
+        # すでに評価済みならスキップ
+        if "result_1d" in entry and "result_3d" in entry:
+            continue
+
+        symbol = entry["ticker"]
+        signal = entry["signal"]
+        timestamp = entry["timestamp"]
+
+        try:
+            price_data = get_price(symbol)
+            if price_data.empty:
+                continue
+
+            # 日付の整形（UTC → 日付部分だけ）
+            date_str = timestamp[:10]
+            dates = sorted(price_data.index)
+
+            # 翌日・3日後のインデックスを探す
+            if date_str not in dates:
+                continue
+
+            idx = dates.index(date_str)
+            if idx + 1 >= len(dates) or idx + 3 >= len(dates):
+                continue
+
+            price_0d = price_data.loc[dates[idx]]["4. close"]
+            price_1d = price_data.loc[dates[idx + 1]]["4. close"]
+            price_3d = price_data.loc[dates[idx + 3]]["4. close"]
+
+            # 判定ロジック
+            def judge(p0, pX, signal):
+                if signal == "BUY":
+                    return "WIN" if pX > p0 else "LOSE"
+                elif signal == "SELL":
+                    return "WIN" if pX < p0 else "LOSE"
+                else:
+                    return "N/A"
+
+            entry["result_1d"] = judge(price_0d, price_1d, signal)
+            entry["result_3d"] = judge(price_0d, price_3d, signal)
+            updated = True
+
+        except Exception as e:
+            print(f"[追跡エラー] {symbol}: {e}")
+            continue
+
+    # 更新があったら保存
+    if updated:
+        try:
+            with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+                json.dump(history, f, ensure_ascii=False, indent=2)
+            print("signal_history.json を更新しました（追跡結果付き）")
+        except Exception as e:
+            print(f"[保存エラー] signal_history.json: {e}")
+
 # メール本文整形
 def main():
     signals = {}
