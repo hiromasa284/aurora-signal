@@ -76,6 +76,8 @@ def load_tickers():
 
 # 株価取得（Alpha Vantage）
 def get_price(symbol):
+    print(f"[取得開始] {symbol}")
+    ...
     key = os.getenv("ALPHA_KEY")
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={key}"
     r = requests.get(url).json()
