@@ -131,36 +131,63 @@ def filter_alerts(alerts):
     return {ticker: info for ticker, info in alerts.items() if info["signal"] in ["BUY", "SELL"]}
 
 # メール本文整形
-def format_alerts_for_email(signals):
-    """
-    アラート情報を整形してメール本文を作成する関数
-    """
-    body = "以下は最新のハイコンフィデンス・シグナルです：\n\n"
-    for ticker, info in signals.items():
-        # 銘柄名とティッカーシンボル
-        name = NAMES.get(ticker, "N/A")  # 銘柄名を取得
-        body += f"銘柄: {name} ({ticker})\n"
+def main():
+    signals = {}
+    run_timestamp = datetime.utcnow().isoformat()
 
-        # シグナル
-        body += f"  シグナル: {info['signal']}\n"
+    for ticker in TICKERS:
+        try:
+            price_data = get_price(ticker)
 
-        # RSI
-        body += f"  RSI: {info['rsi']:.2f}\n"
+            if price_data.empty or len(price_data) < 50:
+                # 50日移動平均を使うので、最低50本必要
+                continue
 
-        # 価格
-        body += f"  価格: {info['close']}\n"
+            latest_price = price_data.iloc[-1]["4. close"]
+            rsi = calculate_rsi(price_data)
+            moving_avg = price_data["4. close"].rolling(window=50).mean().iloc[-1]
 
-        # 移動平均
-        body += f"  移動平均(50日): {info.get('moving_avg', 'N/A')}\n"
+            data = {
+                "close": latest_price,
+                "rsi": rsi,
+                "moving_avg": moving_avg,
+            }
 
-        # 期待値スコアと星の評価
-        expected_value = info['expected_value']
-        stars = calculate_stars(expected_value)  # 星を計算
-        body += f"  期待値スコア: {expected_value:.2f} ({stars})\n"
+            signal = check_signal(data)
+            expected_value = calculate_expected_value(data)
 
-        # 区切り線
-        body += "-" * 20 + "\n"
-    return body
+            signals[ticker] = {
+                "signal": signal,
+                "rsi": rsi,
+                "close": latest_price,
+                "moving_avg": moving_avg,
+                "expected_value": expected_value
+            }
+        except Exception as e:
+            print(f"エラーが発生しました（{ticker}）: {e}")
+
+    # ★ BUY/SELL/HOLD 含めて今回の全シグナルを履歴に保存（1回だけ）
+    if signals:
+        save_signal_history(signals, run_timestamp=run_timestamp)
+
+    # まず BUY/SELL だけに絞る（ここが勝ちに行くポイント）
+    filtered_signals = filter_alerts(signals)
+
+    if filtered_signals:
+        # その中から期待値スコア順に上位3つ
+        sorted_signals = sorted(
+            filtered_signals.items(),
+            key=lambda x: x[1]["expected_value"],
+            reverse=True
+        )
+        top_signals = dict(sorted_signals[:3])
+        email_body = format_alerts_for_email(top_signals)
+    else:
+        # 本当に何も出なかった日は「今日は無理に触らない日」と割り切る
+        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+
+    # ★ メール送信も最後に1回だけ
+    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
 def calculate_stars(expected_value):
     """
