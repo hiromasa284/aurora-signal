@@ -498,3 +498,7 @@ def main():
 
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
     print("main: END")
+
+# 🔥 これを追加
+if __name__ == "__main__":
+    main()
