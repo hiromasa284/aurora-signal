@@ -277,18 +277,22 @@ def format_alerts_for_email(signals):
             info["signal"]
         )
 
-        body += f"■ {ticker}（{rank}ランク）\n"
-        body += f"  シグナル: {info['signal']}\n"
-        body += f"  RSI: {info['rsi']:.2f}\n"
-        body += f"  終値: {info['close']:.2f}\n"
-        body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
-        body += f"  期待値スコア: {info['expected_value']:.2f}\n\n"
+    body += f"■ {ticker}（{rank}ランク）\n"
+    body += f"  シグナル: {info['signal']}\n"
+    body += f"  RSI: {info['rsi']:.2f}\n"
+    body += f"  終値: {info['close']:.2f}\n"
+    body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
+    body += f"  期待値スコア: {info['expected_value']:.2f}\n\n"
 
-        # 🔹 ここが追加部分
-        body += "  ▶ 手じまいガイド（期待値ベース）\n"
-        body += f"     利確ライン: {take_profit}\n"
-        body += f"     損切りライン: {stop_loss}\n"
-        body += "--------------------\n"
+# 🔹 Bランクだけ注意書きを追加
+if rank == "B":
+    body += "  ※Bランクは信頼度が低いため、参考程度にご利用ください\n\n"
+
+# 🔹 手じまいガイド（← ここは if の外）
+    body += "  ▶ 手じまいガイド（期待値ベース）\n"
+    body += f"     利確ライン: {take_profit}\n"
+    body += f"     損切りライン: {stop_loss}\n"
+    body += "--------------------\n"
 
     # 勝率サマリー
     body += "\n【過去シグナルの成績（1日後）】\n"
@@ -297,6 +301,16 @@ def format_alerts_for_email(signals):
     body += f"平均反発率: +{win_rates['buy_avg_gain']}%\n"
     body += f"平均下落率: {win_rates['sell_avg_drop']}%\n"
 
+    【ランク別成績（1日後）】
+Sランク BUY勝率：72.5% / 平均反発率：+1.12%
+Sランク SELL勝率：80.0% / 平均下落率：-1.45%
+
+Aランク BUY勝率：55.0% / 平均反発率：+0.65%
+Aランク SELL勝率：60.0% / 平均下落率：-0.88%
+
+Bランク BUY勝率：40.0% / 平均反発率：+0.22%
+Bランク SELL勝率：45.0% / 平均下落率：-0.30%
+    
     return body
 
 def rank_signal(expected_value, win_rate):
