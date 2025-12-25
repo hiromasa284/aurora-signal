@@ -452,6 +452,9 @@ def load_tickers_from_csv(path):
     df = pd.read_csv(path)
     return df["symbol"].tolist()
 
+# 🔥 銘柄リスト読み込み（ここがベスト）
+TICKERS, NAMES = load_tickers()
+
 def main():
     print("main: START")
     signals = {}
@@ -564,3 +567,6 @@ def send_email(subject, body):
 
     except Exception as e:
         print(f"[メール送信エラー] {e}")
+
+if __name__ == "__main__":
+    main()
