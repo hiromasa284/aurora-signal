@@ -81,37 +81,44 @@ def load_tickers():
 
     return symbols, names
 
-# 株価取得（FMP版・日本株対応）
 def get_price(symbol):
     print(f"[取得開始] {symbol}")
     key = os.getenv("FMP_KEY")
 
-    # .T を外して数字だけにする（FMP の日本株はこれが最も安定）
+    # .T を外して数字だけにする
     symbol_clean = symbol.replace(".T", "")
 
-    url = f"https://financialmodelingprep.com/api/v3/quote/{symbol_clean}?apikey={key}&exchange=JPX"
+    # 試すURLの候補（FMP日本株は銘柄によって返るAPIが違う）
+    urls = [
+        f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol_clean}?apikey={key}&serietype=line",
+        f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={key}&serietype=line",
+        f"https://financialmodelingprep.com/api/v3/historical-chart/1day/{symbol_clean}?apikey={key}",
+        f"https://financialmodelingprep.com/api/v3/historical-chart/1day/{symbol}?apikey={key}",
+    ]
 
-    try:
-        r = requests.get(url).json()
-    except Exception as e:
-        print(f"[取得エラー] {symbol}: {e}")
-        return pd.DataFrame()
+    for url in urls:
+        try:
+            r = requests.get(url).json()
+        except Exception as e:
+            print(f"[取得エラー] {symbol}: {e}")
+            continue
 
-    if not r or not isinstance(r, list) or len(r) == 0:
-        print(f"{symbol} のデータが取得できませんでした")
-        return pd.DataFrame()
+        # historical-price-full の場合
+        if isinstance(r, dict) and "historical" in r:
+            df = pd.DataFrame(r["historical"])
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date")
+            return df
 
-    data = r[0]
+        # historical-chart の場合
+        if isinstance(r, list) and len(r) > 0 and "date" in r[0]:
+            df = pd.DataFrame(r)
+            df["date"] = pd.to_datetime(df["date"])
+            df = df.sort_values("date")
+            return df
 
-    df = pd.DataFrame([{
-        "open": data.get("open"),
-        "high": data.get("dayHigh"),
-        "low": data.get("dayLow"),
-        "close": data.get("price"),
-        "volume": data.get("volume"),
-    }])
-
-    return df
+    print(f"{symbol} のデータが取得できませんでした")
+    return pd.DataFrame()
     
 # RSI計算
 def calculate_rsi(data, window=14):
