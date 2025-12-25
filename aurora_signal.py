@@ -86,8 +86,10 @@ def get_price(symbol):
     print(f"[取得開始] {symbol}")
     key = os.getenv("FMP_KEY")
 
-    # 日本株は exchange=JPX を付けると安定して取得できる
-    url = f"https://financialmodelingprep.com/api/v3/quote/{symbol}?apikey={key}&exchange=JPX"
+    # .T を外して数字だけにする（FMP の日本株はこれが最も安定）
+    symbol_clean = symbol.replace(".T", "")
+
+    url = f"https://financialmodelingprep.com/api/v3/quote/{symbol_clean}?apikey={key}&exchange=JPX"
 
     try:
         r = requests.get(url).json()
@@ -95,14 +97,12 @@ def get_price(symbol):
         print(f"[取得エラー] {symbol}: {e}")
         return pd.DataFrame()
 
-    # データが空の場合
     if not r or not isinstance(r, list) or len(r) == 0:
         print(f"{symbol} のデータが取得できませんでした")
         return pd.DataFrame()
 
     data = r[0]
 
-    # FMP のレスポンスを DataFrame に変換
     df = pd.DataFrame([{
         "open": data.get("open"),
         "high": data.get("dayHigh"),
