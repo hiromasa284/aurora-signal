@@ -517,7 +517,7 @@ def main():
     # 🔹 BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
 
- if filtered_signals:
+if filtered_signals:
     sorted_signals = sorted(
         filtered_signals.items(),
         key=lambda x: x[1]["expected_value"],
