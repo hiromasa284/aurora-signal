@@ -347,7 +347,7 @@ def main():
     print("main: END")
 
 TICKERS, NAMES = load_tickers()
-TICKERS = TICKERS[:25]
+# 🔹TICKERS = TICKERS[:25]
 
 if __name__ == "__main__":
     evaluate_past_signals()
