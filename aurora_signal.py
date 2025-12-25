@@ -297,10 +297,10 @@ def rank_signal(expected_value, win_rate):
         return "B"
 
 def send_email(subject, body):
-    sender = os.getenv("EMAIL_SENDER")
-    recipient = os.getenv("EMAIL_RECIPIENT")
-    password = os.getenv("EMAIL_PASSWORD")
-
+    sender = os.getenv("SMTP_USER")
+    recipient = os.getenv("SEND_TO")
+    password = os.getenv("SMTP_PASS")
+    
     if not sender or not recipient or not password:
         print("メール送信に必要な環境変数が不足しています")
         return
