@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import pandas as pd
+import numpy as np
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
@@ -540,24 +541,6 @@ def main():
 
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
     print("main: END")
-
-if filtered_signals:
-    sorted_signals = sorted(
-        filtered_signals.items(),
-        key=lambda x: x[1]["expected_value"],
-        reverse=True
-    )
-    top_signals = dict(sorted_signals[:3])
-    email_body = format_alerts_for_email(top_signals)
-else:
-    email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
-
-# 🔥 API制限があった場合の追記
-if api_limited:
-    email_body += "\n\n※一部銘柄はAPI制限により分析できませんでした。ご了承ください。"
-
-send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
-print("main: END")
 
 # 🔥 ここに置く（main の外）
 import smtplib
