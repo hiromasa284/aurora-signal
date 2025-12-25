@@ -139,12 +139,7 @@ def filter_alerts(alerts):
 
 def evaluate_past_signals():
     print("evaluate_past_signals: START")
-    
-    """
-    過去のシグナル履歴を読み込み、
-    翌日・3日後の価格を取得して、
-    BUY/SELL の成否を判定する。
-    """
+
     history = load_signal_history()
     updated = False
 
@@ -190,10 +185,10 @@ def evaluate_past_signals():
             entry["result_1d"] = judge(price_0d, price_1d, signal)
             entry["result_3d"] = judge(price_0d, price_3d, signal)
 
-            # ★ これを追加
+            # 追加情報
             entry["price_1d"] = price_1d
             entry["price_3d"] = price_3d
-           
+
             updated = True
 
         except Exception as e:
@@ -209,7 +204,6 @@ def evaluate_past_signals():
         except Exception as e:
             print(f"[保存エラー] signal_history.json: {e}")
 
-    # 🔹 これが正しい位置
     print("evaluate_past_signals: END")
 
 def calculate_win_rates():
@@ -332,10 +326,10 @@ def send_email(subject, body):
         print(f"メール送信中にエラー: {e}")
 
 def main():
+    print("main: START")
     signals = {}
     run_timestamp = datetime.utcnow().isoformat()
 
-    # BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
 
     if filtered_signals:
@@ -350,6 +344,7 @@ def main():
         email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
+    print("main: END")
 
 TICKERS, NAMES = load_tickers()
 TICKERS = TICKERS[:25]
