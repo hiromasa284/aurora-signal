@@ -82,7 +82,9 @@ def get_price(symbol):
     r = requests.get(url).json()
 
     # ★ ここに入れる
-    print(f"[レスポンス内容] {symbol}: {r}")
+    if "Information" in r:
+        print(f"[API制限] {symbol}: {r['Information']}")
+        return pd.DataFrame()
 
     data = r.get("Time Series (Daily)", {})
     if not data:
