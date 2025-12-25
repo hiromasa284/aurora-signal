@@ -461,20 +461,30 @@ def main():
         try:
             price_data = get_price(ticker)
 
+            # 🔥 API制限・壊れたデータ対策
             if price_data.empty:
                 continue
 
-            # 🔥 API制限で "4. close" が無いケース対策
             if "4. close" not in price_data.columns:
                 continue
 
             close = price_data["4. close"].iloc[-1]
+            if close is None or np.isnan(close):
+                continue
+
             rsi = calculate_rsi(price_data)
+            if rsi is None or np.isnan(rsi):
+                continue
+
             moving_avg = price_data["4. close"].rolling(50).mean().iloc[-1]
+            if moving_avg is None or np.isnan(moving_avg):
+                continue
+
+            # 🔹 シグナル判定
             signal = check_signal({"rsi": rsi, "close": close, "moving_avg": moving_avg})
             expected_value = calculate_expected_value({"rsi": rsi, "close": close})
 
-            # 🔹 ランク判定（win_rate は仮で 50%）
+            # 🔹 ランク判定
             rank = rank_signal(expected_value, signal)
 
             # 🔹 signal_history に保存
@@ -520,14 +530,3 @@ def main():
 
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
     print("main: END")
-
-
-# 🔥 ここが正しい位置（関数定義がすべて終わった後）
-tickers_us = load_tickers_from_csv("tickers_us.csv")
-tickers_jp = load_tickers_from_csv("tickers_jp.csv")
-TICKERS = tickers_us + tickers_jp
-
-
-# 🔥 main() を呼び出す
-if __name__ == "__main__":
-    main()
