@@ -210,6 +210,15 @@ def evaluate_past_signals():
 
     print("evaluate_past_signals: END")
 
+def append_signal_history(entry):
+    history = load_signal_history()
+    history.append(entry)
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[保存エラー] signal_history.json: {e}")
+
 def calculate_win_rates():
     """
     signal_history.json から勝率と平均反発率を集計する。
