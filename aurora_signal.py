@@ -8,6 +8,11 @@ from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import smtplib
 
+# 🔥 Secrets 読み込み（ここがベスト）
+SMTP_USER = os.getenv("SMTP_USER")
+SMTP_PASS = os.getenv("SMTP_PASS")
+SEND_TO = os.getenv("SEND_TO")
+
 HISTORY_FILE = "signal_history.json"  # リポジトリ直下に保存
 
 def load_signal_history():
@@ -463,6 +468,8 @@ def main():
 
     # 🔹 全銘柄をスキャンしてシグナル生成
     for ticker in TICKERS:
+        time.sleep(1.1)  # ← ここがベスト（API制限対策）
+        
         try:
             price_data = get_price(ticker)
 
