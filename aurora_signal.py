@@ -257,6 +257,73 @@ def calculate_win_rates():
         "sell_avg_drop": sell_avg_drop
     }
 
+def calculate_ranked_win_rates():
+    """
+    signal_history.json からランク別の勝率と平均反発率を集計する。
+    """
+    history = load_signal_history()
+
+    # ランク別の集計用辞書
+    rank_stats = {
+        "S": {"buy_total": 0, "buy_win": 0, "buy_gain_sum": 0.0,
+              "sell_total": 0, "sell_win": 0, "sell_drop_sum": 0.0},
+        "A": {"buy_total": 0, "buy_win": 0, "buy_gain_sum": 0.0,
+              "sell_total": 0, "sell_win": 0, "sell_drop_sum": 0.0},
+        "B": {"buy_total": 0, "buy_win": 0, "buy_gain_sum": 0.0,
+              "sell_total": 0, "sell_win": 0, "sell_drop_sum": 0.0},
+    }
+
+    for entry in history:
+        signal = entry.get("signal")
+        r1 = entry.get("result_1d")
+        rank = entry.get("rank")  # ← main() で保存したランクを使う
+
+        # ランクが保存されていない古いデータはスキップ
+        if rank not in ["S", "A", "B"]:
+            continue
+
+        # 翌日結果がない場合はスキップ
+        if r1 not in ["WIN", "LOSE"]:
+            continue
+
+        price_0d = entry.get("close")
+        price_1d = entry.get("price_1d")
+
+        if price_1d is None:
+            continue
+
+        change_pct = ((price_1d - price_0d) / price_0d) * 100
+
+        stats = rank_stats[rank]
+
+        if signal == "BUY":
+            stats["buy_total"] += 1
+            if r1 == "WIN":
+                stats["buy_win"] += 1
+            stats["buy_gain_sum"] += change_pct
+
+        elif signal == "SELL":
+            stats["sell_total"] += 1
+            if r1 == "WIN":
+                stats["sell_win"] += 1
+            stats["sell_drop_sum"] += change_pct
+
+    # 勝率と平均値を計算
+    result = {}
+    for rank, stats in rank_stats.items():
+        result[rank] = {
+            "buy_win_rate": round((stats["buy_win"] / stats["buy_total"] * 100), 1)
+                              if stats["buy_total"] else 0,
+            "sell_win_rate": round((stats["sell_win"] / stats["sell_total"] * 100), 1)
+                              if stats["sell_total"] else 0,
+            "buy_avg_gain": round((stats["buy_gain_sum"] / stats["buy_total"]), 2)
+                              if stats["buy_total"] else 0,
+            "sell_avg_drop": round((stats["sell_drop_sum"] / stats["sell_total"]), 2)
+                              if stats["sell_total"] else 0,
+        }
+
+    return result
+
 def format_alerts_for_email(signals):
     body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
 
@@ -310,17 +377,48 @@ Aランク SELL勝率：60.0% / 平均下落率：-0.88%
 
 Bランク BUY勝率：40.0% / 平均反発率：+0.22%
 Bランク SELL勝率：45.0% / 平均下落率：-0.30%
-    
+
+    # ランク別成績（1日後）
+    ranked = calculate_ranked_win_rates()
+
+    body += "\n【ランク別成績（1日後）】\n"
+    body += f"Sランク BUY勝率：{ranked['S']['buy_win_rate']}% / 平均反発率：+{ranked['S']['buy_avg_gain']}%\n"
+    body += f"Sランク SELL勝率：{ranked['S']['sell_win_rate']}% / 平均下落率：{ranked['S']['sell_avg_drop']}%\n\n"
+
+    body += f"Aランク BUY勝率：{ranked['A']['buy_win_rate']}% / 平均反発率：+{ranked['A']['buy_avg_gain']}%\n"
+    body += f"Aランク SELL勝率：{ranked['A']['sell_win_rate']}% / 平均下落率：{ranked['A']['sell_avg_drop']}%\n\n"
+
+    body += f"Bランク BUY勝率：{ranked['B']['buy_win_rate']}% / 平均反発率：+{ranked['B']['buy_avg_gain']}%\n"
+    body += f"Bランク SELL勝率：{ranked['B']['sell_win_rate']}% / 平均下落率：{ranked['B']['sell_avg_drop']}%\n"
+
     return body
 
-def rank_signal(expected_value, win_rate):
-    total_score = expected_value * (win_rate / 100)
-    if total_score >= 300 and win_rate >= 70:
+def rank_signal(expected_value, signal_type):
+    """
+    expected_value と 過去の勝率データ を使ってランクを判定する。
+    signal_type は "BUY" または "SELL"
+    """
+
+    # 全体の勝率
+    win_rates = calculate_win_rates()
+
+    # BUY/SELL の全体勝率
+    if signal_type == D"BUY":
+        base_win = win_rates["buy_win_rate"]
+    else:
+        base_win = win_rates["sell_win_rate"]
+
+    # 期待値と勝率の複合スコア
+    score = (expected_value * 0.7) + (base_win * 0.3)
+
+    # ランク判定ロジック（調整可能）
+    if score >= 120:
         return "S"
-    elif total_score >= 150 and win_rate >= 55:
+    elif score >= 80:
         return "A"
     else:
         return "B"
+        
 def calculate_exit_levels(close, expected_value, signal):
     """
     期待値ベースの利確・損切りラインを計算する。
@@ -344,35 +442,6 @@ def calculate_exit_levels(close, expected_value, signal):
 
     return round(take_profit, 2), round(stop_loss, 2)
 
-def send_email(subject, body):
-    sender = os.getenv("SMTP_USER")
-    recipient = os.getenv("SEND_TO")
-    password = os.getenv("SMTP_PASS")
-    
-    if not sender or not recipient or not password:
-        print("メール送信に必要な環境変数が不足しています")
-        return
-
-    msg = MIMEMultipart()
-    msg["From"] = sender
-    msg["To"] = recipient
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-
-    # 🔹 ここにログ出力を追加（インデント修正済み）
-    print("送信者:", sender)
-    print("宛先:", recipient)
-    print("件名:", subject)
-    print("本文:\n", body)
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender, password)
-            server.send_message(msg)
-        print("メール送信に成功しました")
-    except Exception as e:
-        print(f"メール送信中にエラー: {e}")
-
 def main():
     print("main: START")
     signals = {}
@@ -391,12 +460,29 @@ def main():
             signal = check_signal({"rsi": rsi, "close": close, "moving_avg": moving_avg})
             expected_value = calculate_expected_value({"rsi": rsi, "close": close})
 
+            # 🔹 ランク判定（win_rate は仮で 50%）
+            rank = rank_signal(expected_value, 50)
+
+            # 🔹 signal_history に保存
+            history_entry = {
+                "ticker": ticker,
+                "signal": signal,
+                "rsi": rsi,
+                "close": close,
+                "expected_value": expected_value,
+                "rank": rank,
+                "timestamp": run_timestamp
+            }
+            append_signal_history(history_entry)
+
+            # 🔹 メール用の signals にも保存
             signals[ticker] = {
                 "signal": signal,
                 "rsi": rsi,
                 "close": close,
                 "moving_avg": moving_avg,
                 "expected_value": expected_value,
+                "rank": rank,
                 "timestamp": run_timestamp
             }
 
@@ -420,10 +506,3 @@ def main():
 
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
     print("main: END")
-
-TICKERS, NAMES = load_tickers()
-# 🔹TICKERS = TICKERS[:25]
-
-if __name__ == "__main__":
-    evaluate_past_signals()
-    main()
