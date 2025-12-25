@@ -395,7 +395,7 @@ def rank_signal(expected_value, signal_type):
     win_rates = calculate_win_rates()
 
     # BUY/SELL の全体勝率
-    if signal_type == D"BUY":
+    if signal_type == "BUY":
         base_win = win_rates["buy_win_rate"]
     else:
         base_win = win_rates["sell_win_rate"]
