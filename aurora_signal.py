@@ -270,12 +270,24 @@ def format_alerts_for_email(signals):
         win_rate = buy_win if info["signal"] == "BUY" else sell_win
         rank = rank_signal(info["expected_value"], win_rate)
 
+        # 🔹 手じまいラインを計算
+        take_profit, stop_loss = calculate_exit_levels(
+            info["close"],
+            info["expected_value"],
+            info["signal"]
+        )
+
         body += f"■ {ticker}（{rank}ランク）\n"
         body += f"  シグナル: {info['signal']}\n"
         body += f"  RSI: {info['rsi']:.2f}\n"
         body += f"  終値: {info['close']:.2f}\n"
         body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
-        body += f"  期待値スコア: {info['expected_value']:.2f}\n"
+        body += f"  期待値スコア: {info['expected_value']:.2f}\n\n"
+
+        # 🔹 ここが追加部分
+        body += "  ▶ 手じまいガイド（期待値ベース）\n"
+        body += f"     利確ライン: {take_profit}\n"
+        body += f"     損切りライン: {stop_loss}\n"
         body += "--------------------\n"
 
     # 勝率サマリー
@@ -295,6 +307,28 @@ def rank_signal(expected_value, win_rate):
         return "A"
     else:
         return "B"
+def calculate_exit_levels(close, expected_value, signal):
+    """
+    期待値ベースの利確・損切りラインを計算する。
+    expected_value が大きいほど利確幅を広げる動的モデル。
+    """
+
+    # 係数（調整可能）
+    take_profit_factor = expected_value / 50000
+    stop_loss_factor = expected_value / 80000
+
+    if signal == "BUY":
+        take_profit = close * (1 + take_profit_factor)
+        stop_loss = close * (1 - stop_loss_factor)
+
+    elif signal == "SELL":
+        take_profit = close * (1 - take_profit_factor)
+        stop_loss = close * (1 + stop_loss_factor)
+
+    else:
+        return None, None
+
+    return round(take_profit, 2), round(stop_loss, 2)
 
 def send_email(subject, body):
     sender = os.getenv("SMTP_USER")
@@ -330,6 +364,33 @@ def main():
     signals = {}
     run_timestamp = datetime.utcnow().isoformat()
 
+    # 🔹 全銘柄をスキャンしてシグナル生成
+    for ticker in TICKERS:
+        try:
+            price_data = get_price(ticker)
+            if price_data.empty:
+                continue
+
+            close = price_data["4. close"].iloc[-1]
+            rsi = calculate_rsi(price_data)
+            moving_avg = price_data["4. close"].rolling(50).mean().iloc[-1]
+            signal = check_signal({"rsi": rsi, "close": close, "moving_avg": moving_avg})
+            expected_value = calculate_expected_value({"rsi": rsi, "close": close})
+
+            signals[ticker] = {
+                "signal": signal,
+                "rsi": rsi,
+                "close": close,
+                "moving_avg": moving_avg,
+                "expected_value": expected_value,
+                "timestamp": run_timestamp
+            }
+
+        except Exception as e:
+            print(f"[エラー] {ticker}: {e}")
+            continue
+
+    # 🔹 BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
 
     if filtered_signals:
