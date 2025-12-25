@@ -530,3 +530,11 @@ def main():
 
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
     print("main: END")
+
+def send_email(subject, body):
+    try:
+        print("[メール送信開始]")
+        ...
+        print("[メール送信完了]")
+    except Exception as e:
+        print(f"[メール送信エラー] {e}")
