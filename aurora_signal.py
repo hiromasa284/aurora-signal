@@ -77,14 +77,18 @@ def load_tickers():
 # 株価取得（Alpha Vantage）
 def get_price(symbol):
     print(f"[取得開始] {symbol}")
-    ...
     key = os.getenv("ALPHA_KEY")
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={key}"
     r = requests.get(url).json()
+
+    # ★ ここに入れる
+    print(f"[レスポンス内容] {symbol}: {r}")
+
     data = r.get("Time Series (Daily)", {})
     if not data:
         print(f"{symbol} のデータが取得できませんでした")
         return pd.DataFrame()
+
     df = pd.DataFrame.from_dict(data, orient="index").sort_index()
     df = df.astype(float)
     return df
