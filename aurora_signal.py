@@ -7,6 +7,7 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
 import smtplib
+import time
 
 # 🔥 Secrets 読み込み（ここがベスト）
 SMTP_USER = os.getenv("SMTP_USER")
