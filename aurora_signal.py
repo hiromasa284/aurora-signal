@@ -451,7 +451,12 @@ def main():
     for ticker in TICKERS:
         try:
             price_data = get_price(ticker)
+
             if price_data.empty:
+                continue
+
+            # 🔥 API制限で "4. close" が無いケース対策
+            if "4. close" not in price_data.columns:
                 continue
 
             close = price_data["4. close"].iloc[-1]
