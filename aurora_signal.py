@@ -298,7 +298,7 @@ def rank_signal(expected_value, win_rate):
         return "B"
 
 
-# ★ send_email を main の前に置く（これが本物）
+# ★ send_email はここに1回だけ置く
 def send_email(subject, body):
     sender = os.getenv("EMAIL_SENDER")
     recipient = os.getenv("EMAIL_RECIPIENT")
@@ -322,14 +322,28 @@ def send_email(subject, body):
     except Exception as e:
         print(f"メール送信中にエラー: {e}")
 
-
-# メール本文整形
 def main():
     signals = {}
     run_timestamp = datetime.utcnow().isoformat()
     ...
-    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
+    # BUY/SELL のみ抽出
+    filtered_signals = filter_alerts(signals)
+
+    if filtered_signals:
+        # 期待値順に並べて上位3つを抽出
+        sorted_signals = sorted(
+            filtered_signals.items(),
+            key=lambda x: x[1]["expected_value"],
+            reverse=True
+        )
+        top_signals = dict(sorted_signals[:3])
+
+        email_body = format_alerts_for_email(top_signals)
+    else:
+        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+
+    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
 TICKERS, NAMES = load_tickers()
 TICKERS = TICKERS[:25]
@@ -337,26 +351,3 @@ TICKERS = TICKERS[:25]
 if __name__ == "__main__":
     evaluate_past_signals()
     main()
-
-def send_email(subject, body):
-    sender = os.getenv("EMAIL_SENDER")
-    recipient = os.getenv("EMAIL_RECIPIENT")
-    password = os.getenv("EMAIL_PASSWORD")
-
-    if not sender or not recipient or not password:
-        print("メール送信に必要な環境変数が不足しています")
-        return
-
-    msg = MIMEMultipart()
-    msg["From"] = sender
-    msg["To"] = recipient
-    msg["Subject"] = subject
-    msg.attach(MIMEText(body, "plain", "utf-8"))
-
-    try:
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
-            server.login(sender, password)
-            server.send_message(msg)
-        print("メール送信に成功しました")
-    except Exception as e:
-        print(f"メール送信中にエラー: {e}")
