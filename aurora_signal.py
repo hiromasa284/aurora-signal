@@ -434,6 +434,10 @@ def calculate_exit_levels(close, expected_value, signal):
 
     return round(take_profit, 2), round(stop_loss, 2)
 
+def load_tickers_from_csv(path):
+    df = pd.read_csv(path)
+    return df["symbol"].tolist()
+
 def main():
     print("main: START")
     signals = {}
@@ -453,7 +457,7 @@ def main():
             expected_value = calculate_expected_value({"rsi": rsi, "close": close})
 
             # 🔹 ランク判定（win_rate は仮で 50%）
-            rank = rank_signal(expected_value, 50)
+            rank = rank_signal(expected_value, signal)
 
             # 🔹 signal_history に保存
             history_entry = {
@@ -499,6 +503,13 @@ def main():
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
     print("main: END")
 
-# 🔥 これを追加
+
+# 🔥 ここが正しい位置（関数定義がすべて終わった後）
+tickers_us = load_tickers_from_csv("tickers_us.csv")
+tickers_jp = load_tickers_from_csv("tickers_jp.csv")
+TICKERS = tickers_us + tickers_jp
+
+
+# 🔥 main() を呼び出す
 if __name__ == "__main__":
     main()
