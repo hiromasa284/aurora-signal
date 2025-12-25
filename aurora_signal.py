@@ -81,25 +81,34 @@ def load_tickers():
 
     return symbols, names
 
-# 株価取得（Alpha Vantage）
+# 株価取得（FMP版・日本株対応）
 def get_price(symbol):
     print(f"[取得開始] {symbol}")
-    key = os.getenv("ALPHA_KEY")
-    url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={symbol}&apikey={key}"
-    r = requests.get(url).json()
+    key = os.getenv("FMP_KEY")
+    url = f"https://financialmodelingprep.com/api/v3/quote/{symbol}?apikey={key}"
 
-    # ★ ここに入れる
-    if "Information" in r:
-        print(f"[API制限] {symbol}: {r['Information']}")
+    try:
+        r = requests.get(url).json()
+    except Exception as e:
+        print(f"[取得エラー] {symbol}: {e}")
         return pd.DataFrame()
 
-    data = r.get("Time Series (Daily)", {})
-    if not data:
+    # データが空の場合
+    if not r or not isinstance(r, list):
         print(f"{symbol} のデータが取得できませんでした")
         return pd.DataFrame()
 
-    df = pd.DataFrame.from_dict(data, orient="index").sort_index()
-    df = df.astype(float)
+    data = r[0]
+
+    # FMP のレスポンスを DataFrame に変換
+    df = pd.DataFrame([{
+        "open": data.get("open"),
+        "high": data.get("dayHigh"),
+        "low": data.get("dayLow"),
+        "close": data.get("price"),
+        "volume": data.get("volume"),
+    }])
+
     return df
 
 # RSI計算
