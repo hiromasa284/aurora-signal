@@ -454,6 +454,7 @@ def load_tickers_from_csv(path):
 def main():
     print("main: START")
     signals = {}
+    api_limited = False
     run_timestamp = datetime.utcnow().isoformat()
 
     # 🔹 全銘柄をスキャンしてシグナル生成
@@ -463,21 +464,26 @@ def main():
 
             # 🔥 API制限・壊れたデータ対策
             if price_data.empty:
+                api_limited = True
                 continue
 
             if "4. close" not in price_data.columns:
+                api_limited = True
                 continue
 
             close = price_data["4. close"].iloc[-1]
             if close is None or np.isnan(close):
+                api_limited = True
                 continue
 
             rsi = calculate_rsi(price_data)
             if rsi is None or np.isnan(rsi):
+                api_limited = True
                 continue
 
             moving_avg = price_data["4. close"].rolling(50).mean().iloc[-1]
             if moving_avg is None or np.isnan(moving_avg):
+                api_limited = True
                 continue
 
             # 🔹 シグナル判定
@@ -516,6 +522,24 @@ def main():
 
     # 🔹 BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
+
+    if filtered_signals:
+        sorted_signals = sorted(
+            filtered_signals.items(),
+            key=lambda x: x[1]["expected_value"],
+            reverse=True
+        )
+        top_signals = dict(sorted_signals[:3])
+        email_body = format_alerts_for_email(top_signals)
+    else:
+        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+
+    # 🔥 API制限があった場合の追記
+    if api_limited:
+        email_body += "\n\n※一部銘柄はAPI制限により分析できませんでした。ご了承ください。"
+
+    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
+    print("main: END")
 
 if filtered_signals:
     sorted_signals = sorted(
