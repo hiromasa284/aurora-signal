@@ -335,61 +335,53 @@ def format_alerts_for_email(signals):
     # 銘柄ごとの表示
     for ticker, info in signals.items():
         win_rate = buy_win if info["signal"] == "BUY" else sell_win
-        rank = rank_signal(info["expected_value"], win_rate)
+        rank = rank_signal(info["expected_value"], info["signal"])
 
-        # 🔹 手じまいラインを計算
+        # 手じまいライン
         take_profit, stop_loss = calculate_exit_levels(
             info["close"],
             info["expected_value"],
-            info["signal"]
+            info["signal"],
+            rank
         )
 
-    body += f"■ {ticker}（{rank}ランク）\n"
-    body += f"  シグナル: {info['signal']}\n"
-    body += f"  RSI: {info['rsi']:.2f}\n"
-    body += f"  終値: {info['close']:.2f}\n"
-    body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
-    body += f"  期待値スコア: {info['expected_value']:.2f}\n\n"
+        # 銘柄ブロック
+        body += f"■ {ticker}（{rank}ランク）\n"
+        body += f"  シグナル: {info['signal']}\n"
+        body += f"  RSI: {info['rsi']:.2f}\n"
+        body += f"  終値: {info['close']:.2f}\n"
+        body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
+        body += f"  期待値スコア: {info['expected_value']:.2f}\n"
 
-# 🔹 Bランクだけ注意書きを追加
-if rank == "B":
-    body += "  ※Bランクは信頼度が低いため、参考程度にご利用ください\n\n"
+        # Bランク注意書き
+        if rank == "B":
+            body += "  ※Bランクは信頼度が低いため、参考程度にご利用ください\n"
 
-# 🔹 手じまいガイド（← ここは if の外）
-    body += "  ▶ 手じまいガイド（期待値ベース）\n"
-    body += f"     利確ライン: {take_profit}\n"
-    body += f"     損切りライン: {stop_loss}\n"
-    body += "--------------------\n"
+        # 手じまいガイド
+        body += "  ▶ 手じまいガイド（期待値ベース）\n"
+        body += f"     利確ライン: {take_profit}\n"
+        body += f"     損切りライン: {stop_loss}\n"
+        body += "--------------------\n\n"
 
     # 勝率サマリー
-    body += "\n【過去シグナルの成績（1日後）】\n"
+    body += "【過去シグナルの成績（1日後）】\n"
     body += f"BUY 勝率: {buy_win}%\n"
     body += f"SELL 勝率: {sell_win}%\n"
     body += f"平均反発率: +{win_rates['buy_avg_gain']}%\n"
-    body += f"平均下落率: {win_rates['sell_avg_drop']}%\n"
+    body += f"平均下落率: {win_rates['sell_avg_drop']}%\n\n"
 
-body += "\n【ランク別成績（1日後）】\n"
-Sランク BUY勝率：72.5% / 平均反発率：+1.12%
-Sランク SELL勝率：80.0% / 平均下落率：-1.45%
-
-Aランク BUY勝率：55.0% / 平均反発率：+0.65%
-Aランク SELL勝率：60.0% / 平均下落率：-0.88%
-
-Bランク BUY勝率：40.0% / 平均反発率：+0.22%
-Bランク SELL勝率：45.0% / 平均下落率：-0.30%
-
-    # ランク別成績（1日後）
+    # ランク別成績（動的）
     ranked = calculate_ranked_win_rates()
 
-    body += "\n【ランク別成績（1日後）】\n"
-    body += f"Sランク BUY勝率：{ranked['S']['buy_win_rate']}% / 平均反発率：+{ranked['S']['buy_avg_gain']}%\n"
-    body += f"Sランク SELL勝率：{ranked['S']['sell_win_rate']}% / 平均下落率：{ranked['S']['sell_avg_drop']}%\n\n"
+    body += "【ランク別成績（1日後）】\n"
+    body += f"Sランク BUY勝率: {ranked['S']['buy_win_rate']}% / 平均反発率: +{ranked['S']['buy_avg_gain']}%\n"
+    body += f"Sランク SELL勝率: {ranked['S']['sell_win_rate']}% / 平均下落率: {ranked['S']['sell_avg_drop']}%\n\n"
 
-    body += f"Aランク BUY勝率：{ranked['A']['buy_win_rate']}% / 平均反発率：+{ranked['A']['buy_avg_gain']}%\n"
-    body += f"Aランク SELL勝率：{ranked['A']['sell_win_rate']}% / 平均下落率：{ranked['A']['sell_avg_drop']}%\n\n"
+    body += f"Aランク BUY勝率: {ranked['A']['buy_win_rate']}% / 平均反発率: +{ranked['A']['buy_avg_gain']}%\n"
+    body += f"Aランク SELL勝率: {ranked['A']['sell_win_rate']}% / 平均下落率: {ranked['A']['sell_avg_drop']}%\n\n"
 
-    body += f"Bランク BUY勝率：{ranked['B']['buy_win_rate']}% / 平均反発率：+{ranked['B']['buy_avg_gain']}%\n"
-    body += f"Bランク SELL勝率：{ranked['B']['sell_win_rate']}% / 平均下落率：{ranked['B']['sell_avg_drop']}%\n"
+    body += f"Bランク BUY勝率: {ranked['B']['buy_win_rate']}% / 平均反発率: +{ranked['B']['buy_avg_gain']}%\n"
+    body += f"Bランク SELL勝率: {ranked['B']['sell_win_rate']}% / 平均下落率: {ranked['B']['sell_avg_drop']}%\n"
 
     return body
 
