@@ -357,8 +357,6 @@ def main():
 
 # ★ CSV から銘柄リストを読み込む（main の後ろに置く）
 TICKERS, NAMES = load_tickers()
-
-TICKERS, NAMES = load_tickers()
 TICKERS = TICKERS[:25]  # ← ここで制限をかける
 
 if __name__ == "__main__":
