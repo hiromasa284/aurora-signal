@@ -85,7 +85,9 @@ def load_tickers():
 def get_price(symbol):
     print(f"[取得開始] {symbol}")
     key = os.getenv("FMP_KEY")
-    url = f"https://financialmodelingprep.com/api/v3/quote/{symbol}?apikey={key}"
+
+    # 日本株は exchange=JPX を付けると安定して取得できる
+    url = f"https://financialmodelingprep.com/api/v3/quote/{symbol}?apikey={key}&exchange=JPX"
 
     try:
         r = requests.get(url).json()
@@ -94,7 +96,7 @@ def get_price(symbol):
         return pd.DataFrame()
 
     # データが空の場合
-    if not r or not isinstance(r, list):
+    if not r or not isinstance(r, list) or len(r) == 0:
         print(f"{symbol} のデータが取得できませんでした")
         return pd.DataFrame()
 
@@ -110,7 +112,7 @@ def get_price(symbol):
     }])
 
     return df
-
+    
 # RSI計算
 def calculate_rsi(data, window=14):
     delta = data["4. close"].diff()
@@ -478,8 +480,6 @@ def main():
 
     # 🔹 全銘柄をスキャンしてシグナル生成
     for ticker in TICKERS:
-        time.sleep(1.1)  # ← ここがベスト（API制限対策）
-        
         try:
             price_data = get_price(ticker)
 
