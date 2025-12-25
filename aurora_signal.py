@@ -368,7 +368,7 @@ if rank == "B":
     body += f"平均反発率: +{win_rates['buy_avg_gain']}%\n"
     body += f"平均下落率: {win_rates['sell_avg_drop']}%\n"
 
-    【ランク別成績（1日後）】
+body += "\n【ランク別成績（1日後）】\n"
 Sランク BUY勝率：72.5% / 平均反発率：+1.12%
 Sランク SELL勝率：80.0% / 平均下落率：-1.45%
 
