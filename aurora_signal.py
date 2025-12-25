@@ -161,6 +161,10 @@ def evaluate_past_signals():
             date_str = timestamp[:10]
             dates = sorted(price_data.index)
 
+            # 🔥 空データ対策
+            if len(dates) == 0:
+                continue
+
             # 翌日・3日後のインデックスを探す
             if date_str not in dates:
                 continue
