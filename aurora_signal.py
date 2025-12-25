@@ -85,6 +85,10 @@ def get_price(symbol):
     print(f"[取得開始] {symbol}")
     key = os.getenv("FMP_KEY")
 
+    # 🔍 ここに入れる（キーが空かどうかだけ確認）
+    print("FMP_KEY is None:", key is None)
+    print("FMP_KEY length:", len(key or ""))
+
     # .T を外して数字だけにする
     symbol_clean = symbol.replace(".T", "")
 
