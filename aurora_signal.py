@@ -517,24 +517,43 @@ def main():
     # 🔹 BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
 
-    if filtered_signals:
-        sorted_signals = sorted(
-            filtered_signals.items(),
-            key=lambda x: x[1]["expected_value"],
-            reverse=True
-        )
-        top_signals = dict(sorted_signals[:3])
-        email_body = format_alerts_for_email(top_signals)
-    else:
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+ if filtered_signals:
+    sorted_signals = sorted(
+        filtered_signals.items(),
+        key=lambda x: x[1]["expected_value"],
+        reverse=True
+    )
+    top_signals = dict(sorted_signals[:3])
+    email_body = format_alerts_for_email(top_signals)
+else:
+    email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
-    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
-    print("main: END")
+# 🔥 API制限があった場合の追記
+if api_limited:
+    email_body += "\n\n※一部銘柄はAPI制限により分析できませんでした。ご了承ください。"
+
+send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
+print("main: END")
+
+# 🔥 ここに置く（main の外）
+import smtplib
+from email.mime.text import MIMEText   # ← 修正ポイント
 
 def send_email(subject, body):
     try:
         print("[メール送信開始]")
-        ...
+
+        msg = MIMEText(body, "plain", "utf-8")
+        msg["Subject"] = subject
+        msg["From"] = SMTP_USER
+        msg["To"] = SEND_TO
+
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
+        server.login(SMTP_USER, SMTP_PASS)
+        server.sendmail(SMTP_USER, SEND_TO, msg.as_string())
+        server.quit()
+
         print("[メール送信完了]")
+
     except Exception as e:
         print(f"[メール送信エラー] {e}")
