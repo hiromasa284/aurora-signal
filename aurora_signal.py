@@ -290,7 +290,6 @@ def format_alerts_for_email(signals):
 
 def rank_signal(expected_value, win_rate):
     total_score = expected_value * (win_rate / 100)
-
     if total_score >= 300 and win_rate >= 70:
         return "S"
     elif total_score >= 150 and win_rate >= 55:
@@ -298,68 +297,42 @@ def rank_signal(expected_value, win_rate):
     else:
         return "B"
 
-# send_email を main の前に置く
+
+# ★ send_email を main の前に置く（これが本物）
 def send_email(subject, body):
+    sender = os.getenv("EMAIL_SENDER")
+    recipient = os.getenv("EMAIL_RECIPIENT")
+    password = os.getenv("EMAIL_PASSWORD")
+
+    if not sender or not recipient or not password:
+        print("メール送信に必要な環境変数が不足しています")
+        return
+
+    msg = MIMEMultipart()
+    msg["From"] = sender
+    msg["To"] = recipient
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain", "utf-8"))
+
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+            server.login(sender, password)
+            server.send_message(msg)
+        print("メール送信に成功しました")
+    except Exception as e:
+        print(f"メール送信中にエラー: {e}")
+
 
 # メール本文整形
 def main():
     signals = {}
     run_timestamp = datetime.utcnow().isoformat()
-
-    for ticker in TICKERS:
-        try:
-            price_data = get_price(ticker)
-
-            if price_data.empty or len(price_data) < 50:
-                continue
-
-            latest_price = price_data.iloc[-1]["4. close"]
-            rsi = calculate_rsi(price_data)
-            moving_avg = price_data["4. close"].rolling(window=50).mean().iloc[-1]
-
-            data = {
-                "close": latest_price,
-                "rsi": rsi,
-                "moving_avg": moving_avg,
-            }
-
-            signal = check_signal(data)
-            expected_value = calculate_expected_value(data)
-
-            signals[ticker] = {
-                "signal": signal,
-                "rsi": rsi,
-                "close": latest_price,
-                "moving_avg": moving_avg,
-                "expected_value": expected_value
-            }
-        except Exception as e:
-            print(f"エラーが発生しました（{ticker}）: {e}")
-
-    # ★ BUY/SELL/HOLD 含めて今回の全シグナルを履歴に保存（1回だけ）
-    if signals:
-        save_signal_history(signals, run_timestamp=run_timestamp)
-
-    # BUY/SELL のみ抽出
-    filtered_signals = filter_alerts(signals)
-
-    if filtered_signals:
-        sorted_signals = sorted(
-            filtered_signals.items(),
-            key=lambda x: x[1]["expected_value"],
-            reverse=True
-        )
-        top_signals = dict(sorted_signals[:3])
-        email_body = format_alerts_for_email(top_signals)
-    else:
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
-
-    # ★ メール送信（1回だけ）
+    ...
     send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
 
-# ★ CSV から銘柄リストを読み込む（main の後ろに置く）
+
 TICKERS, NAMES = load_tickers()
-TICKERS = TICKERS[:25]  # ← ここで制限をかける
+TICKERS = TICKERS[:25]
 
 if __name__ == "__main__":
     evaluate_past_signals()
