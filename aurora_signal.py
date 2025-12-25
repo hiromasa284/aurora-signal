@@ -296,6 +296,9 @@ def rank_signal(expected_value, win_rate):
     else:
         return "B"
 
+# send_email を main の前に置く
+def send_email(subject, body):
+
 # メール本文整形
 def main():
     signals = {}
