@@ -138,6 +138,8 @@ def filter_alerts(alerts):
     return {ticker: info for ticker, info in alerts.items() if info["signal"] in ["BUY", "SELL"]}
 
 def evaluate_past_signals():
+    print("evaluate_past_signals: START")
+    
     """
     過去のシグナル履歴を読み込み、
     翌日・3日後の価格を取得して、
@@ -206,6 +208,9 @@ def evaluate_past_signals():
             print("signal_history.json を更新しました（追跡結果付き）")
         except Exception as e:
             print(f"[保存エラー] signal_history.json: {e}")
+
+    # 🔹 これが正しい位置
+    print("evaluate_past_signals: END")
 
 def calculate_win_rates():
     """
@@ -297,8 +302,6 @@ def rank_signal(expected_value, win_rate):
     else:
         return "B"
 
-
-# ★ send_email はここに1回だけ置く
 def send_email(subject, body):
     sender = os.getenv("EMAIL_SENDER")
     recipient = os.getenv("EMAIL_RECIPIENT")
@@ -314,6 +317,12 @@ def send_email(subject, body):
     msg["Subject"] = subject
     msg.attach(MIMEText(body, "plain", "utf-8"))
 
+    # 🔹 ここにログ出力を追加（インデント修正済み）
+    print("送信者:", sender)
+    print("宛先:", recipient)
+    print("件名:", subject)
+    print("本文:\n", body)
+
     try:
         with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
             server.login(sender, password)
@@ -325,20 +334,17 @@ def send_email(subject, body):
 def main():
     signals = {}
     run_timestamp = datetime.utcnow().isoformat()
-    ...
 
     # BUY/SELL のみ抽出
     filtered_signals = filter_alerts(signals)
 
     if filtered_signals:
-        # 期待値順に並べて上位3つを抽出
         sorted_signals = sorted(
             filtered_signals.items(),
             key=lambda x: x[1]["expected_value"],
             reverse=True
         )
         top_signals = dict(sorted_signals[:3])
-
         email_body = format_alerts_for_email(top_signals)
     else:
         email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
