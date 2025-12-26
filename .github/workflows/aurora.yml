@@ -38,7 +38,6 @@ jobs:
         run: |
           git config --global user.name "Aurora Bot"
           git config --global user.email "aurora@example.com"
-          git pull origin main --rebase || true
           git add signal.json
           git diff --cached --quiet && echo "No changes to commit" || (
             git commit -m "Update signal.json"
