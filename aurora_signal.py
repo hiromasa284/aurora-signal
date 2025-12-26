@@ -588,7 +588,8 @@ def send_email(subject, body):
     except Exception as e:
         print(f"[メール送信エラー] {e}")
 
-# --- LINE送信（新） ---
+import requests
+
 def send_line(message):
     token = os.getenv("LINE_CHANNEL_TOKEN")
     user_id = os.getenv("LINE_USER_ID")
@@ -607,11 +608,12 @@ def send_line(message):
 
     try:
         print("[LINE送信開始]")
-        requests.post(url, headers=headers, json=data)
+        response = requests.post(url, headers=headers, json=data)
+        print(f"[LINE送信レスポンス] {response.status_code} {response.text}")
+        response.raise_for_status()
         print("[LINE送信完了]")
     except Exception as e:
         print(f"[LINE送信エラー] {e}")
-
 
 if __name__ == "__main__":
     main()
