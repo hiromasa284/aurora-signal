@@ -1,16 +1,22 @@
 {
   "signals": [
     {
+      "ticker": "6367.T",
+      "signal": "SELL",
+      "rsi": 72.53,
+      "price": 20365
+    },
+    {
+      "ticker": "6871.T",
+      "signal": "SELL",
+      "rsi": 85.71,
+      "price": 7230
+    },
+    {
       "ticker": "AAPL",
       "signal": "BUY",
       "rsi": 28.5,
       "price": 147.23
-    },
-    {
-      "ticker": "MSFT",
-      "signal": "HOLD",
-      "rsi": 52.1,
-      "price": 310.45
     }
   ]
 }
