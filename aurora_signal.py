@@ -362,14 +362,13 @@ def format_alerts_for_email(signals):
         rank = rank_signal(info["expected_value"], info["signal"])
 
         # 手じまいライン
-        take_profit, stop_loss = calculate_exit_levels(
-            info["close"],
-            info["expected_value"],
-            info["signal"],
-            rank
-        )
+take_profit, stop_loss = calculate_exit_levels(
+    info["close"],
+    info["expected_value"],
+    info["signal"]
+)
 
-        # 銘柄ブロック
+  # 銘柄ブロック
         body += f"■ {ticker}（{rank}ランク）\n"
         body += f"  シグナル: {info['signal']}\n"
         body += f"  RSI: {info['rsi']:.2f}\n"
