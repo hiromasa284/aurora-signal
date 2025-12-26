@@ -553,9 +553,16 @@ def main():
     if api_limited:
         email_body += "\n\n※一部銘柄はAPI制限により分析できませんでした。ご了承ください。"
 
-    # ★ LINE 通知に変更（ここは main() の中）
-    send_line(f"Aurora Signal: ハイコンフィデンス・シグナル\n{email_body}")
+    # ★ 通知内容をまず表示する（← main の中）
+    print("===== AuroraSignal 通知内容 =====")
+    print(f"Aurora Signal: ハイコンフィデンス・シグナル\n{email_body}")
+    print("================================")
+
+    # ★ LINE 通知（今は届かなくてもOK）
+    # send_line(f"Aurora Signal: ハイコンフィデンス・シグナル\n{email_body}")
+
     print("main: END")
+
 
 # 🔥 ここに置く（main の外）
 import smtplib
@@ -588,7 +595,6 @@ def send_email(subject, body):
     except Exception as e:
         print(f"[メール送信エラー] {e}")
 
-import requests
 
 def send_line(message):
     token = os.getenv("LINE_CHANNEL_TOKEN")
@@ -614,6 +620,7 @@ def send_line(message):
         print("[LINE送信完了]")
     except Exception as e:
         print(f"[LINE送信エラー] {e}")
+
 
 if __name__ == "__main__":
     main()
