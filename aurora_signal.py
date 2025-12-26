@@ -553,13 +553,17 @@ def main():
     if api_limited:
         email_body += "\n\n※一部銘柄はAPI制限により分析できませんでした。ご了承ください。"
 
-    send_email("Aurora Signal: ハイコンフィデンス・シグナル", email_body)
+    # ★ LINE 通知に変更（ここは main() の中）
+    send_line(f"Aurora Signal: ハイコンフィデンス・シグナル\n{email_body}")
     print("main: END")
 
 # 🔥 ここに置く（main の外）
 import smtplib
-from email.mime.text import MIMEText   # ← 修正ポイント
+from email.mime.text import MIMEText
+import os
+import requests
 
+# --- メール送信（旧） ---
 def send_email(subject, body):
     try:
         print("[メール送信開始]")
@@ -583,6 +587,31 @@ def send_email(subject, body):
 
     except Exception as e:
         print(f"[メール送信エラー] {e}")
+
+# --- LINE送信（新） ---
+def send_line(message):
+    token = os.getenv("LINE_CHANNEL_TOKEN")
+    user_id = os.getenv("LINE_USER_ID")
+
+    url = "https://api.line.me/v2/bot/message/push"
+    headers = {
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {token}"
+    }
+    data = {
+        "to": user_id,
+        "messages": [
+            {"type": "text", "text": message}
+        ]
+    }
+
+    try:
+        print("[LINE送信開始]")
+        requests.post(url, headers=headers, json=data)
+        print("[LINE送信完了]")
+    except Exception as e:
+        print(f"[LINE送信エラー] {e}")
+
 
 if __name__ == "__main__":
     main()
