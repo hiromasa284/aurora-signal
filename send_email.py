@@ -1,16 +1,23 @@
 def main():
     try:
-        # signal.json を読み込む
-        with open("signal.json", "r", encoding="utf-8") as f:
-            data = json.load(f)
-
-        signals = data.get("signals", [])
-
         # --- CSV から symbol → name の辞書を作成 ---
         import pandas as pd
         jp = pd.read_csv("tickers_jp.csv")
         us = pd.read_csv("tickers_us.csv")
         name_map = pd.concat([jp, us]).set_index("symbol")["name"].to_dict()
+
+        # --- signal.json を読み込む ---
+        with open("signal.json", "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        signals = data.get("signals", [])
+
+        # --- シグナルが無い場合 ---
+        if not signals:
+            body = "本日のシグナルはありませんでした。\n\n" + data["stats"]
+            subject = "Aurora Signal: シグナルなし"
+            send_email(subject, body)
+            return
 
         # --- 銘柄一覧（冒頭に表示） ---
         ticker_list = []
