@@ -362,13 +362,13 @@ def format_alerts_for_email(signals):
         rank = rank_signal(info["expected_value"], info["signal"])
 
         # 手じまいライン
-take_profit, stop_loss = calculate_exit_levels(
-    info["close"],
-    info["expected_value"],
-    info["signal"]
-)
+        take_profit, stop_loss = calculate_exit_levels(
+            info["close"],
+            info["expected_value"],
+            info["signal"]
+        )
 
-  # 銘柄ブロック
+        # 銘柄ブロック
         body += f"■ {ticker}（{rank}ランク）\n"
         body += f"  シグナル: {info['signal']}\n"
         body += f"  RSI: {info['rsi']:.2f}\n"
@@ -386,7 +386,7 @@ take_profit, stop_loss = calculate_exit_levels(
         body += f"     損切りライン: {stop_loss}\n"
         body += "--------------------\n\n"
 
-    # 勝率サマリー
+    # 勝率サマリー（ループの外）
     body += "【過去シグナルの成績（1日後）】\n"
     body += f"BUY 勝率: {buy_win}%\n"
     body += f"SELL 勝率: {sell_win}%\n"
