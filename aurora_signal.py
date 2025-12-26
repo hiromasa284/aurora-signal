@@ -564,14 +564,19 @@ def send_email(subject, body):
     try:
         print("[メール送信開始]")
 
+        smtp_user = os.getenv("OUTLOOK_USER")
+        smtp_pass = os.getenv("OUTLOOK_PASS")
+        send_to = os.getenv("SEND_TO")
+
         msg = MIMEText(body, "plain", "utf-8")
         msg["Subject"] = subject
-        msg["From"] = SMTP_USER
-        msg["To"] = SEND_TO
+        msg["From"] = smtp_user
+        msg["To"] = send_to
 
-        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
-        server.login(SMTP_USER, SMTP_PASS)
-        server.sendmail(SMTP_USER, SEND_TO, msg.as_string())
+        server = smtplib.SMTP("smtp.office365.com", 587)
+        server.starttls()
+        server.login(smtp_user, smtp_pass)
+        server.sendmail(smtp_user, send_to, msg.as_string())
         server.quit()
 
         print("[メール送信完了]")
