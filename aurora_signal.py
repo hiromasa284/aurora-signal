@@ -2,7 +2,7 @@ import os
 import json
 import requests
 import pandas as pd
-import numpy as np
+import numpy as npget_signal
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime
@@ -462,7 +462,11 @@ def load_tickers_from_csv(path):
     return df["symbol"].tolist()
 
 # 🔥 銘柄リスト読み込み（ここがベスト）
-TICKERS, NAMES = load_tickers()
+import pandas as pd
+jp = pd.read_csv("tickers_jp.csv")
+us = pd.read_csv("tickers_us.csv")
+
+TICKERS = jp["symbol"].tolist() + us["symbol"].tolist()
 
 def main():
     print("main: START")
@@ -470,11 +474,18 @@ def main():
     api_limited = False
     run_timestamp = datetime.utcnow().isoformat()
 
+    # --- CSV から銘柄リストを読み込む ---
+    import pandas as pd
+    jp = pd.read_csv("tickers_jp.csv")
+    us = pd.read_csv("tickers_us.csv")
+
+    # 日本株 + 米国株
+    TICKERS = jp["symbol"].tolist() + us["symbol"].tolist()
+
     for ticker in TICKERS:
         try:
             df = get_price(ticker)
 
-            # データ不足
             if df.empty or len(df) < 15:
                 print(f"{ticker} はデータ不足のためスキップ")
                 signals[ticker] = {
@@ -488,28 +499,16 @@ def main():
                 }
                 continue
 
-            # RSI 計算
             df["rsi"] = calculate_rsi(df)
-
-            # 最新行
             latest = df.iloc[-1]
 
             close = latest["close"]
             rsi = latest["rsi"]
-
-            # 移動平均（50本）
             moving_avg = df["close"].rolling(50).mean().iloc[-1]
-
-            # シグナル判定
             signal = check_signal(latest)
-
-            # 期待値
             expected_value = calculate_expected_value(latest)
-
-            # ランク
             rank = rank_signal(expected_value, signal)
 
-            # 履歴保存
             history_entry = {
                 "ticker": ticker,
                 "signal": signal,
@@ -521,7 +520,6 @@ def main():
             }
             append_signal_history(history_entry)
 
-            # メール用
             signals[ticker] = {
                 "signal": signal,
                 "rsi": rsi,
@@ -539,7 +537,6 @@ def main():
             api_limited = True
             continue
 
-    # BUY/SELL 抽出
     filtered = filter_alerts(signals)
 
     if filtered:
