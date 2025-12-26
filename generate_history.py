@@ -37,6 +37,9 @@ def generate_signal_history(tickers, start="2020-01-01", end=None):
             print(f"  → データなし")
             continue
 
+        # ★ MultiIndex 対策（ここが今回の決定打）
+        df.columns = [col[0] if isinstance(col, tuple) else col for col in df.columns]
+
         df["RSI"] = calculate_rsi(df["Close"])
         df["Signal"] = df["RSI"].apply(detect_signal)
 
@@ -46,17 +49,22 @@ def generate_signal_history(tickers, start="2020-01-01", end=None):
         for i in range(len(df) - 1):
             row = df.iloc[i]
 
-            if row["Signal"] == "HOLD":
+            # Signal を安全に文字列化
+            signal = str(row["Signal"])
+            if signal == "HOLD":
                 continue
 
-            entry_price = row["Close"]
-            next_price = row["Next_Close"]
+            # float に強制変換して Series 問題を完全排除
+            entry_price = float(row["Close"])
 
-            if pd.isna(next_price):
+            raw_next = row["Next_Close"]
+            if pd.isna(raw_next):
                 continue
+
+            next_price = float(raw_next)
 
             # BUY/SELL の勝敗判定
-            if row["Signal"] == "BUY":
+            if signal == "BUY":
                 result = "WIN" if next_price > entry_price else "LOSE"
             else:
                 result = "WIN" if next_price < entry_price else "LOSE"
@@ -64,9 +72,9 @@ def generate_signal_history(tickers, start="2020-01-01", end=None):
             history.append({
                 "ticker": ticker,
                 "date": str(row.name.date()),
-                "signal": row["Signal"],
-                "entry_price": float(entry_price),
-                "next_price": float(next_price),
+                "signal": signal,
+                "entry_price": entry_price,
+                "next_price": next_price,
                 "result": result
             })
 
