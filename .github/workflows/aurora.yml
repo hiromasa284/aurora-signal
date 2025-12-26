@@ -2,11 +2,11 @@ name: Aurora Signal
 
 on:
   schedule:
-  - cron: "0 */1 * * *"
-  workflow_dispatch:     # 手動実行も可能
+    - cron: "0 */1 * * *"
+  workflow_dispatch:
 
 permissions:
-  contents: write        # signal.json を push するために必要
+  contents: write
 
 jobs:
   run-signal:
@@ -29,8 +29,8 @@ jobs:
           ALPHA_KEY: ${{ secrets.ALPHA_KEY }}
           NEWS_KEY: ${{ secrets.NEWS_KEY }}
           FMP_KEY: ${{ secrets.FMP_KEY }}
-          SMTP_USER: ${{ secrets.SMTP_USER }}
-          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          OUTLOOK_USER: ${{ secrets.OUTLOOK_USER }}
+          OUTLOOK_PASS: ${{ secrets.OUTLOOK_PASS }}
           SEND_TO: ${{ secrets.SEND_TO }}
         run: python aurora_signal.py
 
