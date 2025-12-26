@@ -87,8 +87,8 @@ def get_price(symbol):
 
     symbol_clean = symbol.replace(".T", "")
     urls = [
-        f"https://financialmodelingprep.com/api/v3/historical-chart/4hour/{symbol_clean}?apikey={key}",
-        f"https://financialmodelingprep.com/api/v3/historical-chart/4hour/{symbol}?apikey={key}",
+        f"https://financialmodelingprep.com/api/v3/historical-chart/1hour/{symbol_clean}?apikey={key}",
+        f"https://financialmodelingprep.com/api/v3/historical-chart/1hour/{symbol}?apikey={key}",
     ]
 
     for url in urls:
