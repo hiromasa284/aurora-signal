@@ -85,19 +85,10 @@ def get_price(symbol):
     print(f"[取得開始] {symbol}")
     key = os.getenv("FMP_KEY")
 
-    # 🔍 ここに入れる（キーが空かどうかだけ確認）
-    print("FMP_KEY is None:", key is None)
-    print("FMP_KEY length:", len(key or ""))
-
-    # .T を外して数字だけにする
     symbol_clean = symbol.replace(".T", "")
-
-    # 試すURLの候補（FMP日本株は銘柄によって返るAPIが違う）
     urls = [
-        f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol_clean}?apikey={key}&serietype=line",
-        f"https://financialmodelingprep.com/api/v3/historical-price-full/{symbol}?apikey={key}&serietype=line",
-        f"https://financialmodelingprep.com/api/v3/historical-chart/1day/{symbol_clean}?apikey={key}",
-        f"https://financialmodelingprep.com/api/v3/historical-chart/1day/{symbol}?apikey={key}",
+        f"https://financialmodelingprep.com/api/v3/historical-chart/4hour/{symbol_clean}?apikey={key}",
+        f"https://financialmodelingprep.com/api/v3/historical-chart/4hour/{symbol}?apikey={key}",
     ]
 
     for url in urls:
@@ -107,14 +98,6 @@ def get_price(symbol):
             print(f"[取得エラー] {symbol}: {e}")
             continue
 
-        # historical-price-full の場合
-        if isinstance(r, dict) and "historical" in r:
-            df = pd.DataFrame(r["historical"])
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date")
-            return df
-
-        # historical-chart の場合
         if isinstance(r, list) and len(r) > 0 and "date" in r[0]:
             df = pd.DataFrame(r)
             df["date"] = pd.to_datetime(df["date"])
@@ -123,28 +106,28 @@ def get_price(symbol):
 
     print(f"{symbol} のデータが取得できませんでした")
     return pd.DataFrame()
-    
-# RSI計算
+
 def calculate_rsi(data, window=14):
-    delta = data["4. close"].diff()
+    delta = data["close"].diff()
+
     gain = (delta.where(delta > 0, 0)).rolling(window=window).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=window).mean()
+
     rs = gain / loss
     rsi = 100 - (100 / (1 + rs))
+
     return rsi.iloc[-1]
 
 # シグナル判定（勝ちに行くモード）
-def check_signal(data):
-    rsi = data["rsi"]
-    price = data["close"]
-    moving_avg = data.get("moving_avg", 150)
+def check_signal(row):
+    rsi = row["rsi"]
+    price = row["close"]
+    moving_avg = row.get("moving_avg", 150)
 
-    # BUY条件（かなり絞る：売られすぎ＋中期トレンド下）
     if rsi <= 30 and price < moving_avg:
         return "BUY"
 
-    # SELL条件（かなり絞る：買われすぎ＋中期トレンド上）
-    elif rsi >= 70 and price > moving_avg:
+    if rsi >= 70 and price > moving_avg:
         return "SELL"
 
     return "HOLD"
@@ -489,43 +472,46 @@ def main():
     api_limited = False
     run_timestamp = datetime.utcnow().isoformat()
 
-    # 🔹 全銘柄をスキャンしてシグナル生成
     for ticker in TICKERS:
         try:
-            price_data = get_price(ticker)
+            df = get_price(ticker)
 
-            # 🔥 API制限・壊れたデータ対策
-            if price_data.empty:
-                api_limited = True
+            # データ不足
+            if df.empty or len(df) < 15:
+                print(f"{ticker} はデータ不足のためスキップ")
+                signals[ticker] = {
+                    "signal": "HOLD",
+                    "rsi": None,
+                    "close": None,
+                    "moving_avg": None,
+                    "expected_value": None,
+                    "rank": None,
+                    "timestamp": run_timestamp
+                }
                 continue
 
-            if "4. close" not in price_data.columns:
-                api_limited = True
-                continue
+            # RSI 計算
+            df["rsi"] = calculate_rsi(df)
 
-            close = price_data["4. close"].iloc[-1]
-            if close is None or np.isnan(close):
-                api_limited = True
-                continue
+            # 最新行
+            latest = df.iloc[-1]
 
-            rsi = calculate_rsi(price_data)
-            if rsi is None or np.isnan(rsi):
-                api_limited = True
-                continue
+            close = latest["close"]
+            rsi = latest["rsi"]
 
-            moving_avg = price_data["4. close"].rolling(50).mean().iloc[-1]
-            if moving_avg is None or np.isnan(moving_avg):
-                api_limited = True
-                continue
+            # 移動平均（50本）
+            moving_avg = df["close"].rolling(50).mean().iloc[-1]
 
-            # 🔹 シグナル判定
-            signal = check_signal({"rsi": rsi, "close": close, "moving_avg": moving_avg})
-            expected_value = calculate_expected_value({"rsi": rsi, "close": close})
+            # シグナル判定
+            signal = check_signal(latest)
 
-            # 🔹 ランク判定
+            # 期待値
+            expected_value = calculate_expected_value(latest)
+
+            # ランク
             rank = rank_signal(expected_value, signal)
 
-            # 🔹 signal_history に保存
+            # 履歴保存
             history_entry = {
                 "ticker": ticker,
                 "signal": signal,
@@ -537,7 +523,7 @@ def main():
             }
             append_signal_history(history_entry)
 
-            # 🔹 メール用の signals にも保存
+            # メール用
             signals[ticker] = {
                 "signal": signal,
                 "rsi": rsi,
@@ -548,16 +534,19 @@ def main():
                 "timestamp": run_timestamp
             }
 
+            print(ticker, signal)
+
         except Exception as e:
             print(f"[エラー] {ticker}: {e}")
+            api_limited = True
             continue
 
-    # 🔹 BUY/SELL のみ抽出
-    filtered_signals = filter_alerts(signals)
+    # BUY/SELL 抽出
+    filtered = filter_alerts(signals)
 
-    if filtered_signals:
+    if filtered:
         sorted_signals = sorted(
-            filtered_signals.items(),
+            filtered.items(),
             key=lambda x: x[1]["expected_value"],
             reverse=True
         )
@@ -566,7 +555,6 @@ def main():
     else:
         email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
-    # 🔥 API制限があった場合の追記
     if api_limited:
         email_body += "\n\n※一部銘柄はAPI制限により分析できませんでした。ご了承ください。"
 
