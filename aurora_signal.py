@@ -81,31 +81,33 @@ def load_tickers():
 
     return symbols, names
 
+import yfinance as yf
+
 def get_price(symbol):
     print(f"[取得開始] {symbol}")
-    key = os.getenv("FMP_KEY")
 
-    symbol_clean = symbol.replace(".T", "")
-    urls = [
-        f"https://financialmodelingprep.com/api/v3/historical-chart/1hour/{symbol_clean}?apikey={key}",
-        f"https://financialmodelingprep.com/api/v3/historical-chart/1hour/{symbol}?apikey={key}",
-    ]
+    # yfinance は日本株は .T が必要（既に TICKERS に入っている前提）
+    ticker = yf.Ticker(symbol)
 
-    for url in urls:
-        try:
-            r = requests.get(url).json()
-        except Exception as e:
-            print(f"[取得エラー] {symbol}: {e}")
-            continue
+    # 過去60日分の1時間足（RSI・移動平均に十分）
+    df = ticker.history(period="60d", interval="1h")
 
-        if isinstance(r, list) and len(r) > 0 and "date" in r[0]:
-            df = pd.DataFrame(r)
-            df["date"] = pd.to_datetime(df["date"])
-            df = df.sort_values("date")
-            return df
+    if df.empty:
+        print(f"{symbol} のデータが取得できませんでした")
+        return pd.DataFrame()
 
-    print(f"{symbol} のデータが取得できませんでした")
-    return pd.DataFrame()
+    # yfinance のカラム名を Aurora Signal 用に統一
+    df = df.reset_index()
+    df = df.rename(columns={
+        "Datetime": "date",
+        "Close": "close",
+        "Open": "open",
+        "High": "high",
+        "Low": "low",
+        "Volume": "volume"
+    })
+
+    return df
 
 def calculate_rsi(data, window=14):
     delta = data["close"].diff()
@@ -134,10 +136,7 @@ def check_signal(row):
 
 # 勝率と期待値（シンプルな形は一旦維持）
 def calculate_expected_value(data):
-    """
-    RSI が極端なほど妙味が高いとみなすモデル。
-    50 からの乖離を二乗して、極端値を強調。
-    """
+    # Series（latest）にも dict にも対応
     rsi = data["rsi"]
     price = data["close"]
 
