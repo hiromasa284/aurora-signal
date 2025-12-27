@@ -369,7 +369,7 @@ def format_alerts_for_email(signals):
         )
 
         # 銘柄ブロック
-        body += f"■ {ticker}（{rank}ランク）\n"
+        body += f"■ {ticker} / {info['name']}（{rank}ランク）\n"
         body += f"  シグナル: {info['signal']}\n"
         body += f"  RSI: {info['rsi']:.2f}\n"
         body += f"  終値: {info['close']:.2f}\n"
@@ -526,6 +526,7 @@ def main():
             append_signal_history(history_entry)
 
             signals[ticker] = {
+                "name": TICKERS[ticker],
                 "signal": signal,
                 "rsi": rsi,
                 "close": close,
@@ -535,7 +536,7 @@ def main():
                 "timestamp": run_timestamp
             }
 
-            print(ticker, signal)
+            print(f"{ticker}（{TICKERS[ticker]}） {signal}")
 
         except Exception as e:
             print(f"[エラー] {ticker}: {e}")
