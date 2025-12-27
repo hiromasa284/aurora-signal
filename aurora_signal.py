@@ -620,7 +620,5 @@ def send_line(message):
         print("[LINE送信完了]")
     except Exception as e:
         print(f"[LINE送信エラー] {e}")
-
-
 if __name__ == "__main__":
     main()
