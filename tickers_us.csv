@@ -1,511 +1,503 @@
 symbol,name
-AAPL,Apple Inc.
-MSFT,Microsoft Corporation
-AMZN,Amazon.com Inc.
-GOOGL,Alphabet Inc. Class A
-GOOG,Alphabet Inc. Class C
-META,Meta Platforms Inc.
-NVDA,NVIDIA Corporation
-TSLA,Tesla Inc.
-BRK.B,Berkshire Hathaway Inc. Class B
-UNH,UnitedHealth Group Incorporated
-XOM,Exxon Mobil Corporation
-JNJ,Johnson & Johnson
-JPM,JPMorgan Chase & Co.
-V,Visa Inc.
-PG,Procter & Gamble Company
-MA,Mastercard Incorporated
-HD,Home Depot Inc.
-CVX,Chevron Corporation
-ABBV,AbbVie Inc.
-MRK,Merck & Co. Inc.
-PEP,PepsiCo Inc.
-KO,Coca-Cola Company
-AVGO,Broadcom Inc.
-COST,Costco Wholesale Corporation
-WMT,Walmart Inc.
-MCD,McDonald's Corporation
-BAC,Bank of America Corporation
-CRM,Salesforce Inc.
-PFE,Pfizer Inc.
-TMO,Thermo Fisher Scientific Inc.
-ABT,Abbott Laboratories
-ACN,Accenture plc
-ADBE,Adobe Inc.
-ADI,Analog Devices Inc.
-ADM,Archer-Daniels-Midland Company
-ADP,Automatic Data Processing Inc.
-AEP,American Electric Power Company Inc.
-AES,The AES Corporation
-AFL,Aflac Incorporated
-AIG,American International Group Inc.
-AIZ,Assurant Inc.
-AJG,Arthur J. Gallagher & Co.
-AKAM,Akamai Technologies Inc.
-ALB,Albemarle Corporation
-ALGN,Align Technology Inc.
-ALK,Alaska Air Group Inc.
-ALL,The Allstate Corporation
-ALLE,Allegion plc
-AMAT,Applied Materials Inc.
-AMCR,Amcor plc
-AMD,Advanced Micro Devices Inc.
-AME,AMETEK Inc.
-AMGN,Amgen Inc.
-AMP,Ameriprise Financial Inc.
-AMT,American Tower Corporation
-ANET,Arista Networks Inc.
-ANSS,ANSYS Inc.
-AON,Aon plc
-AOS,A. O. Smith Corporation
-APA,APA Corporation
-APD,Air Products and Chemicals Inc.
-APH,Amphenol Corporation
-APTV,Aptiv plc
-ARE,Alexandria Real Estate Equities Inc.
-ATO,Atmos Energy Corporation
-ATVI,Activision Blizzard Inc.
-AVB,AvalonBay Communities Inc.
-AWK,American Water Works Company Inc.
-AXON,Axon Enterprise Inc.
-AZO,AutoZone Inc.
-BA,The Boeing Company
-BALL,Ball Corporation
-BAX,Baxter International Inc.
-BBWI,Bath & Body Works Inc.
-BBY,Best Buy Co. Inc.
-BDX,Becton Dickinson and Company
-BEN,Franklin Resources Inc.
-BF.B,Brown-Forman Corporation Class B
-BIIB,Biogen Inc.
-BIO,Bio-Rad Laboratories Inc.
-BK,The Bank of New York Mellon Corporation
-BKNG,Booking Holdings Inc.
-BKR,Baker Hughes Company
-BLK,BlackRock Inc.
-BLL,Ball Corporation
-BMY,Bristol-Myers Squibb Company
-BR,Broadridge Financial Solutions Inc.
-BRK.A,Berkshire Hathaway Inc. Class A
-BRO,Brown & Brown Inc.
-BSX,Boston Scientific Corporation
-BWA,BorgWarner Inc.
-BX,Blackstone Inc.
-C,Citigroup Inc.
-CAG,Conagra Brands Inc.
-CAH,Cardinal Health Inc.
-CARR,Carrier Global Corporation
-CAT,Caterpillar Inc.
-CB,Chubb Limited
-CBOE,Cboe Global Markets Inc.
-CBRE,CBRE Group Inc.
-CCI,Crown Castle Inc.
-CCL,Carnival Corporation
-CDNS,Cadence Design Systems Inc.
-CDW,CDW Corporation
-CE,Celanese Corporation
-CF,CF Industries Holdings Inc.
-CHD,Church & Dwight Co. Inc.
-CHRW,C.H. Robinson Worldwide Inc.
-CHTR,Charter Communications Inc.
-CI,The Cigna Group
-CINF,Cincinnati Financial Corporation
-CL,Colgate-Palmolive Company
-CLX,The Clorox Company
-CMA,Comerica Incorporated
-CMCSA,Comcast Corporation
-CME,CME Group Inc.
-CMG,Chipotle Mexican Grill Inc.
-CMI,Cummins Inc.
-CMS,CMS Energy Corporation
-CNC,Centene Corporation
-CNP,CenterPoint Energy Inc.
-COF,Capital One Financial Corporation
-COO,The Cooper Companies Inc.
-COP,ConocoPhillips
-CORT,Corcept Therapeutics Incorporated
-CPB,Campbell Soup Company
-CPRT,Copart Inc.
-CPT,Camden Property Trust
-CRL,Charles River Laboratories International Inc.
-CRM,Salesforce Inc.
-CSCO,Cisco Systems Inc.
-CSGP,CoStar Group Inc.
-CSX,CSX Corporation
-CTAS,Cintas Corporation
-CTLT,Catalent Inc.
-CTRA,Coterra Energy Inc.
-CTSH,Cognizant Technology Solutions Corporation
-CTVA,Corteva Inc.
-CVS,CVS Health Corporation
-CVX,Chevron Corporation
-D,Dominion Energy Inc.
-DAL,Delta Air Lines Inc.
-DD,DuPont de Nemours Inc.
-DE,Deere & Company
-DFS,Discover Financial Services
-DG,Dollar General Corporation
-DGX,Quest Diagnostics Incorporated
-DHI,D.R. Horton Inc.
-DHR,Danaher Corporation
-DOV,Dover Corporation
-DOW,Dow Inc.
-DPZ,Domino's Pizza Inc.
-DRI,Darden Restaurants Inc.
-DTE,DTE Energy Company
-DUK,Duke Energy Corporation
-DVA,DaVita Inc.
-DVN,Devon Energy Corporation
-DXC,DXC Technology Company
-DXCM,DexCom Inc.
-EA,Electronic Arts Inc.
-EBAY,eBay Inc.
-ECL,Ecolab Inc.
-ED,Consolidated Edison Inc.
-EFX,Equifax Inc.
-EIX,Edison International
-EL,The Estée Lauder Companies Inc.
-ELV,Elevance Health Inc.
-EMN,Eastman Chemical Company
-EMR,Emerson Electric Co.
-ENPH,Enphase Energy Inc.
-EOG,EOG Resources Inc.
-EPAM,EPAM Systems Inc.
-EQIX,Equinix Inc.
-EQR,Equity Residential
-ES,Eversource Energy
-ESS,Essex Property Trust Inc.
-ETN,Eaton Corporation plc
-ETR,Entergy Corporation
-ETSY,Etsy Inc.
-EVRG,Evergy Inc.
-EW,Edwards Lifesciences Corporation
-EXC,Exelon Corporation
-EXPD,Expeditors International of Washington Inc.
-EXPE,Expedia Group Inc.
-EXR,Extra Space Storage Inc.
-F,Ford Motor Company
-FANG,Diamondback Energy Inc.
-FAST,Fastenal Company
-FCX,Freeport-McMoRan Inc.
-FDS,FactSet Research Systems Inc.
-FDX,FedEx Corporation
-FE,FirstEnergy Corp.
-FFIV,F5 Inc.
-FICO,Fair Isaac Corporation
-FIS,Fidelity National Information Services Inc.
-FISV,Fiserv Inc.
-FITB,Fifth Third Bancorp
-FLIR,FLIR Systems Inc.
-FLS,Flowserve Corporation
-FLT,FleetCor Technologies Inc.
-FMC,FMC Corporation
-FOX,Fox Corporation Class B
-FOXA,Fox Corporation Class A
-FRT,Federal Realty Investment Trust
-FTNT,Fortinet Inc.
-FTV,Fortive Corporation
-GD,General Dynamics Corporation
-GE,General Electric Company
-GILD,Gilead Sciences Inc.
-GIS,General Mills Inc.
-GL,Globe Life Inc.
-GLW,Corning Inc.
-GM,General Motors Company
-GNRC,Generac Holdings Inc.
-GOOG,Alphabet Inc. Class C
-GOOGL,Alphabet Inc. Class A
-GPC,Genuine Parts Company
-GPN,Global Payments Inc.
-GRMN,Garmin Ltd.
-GS,The Goldman Sachs Group Inc.
-GWW,W.W. Grainger Inc.
-HAL,Halliburton Company
-HAS,Hasbro Inc.
-HBAN,Huntington Bancshares Incorporated
-HBI,Hanebrands Inc.
-HCA,HCA Healthcare Inc.
-HD,Home Depot Inc.
-HES,Hess Corporation
-HIG,The Hartford Financial Services Group Inc.
-HII,Huntington Ingalls Industries Inc.
-HLT,Hilton Worldwide Holdings Inc.
-HOLX,Hologic Inc.
-HON,Honeywell International Inc.
-HPE,Hewlett Packard Enterprise Company
-HPQ,HP Inc.
-HRL,Hormel Foods Corporation
-HSIC,Henry Schein Inc.
-HST,Host Hotels & Resorts Inc.
-HSY,The Hershey Company
-HUM,Humana Inc.
-HWM,Howmet Aerospace Inc.
-IBM,International Business Machines Corporation
-ICE,Intercontinental Exchange Inc.
-IDXX,IDEXX Laboratories Inc.
-IEX,IDEX Corporation
-IFF,International Flavors & Fragrances Inc.
-ILMN,Illumina Inc.
-INCY,Incyte Corporation
-INTC,Intel Corporation
-INTU,Intuit Inc.
-IP,International Paper Company
-IPG,The Interpublic Group of Companies Inc.
-IPGP,IPG Photonics Corporation
-IQV,IQVIA Holdings Inc.
-IR,Ingersoll Rand Inc.
-IRM,Iron Mountain Inc.
-ISRG,Intuitive Surgical Inc.
-IT,Gartner Inc.
-ITW,Illinois Tool Works Inc.
-IVZ,Invesco Ltd.
-J,Jacobs Solutions Inc.
-JBHT,J.B. Hunt Transport Services Inc.
-JCI,Johnson Controls International plc
-JKHY,Jack Henry & Associates Inc.
-JNJ,Johnson & Johnson
-JNPR,Juniper Networks Inc.
-JPM,JPMorgan Chase & Co.
-K,Kellanova
-KEY,KeyCorp
-KIM,Kimco Realty Corporation
-KLAC,KLA Corporation
-KMB,Kimberly-Clark Corporation
-KMI,Kinder Morgan Inc.
-KMX,CarMax Inc.
-KO,Coca-Cola Company
-KR,Kroger Co.
-L,Lowe's Companies Inc.
-LDOS,Leidos Holdings Inc.
-LEG,Leggett & Platt Incorporated
-LEN,Lennar Corporation
-LH,Labcorp Holdings Inc.
-LHX,L3Harris Technologies Inc.
-LIN,Linde plc
-LKQ,LKQ Corporation
-LLY,Eli Lilly and Company
-LMT,Lockheed Martin Corporation
-LNC,Lincoln National Corporation
-LNT,Alliant Energy Corporation
-LOW,Lowe's Companies Inc.
-LRCX,Lam Research Corporation
-LULU,Lululemon Athletica Inc.
-LUV,Southwest Airlines Co.
-LVS,Las Vegas Sands Corp.
-LW,Lamb Weston Holdings Inc.
-LYB,LyondellBasell Industries N.V.
-LYV,Live Nation Entertainment Inc.
-MA,Mastercard Incorporated
-MAR,Marriott International Inc.
-MAS,Masco Corporation
-MCD,McDonald's Corporation
-MCHP,Microchip Technology Incorporated
-MCK,McKesson Corporation
-MCO,Moody's Corporation
-MDLZ,Mondelez International Inc.
-MDT,Medtronic plc
-MET,MetLife Inc.
-META,Meta Platforms Inc.
-MGM,MGM Resorts International
-MHK,Mohawk Industries Inc.
-MKC,McCormick & Company Incorporated
-MKTX,MarketAxess Holdings Inc.
-MLM,Martin Marietta Materials Inc.
-MMC,Marsh & McLennan Companies Inc.
-MMM,3M Company
-MNST,Monster Beverage Corporation
-MO,Altria Group Inc.
-MOS,The Mosaic Company
-MPC,Marathon Petroleum Corporation
-MPWR,Monolithic Power Systems Inc.
-MRK,Merck & Co. Inc.
-MRNA,Moderna Inc.
-MRO,Marathon Oil Corporation
-MS,Morgan Stanley
-MSCI,MSCI Inc.
-MSFT,Microsoft Corporation
-MSI,Motorola Solutions Inc.
-MTB,M&T Bank Corporation
-MTCH,Match Group Inc.
-MTD,Mettler-Toledo International Inc.
-MU,Micron Technology Inc.
-NCLH,Norwegian Cruise Line Holdings Ltd.
-NDAQ,Nasdaq Inc.
-NDSN,Nordson Corporation
-NEE,NextEra Energy Inc.
-NEM,Newmont Corporation
-NFLX,Netflix Inc.
-NI,NiSource Inc.
-NKE,Nike Inc.
-NLOK,NortonLifeLock Inc.
-NLSN,Nielsen Holdings plc
-NOC,Northrop Grumman Corporation
-NOW,ServiceNow Inc.
-NRG,NRG Energy Inc.
-NSC,Norfolk Southern Corporation
-NTAP,NetApp Inc.
-NTRS,Northern Trust Corporation
-NUE,Nucor Corporation
-NVDA,NVIDIA Corporation
-NVR,NVR Inc.
-NWL,Newell Brands Inc.
-NWS,News Corporation Class B
-NWSA,News Corporation Class A
-NXPI,NXP Semiconductors N.V.
-O,Realty Income Corporation
-ODFL,Old Dominion Freight Line Inc.
-OKE,ONEOK Inc.
-OMC,Omnicom Group Inc.
-ON,ON Semiconductor Corporation
-ORCL,Oracle Corporation
-ORLY,O'Reilly Automotive Inc.
-OTIS,Otis Worldwide Corporation
-OXY,Occidental Petroleum Corporation
-PARA,Paramount Global
-PAYC,Paycom Software Inc.
-PAYX,Paychex Inc.
-PCAR,PACCAR Inc.
-PCG,PG&E Corporation
-PEAK,Healthpeak Properties Inc.
-PEG,Public Service Enterprise Group Incorporated
-PEP,PepsiCo Inc.
-PFE,Pfizer Inc.
-PFG,Principal Financial Group Inc.
-PG,Procter & Gamble Company
-PGR,Progressive Corporation
-PH,Parker-Hannifin Corporation
-PHM,PulteGroup Inc.
-PKG,Packaging Corporation of America
-PKI,PerkinElmer Inc.
-PLD,Prologis Inc.
-PM,Philip Morris International Inc.
-PNC,The PNC Financial Services Group Inc.
-PNR,Pentair plc
-PNW,Pinnacle West Capital Corporation
-POOL,Pool Corporation
-PPG,PPG Industries Inc.
-PPL,PPL Corporation
-PRU,Prudential Financial Inc.
-PSA,Public Storage
-PSX,Phillips 66
-PTC,PTC Inc.
-PVH,PVH Corp.
-PWR,Quanta Services Inc.
-PXD,Pioneer Natural Resources Company
-PYPL,PayPal Holdings Inc.
-QCOM,Qualcomm Incorporated
-QRVO,Qorvo Inc.
-RCL,Royal Caribbean Group
-RE,Everest Re Group Ltd.
-REG,Regency Centers Corporation
-REGN,Regeneron Pharmaceuticals Inc.
-RF,Regions Financial Corporation
-RHI,Robert Half International Inc.
-RJF,Raymond James Financial Inc.
-RL,Ralph Lauren Corporation
-RMD,ResMed Inc.
-ROK,Rockwell Automation Inc.
-ROL,Rolllins Inc.
-ROP,Roper Technologies Inc.
-ROST,Ross Stores Inc.
-RSG,Republic Services Inc.
-RTX,RTX Corporation
-SBAC,SBA Communications Corporation
-SBUX,Starbucks Corporation
-SCHW,Charles Schwab Corporation
-SEDG,SolarEdge Technologies Inc.
-SEE,Sealed Air Corporation
-SHW,The Sherwin-Williams Company
-SIVB,SVB Financial Group
-SJM,The J.M. Smucker Company
-SLB,Schlumberger Limited
-SNA,Snap-on Incorporated
-SNPS,Synopsys Inc.
-SO,Southern Company
-SPG,Simon Property Group Inc.
-SPGI,S&P Global Inc.
-SRE,Sempra Energy
-STE,STERIS plc
-STLD,Steel Dynamics Inc.
-STT,State Street Corporation
-STX,Seagate Technology Holdings plc
-STZ,Constellation Brands Inc.
-SWK,Stanley Black & Decker Inc.
-SWKS,Skyworks Solutions Inc.
-SYF,Synchrony Financial
-SYK,Stryker Corporation
-SYY,Sysco Corporation
-T,AT&T Inc.
-TAP,Molson Coors Beverage Company
-TDG,TransDigm Group Incorporated
-TDY,Teledyne Technologies Incorporated
-TECH,Bio-Techne Corporation
-TEL,TE Connectivity Ltd.
-TER,Teradyne Inc.
-TFC,Truist Financial Corporation
-TFX,Teleflex Incorporated
-TGT,Target Corporation
-TJX,The TJX Companies Inc.
-TMO,Thermo Fisher Scientific Inc.
-TMUS,T-Mobile US Inc.
-TPR,Tapestry Inc.
-TRMB,Trimble Inc.
-TROW,T. Rowe Price Group Inc.
-TRV,The Travelers Companies Inc.
-TSCO,Tractor Supply Company
-TSLA,Tesla Inc.
-TSN,Tyson Foods Inc.
-TT,Trane Technologies plc
-TTWO,Take-Two Interactive Software Inc.
-TXN,Texas Instruments Incorporated
-TXT,Textron Inc.
-TYL,Tyler Technologies Inc.
-UAL,United Airlines Holdings Inc.
-UDR,UDR Inc.
-UHS,Universal Health Services Inc.
-ULTA,Ulta Beauty Inc.
-UNH,UnitedHealth Group Incorporated
-UNP,Union Pacific Corporation
-UPS,United Parcel Service Inc.
-URI,United Rentals Inc.
-USB,U.S. Bancorp
-V,Visa Inc.
-VFC,VF Corporation
-VIAC,ViacomCBS Inc.
-VLO,Valero Energy Corporation
-VMC,Vulcan Materials Company
-VNO,Vornado Realty Trust
-VRSK,Verisk Analytics Inc.
-VRSN,VeriSign Inc.
-VRTX,Vertex Pharmaceuticals Incorporated
-VTR,Ventas Inc.
-VTRS,Viatris Inc.
-VZ,Verizon Communications Inc.
-WAB,Westinghouse Air Brake Technologies Corporation
-WAT,Waters Corporation
-WBA,Walgreens Boots Alliance Inc.
-WDC,Western Digital Corporation
-WEC,WEC Energy Group Inc.
-WELL,Welltower Inc.
-WFC,Wells Fargo & Company
-WHR,Whirlpool Corporation
-WLTW,Willis Towers Watson Public Limited Company
-WM,Waste Management Inc.
-WMB,Williams Companies Inc.
-WMT,Walmart Inc.
-WRB,W. R. Berkley Corporation
-WRK,WestRock Company
-WST,West Pharmaceutical Services Inc.
-WTW,Willis Towers Watson plc
-WY,Weyerhaeuser Company
-WYNN,Wynn Resorts Limited
-XEL,Xcel Energy Inc.
-XOM,Exxon Mobil Corporation
-XRAY,DENTSPLY SIRONA Inc.
-XYL,Xylem Inc.
-YUM,Yum! Brands Inc.
-ZBH,Zimmer Biomet Holdings Inc.
-ZBRA,Zebra Technologies Corporation
-ZION,Zions Bancorporation N.A.
-ZTS,Zoetis Inc.
-AUR,Aurora Innovation
+AAPL,Apple Inc.（アップル）
+ABBV,AbbVie Inc.（アッヴィ）
+ABT,Abbott Laboratories（アボット）
+ACN,Accenture plc（アクセンチュア）
+ADBE,Adobe Inc.（アドビ）
+ADI,Analog Devices Inc.（アナログ・デバイセズ）
+ADM,Archer-Daniels-Midland Company（ADM）
+ADP,Automatic Data Processing Inc.（ADP）
+AEP,American Electric Power Company Inc.（AEP）
+AES,The AES Corporation（AES）
+AFL,Aflac Incorporated（アフラック）
+AIG,American International Group Inc.（AIG）
+AIZ,Assurant Inc.（アシュラント）
+AJG,Arthur J. Gallagher & Co.（AJG）
+AKAM,Akamai Technologies Inc.（アカマイ）
+ALB,Albemarle Corporation（アルベマール）
+ALGN,Align Technology Inc.（アライン）
+ALK,Alaska Air Group Inc.（アラスカ航空）
+ALL,The Allstate Corporation（オールステート）
+ALLE,Allegion plc（アレジオン）
+AMAT,Applied Materials Inc.（アプライド・マテリアルズ）
+AMCR,Amcor plc（アンコール）
+AMD,Advanced Micro Devices Inc.（AMD）
+AME,AMETEK Inc.（アメテック）
+AMGN,Amgen Inc.（アムジェン）
+AMP,Ameriprise Financial Inc.（アメリプライズ）
+AMT,American Tower Corporation（アメリカン・タワー）
+AMZN,Amazon.com Inc.（アマゾン）
+ANET,Arista Networks Inc.（アリスタ）
+ANSS,ANSYS Inc.（アンシス）
+AON,Aon plc（エーオン）
+AOS,A. O. Smith Corporation（A.O.スミス）
+APA,APA Corporation（APA）
+APD,Air Products and Chemicals Inc.（エアープロダクツ）
+APH,Amphenol Corporation（アンフェノール）
+APTV,Aptiv plc（アプティブ）
+ARE,Alexandria Real Estate Equities Inc.（アレクサンドリア）
+ATO,Atmos Energy Corporation（アトモス）
+ATVI,Activision Blizzard Inc.（アクティビジョン・ブリザード）
+AVB,AvalonBay Communities Inc.（アバロンベイ）
+AVGO,Broadcom Inc.（ブロードコム）
+AWK,American Water Works Company Inc.（アメリカン・ウォーター）
+AXON,Axon Enterprise Inc.（アクソン）
+AZO,AutoZone Inc.（オートゾーン）
+BA,The Boeing Company（ボーイング）
+BALL,Ball Corporation（ボール）
+BAX,Baxter International Inc.（バクスター）
+BBWI,Bath & Body Works Inc.（バス＆ボディワークス）
+BBY,Best Buy Co. Inc.（ベストバイ）
+BDX,Becton Dickinson and Company（ベクトン・ディッキンソン）
+BEN,Franklin Resources Inc.（フランクリン）
+BF.B,Brown-Forman Corporation Class B（ブラウン・フォーマン B）
+BIIB,Biogen Inc.（バイオジェン）
+BIO,Bio-Rad Laboratories Inc.（バイオラッド）
+BK,The Bank of New York Mellon Corporation（BNYメロン）
+BKNG,Booking Holdings Inc.（ブッキング）
+BKR,Baker Hughes Company（ベーカー・ヒューズ）
+BLK,BlackRock Inc.（ブラックロック）
+BLL,Ball Corporation（ボール）
+BMY,Bristol-Myers Squibb Company（ブリストル・マイヤーズ）
+BR,Broadridge Financial Solutions Inc.（ブロードリッジ）
+BRK.A,Berkshire Hathaway Inc. Class A（バークシャー・ハサウェイ A）
+BRK.B,Berkshire Hathaway Inc. Class B（バークシャー・ハサウェイ B）
+BRO,Brown & Brown Inc.（ブラウン＆ブラウン）
+BSX,Boston Scientific Corporation（ボストン・サイエンティフィック）
+BWA,BorgWarner Inc.（ボルグワーナー）
+BX,Blackstone Inc.（ブラックストーン）
+C,Citigroup Inc.（シティグループ）
+CAG,Conagra Brands Inc.（コナグラ）
+CAH,Cardinal Health Inc.（カーディナルヘルス）
+CARR,Carrier Global Corporation（キャリア）
+CAT,Caterpillar Inc.（キャタピラー）
+CB,Chubb Limited（チャブ）
+CBOE,Cboe Global Markets Inc.（シカゴオプション取引所）
+CBRE,CBRE Group Inc.（CBRE）
+CCI,Crown Castle Inc.（クラウンキャッスル）
+CCL,Carnival Corporation（カーニバル）
+CDNS,Cadence Design Systems Inc.（ケイデンス）
+CDW,CDW Corporation（CDW）
+CE,Celanese Corporation（セラニーズ）
+CF,CF Industries Holdings Inc.（CF）
+CHD,Church & Dwight Co. Inc.（チャーチ＆ドワイト）
+CHRW,C.H. Robinson Worldwide Inc.（CHロビンソン）
+CHTR,Charter Communications Inc.（チャーター）
+CI,The Cigna Group（シグナ）
+CINF,Cincinnati Financial Corporation（シンシナティ）
+CL,Colgate-Palmolive Company（コルゲート）
+CLX,The Clorox Company（クロロックス）
+CMA,Comerica Incorporated（コメリカ）
+CMCSA,Comcast Corporation（コムキャスト）
+CME,CME Group Inc.（CME）
+CMG,Chipotle Mexican Grill Inc.（チポトレ）
+CMI,Cummins Inc.（カミンズ）
+CMS,CMS Energy Corporation（CMS）
+CNC,Centene Corporation（センティーン）
+CNP,CenterPoint Energy Inc.（センターポイント）
+COF,Capital One Financial Corporation（キャピタルワン）
+COO,The Cooper Companies Inc.（クーパー）
+COP,ConocoPhillips（コノコフィリップス）
+CORT,Corcept Therapeutics Incorporated（コーセプト）
+CPB,Campbell Soup Company（キャンベル）
+CPRT,Copart Inc.（コパート）
+CPT,Camden Property Trust（カムデン）
+CRL,Charles River Laboratories International Inc.（チャールズリバー）
+CRM,Salesforce Inc.（セールスフォース）
+CSCO,Cisco Systems Inc.（シスコ）
+CSGP,CoStar Group Inc.（コースター）
+CSX,CSX Corporation（CSX）
+CTAS,Cintas Corporation（シンタス）
+CTLT,Catalent Inc.（カタレント）
+CTRA,Coterra Energy Inc.（コテラ）
+CTSH,Cognizant Technology Solutions Corporation（コグニザント）
+CTVA,Corteva Inc.（コルテバ）
+CVS,CVS Health Corporation（CVSヘルス）
+CVX,Chevron Corporation（シェブロン）
+DAL,Delta Air Lines Inc.（デルタ航空）
+DD,DuPont de Nemours Inc.（デュポン）
+DE,Deere & Company（ディア）
+DFS,Discover Financial Services（ディスカバー）
+DG,Dollar General Corporation（ダラー・ゼネラル）
+DGX,Quest Diagnostics Incorporated（クエスト・ダイアグノスティクス）
+DHI,D.R. Horton Inc.（D.R.ホートン）
+DHR,Danaher Corporation（ダナハー）
+DOV,Dover Corporation（ドーバー）
+DOW,Dow Inc.（ダウ）
+DPZ,Domino's Pizza Inc.（ドミノ・ピザ）
+DRI,Darden Restaurants Inc.（ダーデン）
+DTE,DTE Energy Company（DTEエナジー）
+DUK,Duke Energy Corporation（デューク・エナジー）
+DVA,DaVita Inc.（ダビータ）
+DVN,Devon Energy Corporation（デボン・エナジー）
+DXC,DXC Technology Company（DXCテクノロジー）
+DXCM,DexCom Inc.（デックスコム）
+EA,Electronic Arts Inc.（エレクトロニック・アーツ）
+EBAY,eBay Inc.（イーベイ）
+ECL,Ecolab Inc.（エコラボ）
+ED,Consolidated Edison Inc.（コンソリデーテッド・エジソン）
+EFX,Equifax Inc.（エクイファックス）
+EIX,Edison International（エジソン・インターナショナル）
+EL,The Estée Lauder Companies Inc.（エスティローダー）
+ELV,Elevance Health Inc.（エレバンス・ヘルス）
+EMN,Eastman Chemical Company（イーストマン・ケミカル）
+EMR,Emerson Electric Co.（エマーソン）
+ENPH,Enphase Energy Inc.（エンフェーズ）
+EOG,EOG Resources Inc.（EOGリソーシズ）
+EPAM,EPAM Systems Inc.（EPAMシステムズ）
+EQIX,Equinix Inc.（エクイニクス）
+EQR,Equity Residential（エクイティ・レジデンシャル）
+ES,Eversource Energy（エバーソース）
+ESS,Essex Property Trust Inc.（エセックス）
+ETN,Eaton Corporation plc（イートン）
+ETR,Entergy Corporation（エンタジー）
+ETSY,Etsy Inc.（エッツィ）
+EVRG,Evergy Inc.（エバーギー）
+EW,Edwards Lifesciences Corporation（エドワーズ・ライフサイエンス）
+EXC,Exelon Corporation（エクセロン）
+EXPD,Expeditors International of Washington Inc.（エクスペディターズ）
+EXPE,Expedia Group Inc.（エクスペディア）
+EXR,Extra Space Storage Inc.（エクストラスペース）
+F,Ford Motor Company（フォード）
+FANG,Diamondback Energy Inc.（ダイアモンドバック・エナジー）
+FAST,Fastenal Company（ファスナル）
+FCX,Freeport-McMoRan Inc.（フリーポート・マクモラン）
+FDS,FactSet Research Systems Inc.（ファクトセット）
+FDX,FedEx Corporation（フェデックス）
+FE,FirstEnergy Corp.（ファーストエナジー）
+FFIV,F5 Inc.（F5）
+FICO,Fair Isaac Corporation（フェア・アイザック）
+FIS,Fidelity National Information Services Inc.（フィデリティNIS）
+FISV,Fiserv Inc.（ファイサーブ）
+FITB,Fifth Third Bancorp（フィフス・サード）
+FLIR,FLIR Systems Inc.（フリアー）
+FLS,Flowserve Corporation（フローサーブ）
+FLT,FleetCor Technologies Inc.（フリートコア）
+FMC,FMC Corporation（FMC）
+FOX,Fox Corporation Class B（フォックス B）
+FOXA,Fox Corporation Class A（フォックス A）
+FRT,Federal Realty Investment Trust（フェデラル・リアルティ）
+FTNT,Fortinet Inc.（フォーティネット）
+FTV,Fortive Corporation（フォーティブ）
+GD,General Dynamics Corporation（ジェネラル・ダイナミクス）
+GE,General Electric Company（ゼネラル・エレクトリック）
+GILD,Gilead Sciences Inc.（ギリアド・サイエンシズ）
+GIS,General Mills Inc.（ゼネラル・ミルズ）
+GL,Globe Life Inc.（グローブ・ライフ）
+GLW,Corning Inc.（コーニング）
+GM,General Motors Company（ゼネラル・モーターズ）
+GNRC,Generac Holdings Inc.（ジェネラック）
+GOOG,Alphabet Inc. Class C（アルファベット C）
+GOOGL,Alphabet Inc. Class A（アルファベット A）
+GPC,Genuine Parts Company（ジェニュイン・パーツ）
+GPN,Global Payments Inc.（グローバル・ペイメンツ）
+GRMN,Garmin Ltd.（ガーミン）
+GS,The Goldman Sachs Group Inc.（ゴールドマン・サックス）
+GWW,W.W. Grainger Inc.（グレンジャー）
+HAL,Halliburton Company（ハリバートン）
+HAS,Hasbro Inc.（ハズブロ）
+HBAN,Huntington Bancshares Incorporated（ハンティントン・バンクシェアーズ）
+HBI,Hanebrands Inc.（ヘインズブランズ）
+HCA,HCA Healthcare Inc.（HCAヘルスケア）
+HD,Home Depot Inc.（ホームデポ）
+HES,Hess Corporation（ヘス）
+HIG,The Hartford Financial Services Group Inc.（ハートフォード）
+HII,Huntington Ingalls Industries Inc.（ハンティントン・インガルス）
+HLT,Hilton Worldwide Holdings Inc.（ヒルトン）
+HOLX,Hologic Inc.（ホロジック）
+HON,Honeywell International Inc.（ハネウェル）
+HPE,Hewlett Packard Enterprise Company（HPE）
+HPQ,HP Inc.（HP）
+HRL,Hormel Foods Corporation（ホーメル）
+HSIC,Henry Schein Inc.（ヘンリーシャイン）
+HST,Host Hotels & Resorts Inc.（ホスト・ホテルズ）
+HSY,The Hershey Company（ハーシー）
+HUM,Humana Inc.（ヒューマナ）
+HWM,Howmet Aerospace Inc.（ハウメット・エアロスペース）
+IBM,International Business Machines Corporation（IBM）
+ICE,Intercontinental Exchange Inc.（インターコンチネンタル取引所）
+IDXX,IDEXX Laboratories Inc.（アイデックス）
+IEX,IDEX Corporation（アイデックス・コーポレーション）
+IFF,International Flavors & Fragrances Inc.（IFF）
+ILMN,Illumina Inc.（イルミナ）
+INCY,Incyte Corporation（インサイト）
+INTC,Intel Corporation（インテル）
+INTU,Intuit Inc.（イントゥイット）
+IP,International Paper Company（インターナショナル・ペーパー）
+IPG,The Interpublic Group of Companies Inc.（インターパブリック）
+IPGP,IPG Photonics Corporation（IPGフォトニクス）
+IQV,IQVIA Holdings Inc.（IQVIA）
+IR,Ingersoll Rand Inc.（インガソール・ランド）
+IRM,Iron Mountain Inc.（アイアン・マウンテン）
+ISRG,Intuitive Surgical Inc.（インテュイティブ・サージカル）
+IT,Gartner Inc.（ガートナー）
+ITW,Illinois Tool Works Inc.（ITW）
+IVZ,Invesco Ltd.（インベスコ）
+J,Jacobs Solutions Inc.（ジェイコブズ）
+JBHT,J.B. Hunt Transport Services Inc.（J.B.ハント）
+JCI,Johnson Controls International plc（ジョンソンコントロールズ）
+JKHY,Jack Henry & Associates Inc.（ジャック・ヘンリー）
+JNJ,Johnson & Johnson（ジョンソン＆ジョンソン）
+JNPR,Juniper Networks Inc.（ジュニパー）
+JPM,JPMorgan Chase & Co.（JPモルガン・チェース）
+K,Kellanova（ケラノヴァ）
+KEY,KeyCorp（キーコープ）
+KIM,Kimco Realty Corporation（キムコ・リアルティ）
+KLAC,KLA Corporation（KLA）
+KMB,Kimberly-Clark Corporation（キンバリークラーク）
+KMI,Kinder Morgan Inc.（キンダー・モルガン）
+KMX,CarMax Inc.（カーマックス）
+KO,Coca-Cola Company（コカ・コーラ）
+KR,Kroger Co.（クローガー）
+L,Lowe's Companies Inc.（ロウズ）
+LDOS,Leidos Holdings Inc.（レイドス）
+LEG,Leggett & Platt Incorporated（レゲット＆プラット）
+LEN,Lennar Corporation（レナー）
+LH,Labcorp Holdings Inc.（ラボコープ）
+LHX,L3Harris Technologies Inc.（L3ハリス）
+LIN,Linde plc（リンデ）
+LKQ,LKQ Corporation（LKQ）
+LLY,Eli Lilly and Company（イーライリリー）
+LMT,Lockheed Martin Corporation（ロッキード・マーティン）
+LNC,Lincoln National Corporation（リンカーン・ナショナル）
+LNT,Alliant Energy Corporation（アライアント・エナジー）
+LOW,Lowe's Companies Inc.（ロウズ）
+LRCX,Lam Research Corporation（ラムリサーチ）
+LULU,Lululemon Athletica Inc.（ルルレモン）
+LUV,Southwest Airlines Co.（サウスウエスト航空）
+LVS,Las Vegas Sands Corp.（ラスベガス・サンズ）
+LW,Lamb Weston Holdings Inc.（ラム・ウェストン）
+LYB,LyondellBasell Industries N.V.（ライオンデルバセル）
+LYV,Live Nation Entertainment Inc.（ライブネーション）
+L,Lowe's Companies Inc.（ロウズ）
+LDOS,Leidos Holdings Inc.（レイドス）
+LEG,Leggett & Platt Incorporated（レゲット＆プラット）
+LEN,Lennar Corporation（レナー）
+LH,Labcorp Holdings Inc.（ラボコープ）
+LHX,L3Harris Technologies Inc.（L3ハリス）
+LIN,Linde plc（リンデ）
+LKQ,LKQ Corporation（LKQ）
+LLY,Eli Lilly and Company（イーライリリー）
+LMT,Lockheed Martin Corporation（ロッキード・マーティン）
+LNC,Lincoln National Corporation（リンカーン・ナショナル）
+LNT,Alliant Energy Corporation（アライアント・エナジー）
+LOW,Lowe's Companies Inc.（ロウズ）
+LRCX,Lam Research Corporation（ラムリサーチ）
+LULU,Lululemon Athletica Inc.（ルルレモン）
+LUV,Southwest Airlines Co.（サウスウエスト航空）
+LVS,Las Vegas Sands Corp.（ラスベガス・サンズ）
+LW,Lamb Weston Holdings Inc.（ラム・ウェストン）
+LYB,LyondellBasell Industries N.V.（ライオンデルバセル）
+LYV,Live Nation Entertainment Inc.（ライブネーション）
+MA,Mastercard Incorporated（マスターカード）
+MAR,Marriott International Inc.（マリオット）
+MAS,Masco Corporation（マスコ）
+MCD,McDonald's Corporation（マクドナルド）
+MCHP,Microchip Technology Incorporated（マイクロチップ）
+MCK,McKesson Corporation（マッケソン）
+MCO,Moody's Corporation（ムーディーズ）
+MDLZ,Mondelez International Inc.（モンデリーズ）
+MDT,Medtronic plc（メドトロニック）
+MET,MetLife Inc.（メットライフ）
+META,Meta Platforms Inc.（メタ）
+MGM,MGM Resorts International（MGMリゾーツ）
+MHK,Mohawk Industries Inc.（モホーク）
+MKC,McCormick & Company Incorporated（マコーミック）
+MKTX,MarketAxess Holdings Inc.（マーケットアクセス）
+MLM,Martin Marietta Materials Inc.（マーティン・マリエッタ）
+MMC,Marsh & McLennan Companies Inc.（マーシュ＆マクレナン）
+MMM,3M Company（スリーエム）
+MNST,Monster Beverage Corporation（モンスター）
+MO,Altria Group Inc.（アルトリア）
+MOS,The Mosaic Company（モザイク）
+MPC,Marathon Petroleum Corporation（マラソン・ペトロリアム）
+MPWR,Monolithic Power Systems Inc.（モノリシック・パワー）
+MRK,Merck & Co. Inc.（メルク）
+MRNA,Moderna Inc.（モデルナ）
+MRO,Marathon Oil Corporation（マラソン・オイル）
+MS,Morgan Stanley（モルガン・スタンレー）
+MSCI,MSCI Inc.（MSCI）
+MSFT,Microsoft Corporation（マイクロソフト）
+MSI,Motorola Solutions Inc.（モトローラ・ソリューションズ）
+MTB,M&T Bank Corporation（M&Tバンク）
+MTCH,Match Group Inc.（マッチ・グループ）
+MTD,Mettler-Toledo International Inc.（メトラー・トレド）
+MU,Micron Technology Inc.（マイクロン）
+NCLH,Norwegian Cruise Line Holdings Ltd.（ノルウェージャン・クルーズライン）
+NDAQ,Nasdaq Inc.（ナスダック）
+NDSN,Nordson Corporation（ノードソン）
+NEE,NextEra Energy Inc.（ネクステラ・エナジー）
+NEM,Newmont Corporation（ニューモント）
+NFLX,Netflix Inc.（ネットフリックス）
+NI,NiSource Inc.（ナイソース）
+NKE,Nike Inc.（ナイキ）
+NLOK,NortonLifeLock Inc.（ノートンライフロック）
+NLSN,Nielsen Holdings plc（ニールセン）
+NOC,Northrop Grumman Corporation（ノースロップ・グラマン）
+NOW,ServiceNow Inc.（サービスナウ）
+NRG,NRG Energy Inc.（NRGエナジー）
+NSC,Norfolk Southern Corporation（ノーフォーク・サザン）
+NTAP,NetApp Inc.（ネットアップ）
+NTRS,Northern Trust Corporation（ノーザン・トラスト）
+NUE,Nucor Corporation（ニューコア）
+NVDA,NVIDIA Corporation（エヌビディア）
+NVR,NVR Inc.（NVR）
+NWL,Newell Brands Inc.（ニューウェル・ブランズ）
+NWS,News Corporation Class B（ニューズ・コープ B）
+NWSA,News Corporation Class A（ニューズ・コープ A）
+NXPI,NXP Semiconductors N.V.（NXPセミコンダクターズ）
+ODFL,Old Dominion Freight Line Inc.（オールド・ドミニオン）
+OGN,Organon & Co.（オルガノン）
+OKE,ONEOK Inc.（ワンオーク）
+OMC,Omnicom Group Inc.（オムニコム）
+ON,ON Semiconductor Corporation（オン・セミコンダクター）
+ORCL,Oracle Corporation（オラクル）
+ORLY,O'Reilly Automotive Inc.（オライリー・オートモーティブ）
+OTIS,Otis Worldwide Corporation（オーチス）
+OXY,Occidental Petroleum Corporation（オクシデンタル）
+PARA,Paramount Global（パラマウント）
+PAYC,Paycom Software Inc.（ペイコム）
+PAYX,Paychex Inc.（ペイチェックス）
+PCAR,PACCAR Inc.（パッカー）
+PCG,PG&E Corporation（PG&E）
+PEAK,Healthpeak Properties Inc.（ヘルスピーク）
+PEG,Public Service Enterprise Group Inc.（PSEG）
+PEP,PepsiCo Inc.（ペプシコ）
+PFE,Pfizer Inc.（ファイザー）
+PFG,Principal Financial Group Inc.（プリンシパル）
+PG,Procter & Gamble Company（P&G）
+PGR,Progressive Corporation（プログレッシブ）
+PH,Parker-Hannifin Corporation（パーカーハネフィン）
+PHM,PulteGroup Inc.（プルテ）
+PKG,Packaging Corporation of America（パッケージング・コープ）
+PLD,Prologis Inc.（プロロジス）
+PM,Philip Morris International Inc.（フィリップモリス）
+PNC,PNC Financial Services Group Inc.（PNC）
+PNR,Pentair plc（ペンテア）
+PNW,Pinnacle West Capital Corporation（ピナクルウェスト）
+PODD,Insulet Corporation（インスレット）
+POOL,Pool Corporation（プール）
+PPG,PPG Industries Inc.（PPG）
+PPL,PPL Corporation（PPL）
+PRU,Prudential Financial Inc.（プルデンシャル）
+PSA,Public Storage（パブリックストレージ）
+PSX,Phillips 66（フィリップス66）
+PTC,PTC Inc.（PTC）
+PVH,PVH Corp.（PVH）
+PWR,Quanta Services Inc.（クアンタ）
+PXD,Pioneer Natural Resources Company（パイオニア）
+QRVO,Qorvo Inc.（コルボ）
+QCOM,Qualcomm Incorporated（クアルコム）
+RCL,Royal Caribbean Group（ロイヤル・カリビアン）
+REG,Regency Centers Corporation（リージェンシー）
+REGN,Regeneron Pharmaceuticals Inc.（リジェネロン）
+RF,Regions Financial Corporation（リージョンズ）
+RHI,Robert Half Inc.（ロバート・ハーフ）
+RJF,Raymond James Financial Inc.（レイモンド・ジェームズ）
+RL,Ralph Lauren Corporation（ラルフローレン）
+RMD,ResMed Inc.（レスメド）
+ROK,Rockwell Automation Inc.（ロックウェル）
+ROL,Rolllins Inc.（ローリンズ）
+ROP,Roper Technologies Inc.（ローパー）
+ROST,Ross Stores Inc.（ロスストアーズ）
+RSG,Republic Services Inc.（リパブリック・サービス）
+RTX,RTX Corporation（アールティーエックス）
+SBUX,Starbucks Corporation（スターバックス）
+SCHW,The Charles Schwab Corporation（チャールズ・シュワブ）
+SHW,The Sherwin-Williams Company（シャーウィン・ウィリアムズ）
+SJM,The J.M. Smucker Company（J.M.スマッカー）
+SLB,Schlumberger Limited（シュルンベルジェ）
+SNA,Snap-on Incorporated（スナップオン）
+SNPS,Synopsys Inc.（シノプシス）
+SO,Southern Company（サザン）
+SPG,Simon Property Group Inc.（サイモン・プロパティ）
+SPGI,S&P Global Inc.（S&Pグローバル）
+SRE,Sempra（センプラ）
+STE,Steris plc（ステリス）
+STLD,Steel Dynamics Inc.（スチール・ダイナミクス）
+STT,State Street Corporation（ステートストリート）
+STX,Seagate Technology Holdings plc（シーゲイト）
+STZ,Constellation Brands Inc.（コンステレーション）
+SWK,Stanley Black & Decker Inc.（スタンレー・ブラック＆デッカー）
+SWKS,Skyworks Solutions Inc.（スカイワークス）
+SYF,Synchrony Financial（シンクロニー）
+SYK,Stryker Corporation（ストライカー）
+SYY,Sysco Corporation（シスコ）
+T,AT&T Inc.（AT&T）
+TAP,The Molson Coors Beverage Company（モルソン・クアーズ）
+TDG,TransDigm Group Incorporated（トランスディグム）
+TDY,Teledyne Technologies Incorporated（テレダイン）
+TECH,Bio-Techne Corporation（バイオテクネ）
+TEL,TE Connectivity Ltd.（TEコネクティビティ）
+TER,Teradyne Inc.（テラダイン）
+TFC,Truist Financial Corporation（トゥルイスト）
+TFX,Teleflex Incorporated（テレフレックス）
+TGT,Target Corporation（ターゲット）
+TJX,The TJX Companies Inc.（TJX）
+TMO,Thermo Fisher Scientific Inc.（サーモフィッシャー）
+TMUS,T-Mobile US Inc.（Tモバイル）
+TPR,Tapestry Inc.（タペストリー）
+TRGP,Targa Resources Corp.（ターガ）
+TRMB,Trimble Inc.（トリンブル）
+TROW,T. Rowe Price Group Inc.（Tロウ・プライス）
+TRV,The Travelers Companies Inc.（トラベラーズ）
+TSCO,Tractor Supply Company（トラクターサプライ）
+TSLA,Tesla Inc.（テスラ）
+TSN,Tyson Foods Inc.（タイソン）
+TT,Trane Technologies plc（トレーン）
+TTWO,Take-Two Interactive Software Inc.（テイクツー）
+TWTR,Twitter Inc.（ツイッター）※上場廃止済みだが参考として
+TXN,Texas Instruments Incorporated（テキサス・インスツルメンツ）
+TXT,Textron Inc.（テキストロン）
+UA,Under Armour Inc. Class C（アンダーアーマー C）
+UAA,Under Armour Inc. Class A（アンダーアーマー A）
+UAL,United Airlines Holdings Inc.（ユナイテッド航空）
+UDR,UDR Inc.（UDR）
+UHS,Universal Health Services Inc.（ユニバーサル・ヘルス）
+ULTA,Ulta Beauty Inc.（ウルタ・ビューティー）
+UNH,UnitedHealth Group Incorporated（ユナイテッドヘルス）
+UNP,Union Pacific Corporation（ユニオン・パシフィック）
+UPS,United Parcel Service Inc.（UPS）
+URI,United Rentals Inc.（ユナイテッド・レンタルズ）
+USB,U.S. Bancorp（USバンコープ）
+V,Visa Inc.（ビザ）
+VFC,VF Corporation（VF）
+VICI,VICI Properties Inc.（VICI）
+VLO,Valero Energy Corporation（バレロ）
+VMC,Vulcan Materials Company（バルカン）
+VRSK,Verisk Analytics Inc.（ベリスク）
+VRSN,VeriSign Inc.（ベリサイン）
+VRTX,Vertex Pharmaceuticals Incorporated（バーテックス）
+VTR,Ventas Inc.（ベンタス）
+VTRS,Viatris Inc.（ヴィアトリス）
+VZ,Verizon Communications Inc.（ベライゾン）
+W,Wayfair Inc.（ウェイフェア）
+WAB,Westinghouse Air Brake Technologies Corporation（Wabtec）
+WAT,Waters Corporation（ウォーターズ）
+WBA,Walgreens Boots Alliance Inc.（ウォルグリーン）
+WBD,Warner Bros. Discovery Inc.（ワーナー・ブラザース・ディスカバリー）
+WDC,Western Digital Corporation（ウェスタンデジタル）
+WEC,WEC Energy Group Inc.（WEC）
+WELL,Welltower Inc.（ウェルタワー）
+WFC,Wells Fargo & Company（ウェルズ・ファーゴ）
+WHR,Whirlpool Corporation（ワールプール）
+WM,Waste Management Inc.（ウェイストマネジメント）
+WMB,The Williams Companies Inc.（ウィリアムズ）
+WMT,Walmart Inc.（ウォルマート）
+WRB,W. R. Berkley Corporation（バークレー）
+WRK,WestRock Company（ウェストロック）
+WST,West Pharmaceutical Services Inc.（ウェストファーマ）
+WTW,Willis Towers Watson plc（ウィリス・タワーズ・ワトソン）
+WY,Weyerhaeuser Company（ウェアハウザー）
+WYNN,Wynn Resorts Limited（ウィン・リゾーツ）
+X,Xylem Inc.（ザイレム）
+XEL,Xcel Energy Inc.（エクセル・エナジー）
+XLNX,Xilinx Inc.（ザイリンクス）※AMDに買収済み
+XOM,Exxon Mobil Corporation（エクソンモービル）
+Y,Yum! Brands Inc.（ヤム・ブランズ）
+YUMC,Yum China Holdings Inc.（ヤム・チャイナ）
+Z,Zebra Technologies Corporation（ジブラ）
+ZBH,Zimmer Biomet Holdings Inc.（ジンマーバイオメット）
+ZBRA,Zebra Technologies Corporation（ジブラ）
+ZION,Zions Bancorporation N.A.（ザイオンズ）
+ZTS,Zoetis Inc.（ゾエティス）
