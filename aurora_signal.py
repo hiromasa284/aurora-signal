@@ -466,7 +466,14 @@ import pandas as pd
 jp = pd.read_csv("tickers_jp.csv")
 us = pd.read_csv("tickers_us.csv")
 
-TICKERS = jp["symbol"].tolist() + us["symbol"].tolist()
+# symbol → name の辞書
+TICKERS = {}
+
+for _, row in jp.iterrows():
+    TICKERS[row["symbol"]] = row["name"]
+
+for _, row in us.iterrows():
+    TICKERS[row["symbol"]] = row["name"]
 
 def main():
     print("main: START")
@@ -474,13 +481,11 @@ def main():
     api_limited = False
     run_timestamp = datetime.utcnow().isoformat()
 
-    # --- CSV から銘柄リストを読み込む ---
-    import pandas as pd
+    # --- CSV 読み込み（これはOK） ---
     jp = pd.read_csv("tickers_jp.csv")
     us = pd.read_csv("tickers_us.csv")
 
-    # 日本株 + 米国株
-    TICKERS = jp["symbol"].tolist() + us["symbol"].tolist()
+    # ★ TICKERS の再定義はしない（削除）
 
     for ticker in TICKERS:
         try:
