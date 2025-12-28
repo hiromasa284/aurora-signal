@@ -360,7 +360,7 @@ def evaluate_past_signals():
         # ★ ここから本来の処理 ★
         # ============================
 
-        outcome = evaluate_signal_outcome(entry)
+　　outcome = evaluate_signal_outcome(entry)
 
         if outcome in ["win", "lose", "expire"]:
             entry["result"] = outcome
