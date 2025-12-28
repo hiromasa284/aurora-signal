@@ -497,21 +497,21 @@ def main():
             continue
 
     # BUY/SELL のみ抽出
-    filtered = {t: s for t, s in signals.items() if s["signal"] in ["BUY", "SELL"]}
+filtered = {t: s for t, s in signals.items() if s["signal"] in ["BUY", "SELL"]}
 
-    if filtered:
-        sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
-        top_signals = dict(sorted_signals[:3])
-        email_body = format_alerts_for_email(top_signals)
-    else:
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+if filtered:
+    # ★ 上位3件に絞らず、全件通知する
+    sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
+    email_body = format_alerts_for_email(dict(sorted_signals))
+else:
+    email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
-    print("===== AuroraSignal 通知内容 =====")
-    print(email_body)
-    print("================================")
+# ★★★ ここが重要：print は if/else の外に置く ★★★
+print("===== AuroraSignal 通知内容 =====")
+print(email_body)
+print("================================")
 
-    print("main: END")
-
+print("main: END")
 
 if __name__ == "__main__":
     main()
