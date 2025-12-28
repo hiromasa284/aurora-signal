@@ -187,33 +187,70 @@ def calculate_tracking_days(entry):
 # ============================
 #  シグナルの勝敗判定（タッチするまで追跡）
 # ============================
+
 def evaluate_signal_outcome(entry):
-    ticker = entry["ticker"]
-    signal = entry["signal"]
-    tp = entry["take_profit"]
-    sl = entry["stop_loss"]
-    date = entry["timestamp"][:10]
+    """
+    過去シグナルの決着判定（利確・損切り or 期限切れ）
+    entry は signal_history.json の1件
+    """
 
-    df = get_price(ticker)
-    df_after = df[df.index.date > datetime.strptime(date, "%Y-%m-%d").date()]
+    ticker = entry.get("ticker")
+    signal = entry.get("signal")
+    close_0 = entry.get("close")
+    tp = entry.get("take_profit")
+    sl = entry.get("stop_loss")
+    timestamp = entry.get("timestamp")
 
-    for _, row in df_after.iterrows():
-        high = row["high"]
-        low = row["low"]
+    # ★ 自動アップグレード後でも None が残る可能性があるので防御
+    if ticker is None or signal is None or close_0 is None:
+        return None
 
-        if signal == "BUY":
-            if high >= tp:
-                return "win"
-            if low <= sl:
-                return "lose"
+    # ★ 過去データの timestamp が不正な場合に備える
+    try:
+        entry_date = datetime.fromisoformat(timestamp)
+    except Exception:
+        entry_date = datetime.utcnow()
 
-        if signal == "SELL":
-            if low <= tp:
-                return "win"
-            if high >= sl:
-                return "lose"
+    # ★ 期限：最大 20 営業日（約1ヶ月）
+    max_days = 20
+    today = datetime.utcnow()
+    days_passed = (today - entry_date).days
 
-    return None  # まだ決着していない
+    # ★ 期限切れ → 引き分け扱い（resolved=True だが result=None）
+    if days_passed > max_days:
+        return "expire"
+
+    # ★ 現在の株価を取得
+    try:
+        df = get_price(ticker)
+        if df.empty:
+            return None
+    except Exception:
+        return None
+
+    latest = df.iloc[-1]
+    price_now = latest["close"]
+
+    # ★ BUY の場合の判定
+    if signal == "BUY":
+        # 利確ライン到達
+        if price_now >= tp:
+            return "win"
+        # 損切りライン到達
+        if price_now <= sl:
+            return "lose"
+
+    # ★ SELL の場合の判定
+    elif signal == "SELL":
+        # 利確ライン（下落）到達
+        if price_now <= tp:
+            return "win"
+        # 損切りライン（上昇）到達
+        if price_now >= sl:
+            return "lose"
+
+    # ★ まだ決着していない
+    return None
 
 # ============================
 #  ランク別累積勝率
