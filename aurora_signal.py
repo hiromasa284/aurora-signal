@@ -534,6 +534,10 @@ def main():
             expected_value = calculate_expected_value(latest)
             rank = rank_signal(expected_value, signal)
 
+            # ★ HOLD は保存しない（重要）
+            if signal == "HOLD":
+                continue
+
             # 利確・損切りラインを計算
             take_profit, stop_loss = calculate_exit_levels(
                 close,
@@ -602,6 +606,7 @@ def main():
     print("main: END")
 
     return email_body
+
 
 # ============================
 #  実行
