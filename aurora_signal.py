@@ -540,7 +540,7 @@ def main():
             rsi = latest["rsi"]
             moving_avg = df["close"].rolling(50).mean().iloc[-1]
 
-            # ★ ここから下の3行のインデントが崩れていた
+            # シグナル判定
             signal = check_signal(latest)
             expected_value = calculate_expected_value(latest)
             rank = rank_signal(expected_value, signal)
@@ -560,59 +560,6 @@ def main():
             if abs(take_profit - stop_loss) < close * 0.01:
                 continue
 
-            # ここから先は元の処理
-            history_entry = {
-                "ticker": ticker,
-                "signal": signal,
-                "rsi": rsi,
-                "close": close,
-                "expected_value": expected_value,
-                "rank": rank,
-                "timestamp": run_timestamp,
-                "take_profit": take_profit,
-                "stop_loss": stop_loss,
-                "resolved": False,
-                "result": None,
-                "score": 0
-            }
-            append_signal_history(history_entry)
-
-            signals[ticker] = {
-                "name": name,
-                "signal": signal,
-                "rsi": rsi,
-                "close": close,
-                "moving_avg": moving_avg,
-                "expected_value": expected_value,
-                "rank": rank,
-                "timestamp": run_timestamp,
-                "take_profit": take_profit,
-                "stop_loss": stop_loss
-            }
-
-            print(f"{ticker}（{name}） {signal}")
-
-        except Exception as e:
-            print(f"[エラー] {ticker}: {e}")
-            continue
-# 利確・損切りラインを計算
-take_profit, stop_loss = calculate_exit_levels(
-    close,
-    expected_value,
-    signal
-)
-
-# ★ 利確と損切りの差が終値の1%未満なら除外（ノイズ対策）
-if abs(take_profit - stop_loss) < close * 0.01:
-    continue
-
-            # 利確・損切りラインを計算
-            take_profit, stop_loss = calculate_exit_levels(
-                close,
-                expected_value,
-                signal
-            )
-
             # 履歴保存
             history_entry = {
                 "ticker": ticker,
@@ -630,7 +577,7 @@ if abs(take_profit - stop_loss) < close * 0.01:
             }
             append_signal_history(history_entry)
 
-            # 今日のシグナル保存
+            # 通知用データ
             signals[ticker] = {
                 "name": name,
                 "signal": signal,
@@ -674,8 +621,6 @@ if abs(take_profit - stop_loss) < close * 0.01:
     print("main: END")
 
     return email_body
-
-
 # ============================
 #  実行
 # ============================
