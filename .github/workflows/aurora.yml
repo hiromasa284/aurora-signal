@@ -8,10 +8,6 @@ on:
 permissions:
   contents: write
 
-defaults:
-  run:
-    working-directory: ./aurora-signal   # ★ これが絶対に必要
-
 jobs:
   run-signal:
     runs-on: ubuntu-latest
