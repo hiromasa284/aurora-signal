@@ -335,6 +335,10 @@ def evaluate_past_signals():
         if entry.get("resolved", False):
             continue
 
+# close が None の古いデータはスキップ
+        if entry.get("close") is None:
+            continue
+        
         if "expected_value" not in entry:
             entry["expected_value"] = 0
 
