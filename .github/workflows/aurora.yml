@@ -1,7 +1,3 @@
-defaults:
-  run:
-    working-directory: ./aurora-signal
-
 name: Aurora Signal
 
 on:
@@ -11,6 +7,10 @@ on:
 
 permissions:
   contents: write
+
+defaults:
+  run:
+    working-directory: ./aurora-signal   # ★ これが絶対に必要
 
 jobs:
   run-signal:
