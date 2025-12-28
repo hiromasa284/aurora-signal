@@ -1,3 +1,7 @@
+defaults:
+  run:
+    working-directory: ./aurora-signal
+
 name: Aurora Signal
 
 on:
