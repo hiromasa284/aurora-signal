@@ -508,3 +508,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+    evaluate_past_signals()   # ← これが絶対に必要
