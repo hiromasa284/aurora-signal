@@ -447,7 +447,6 @@ def calculate_exit_levels(close, expected_value, signal):
 
     return round(take_profit, 2), round(stop_loss, 2)
 
-
 # ============================
 #  メール本文生成
 # ============================
@@ -535,6 +534,13 @@ def main():
             expected_value = calculate_expected_value(latest)
             rank = rank_signal(expected_value, signal)
 
+            # 利確・損切りラインを計算
+            take_profit, stop_loss = calculate_exit_levels(
+                close,
+                expected_value,
+                signal
+            )
+
             # 履歴保存
             history_entry = {
                 "ticker": ticker,
@@ -543,7 +549,12 @@ def main():
                 "close": close,
                 "expected_value": expected_value,
                 "rank": rank,
-                "timestamp": run_timestamp
+                "timestamp": run_timestamp,
+                "take_profit": take_profit,
+                "stop_loss": stop_loss,
+                "resolved": False,
+                "result": None,
+                "score": 0
             }
             append_signal_history(history_entry)
 
@@ -556,7 +567,9 @@ def main():
                 "moving_avg": moving_avg,
                 "expected_value": expected_value,
                 "rank": rank,
-                "timestamp": run_timestamp
+                "timestamp": run_timestamp,
+                "take_profit": take_profit,
+                "stop_loss": stop_loss
             }
 
             print(f"{ticker}（{name}） {signal}")
