@@ -502,7 +502,6 @@ def main():
     # ============================
     filtered = {t: s for t, s in signals.items() if s["signal"] in ["BUY", "SELL"]}
 
-    # ★ デバッグログ（今日のシグナル一覧）
     print("\n[DEBUG] 今日の BUY/SELL シグナル一覧")
     if filtered:
         for t, s in filtered.items():
@@ -511,7 +510,7 @@ def main():
         print("  BUY/SELL シグナルなし")
 
     # ============================
-    #  通知テキスト生成（全件通知）
+    #  通知テキスト生成
     # ============================
     if filtered:
         sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
@@ -519,19 +518,19 @@ def main():
     else:
         email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
-    # ============================
-    #  テキスト出力
-    # ============================
-    print("\n===== AuroraSignal 通知内容 =====")
-    print(email_body)
-    print("================================\n")
-
     print("main: END")
+
+    return email_body
 
 
 # ============================
 #  実行
 # ============================
 if __name__ == "__main__":
-    main()
+    email_body = main()
     evaluate_past_signals()
+
+    # ★★★ 最後に通知内容を出す（ここが最終位置） ★★★
+    print("\n===== AuroraSignal 通知内容 =====")
+    print(email_body)
+    print("================================\n")
