@@ -162,96 +162,164 @@ def rank_signal(expected_value, signal_type):
 from datetime import datetime, timedelta
 import pandas as pd
 
+from datetime import datetime
+
 # ============================
-#  過去シグナルの翌日・3日後の勝敗を評価
+#  追跡日数を計算
+# ============================
+def calculate_tracking_days(entry):
+    ts = entry["timestamp"]
+    date_str = ts.split("T")[0]
+    signal_date = datetime.strptime(date_str, "%Y-%m-%d")
+    today = datetime.utcnow()
+    delta = today - signal_date
+    return delta.days
+
+# ============================
+#  シグナルの勝敗判定（タッチするまで追跡）
+# ============================
+def evaluate_signal_outcome(entry):
+    ticker = entry["ticker"]
+    signal = entry["signal"]
+    tp = entry["take_profit"]
+    sl = entry["stop_loss"]
+    date = entry["timestamp"][:10]
+
+    df = get_price(ticker)
+    df_after = df[df.index.date > datetime.strptime(date, "%Y-%m-%d").date()]
+
+    for _, row in df_after.iterrows():
+        high = row["high"]
+        low = row["low"]
+
+        if signal == "BUY":
+            if high >= tp:
+                return "win"
+            if low <= sl:
+                return "lose"
+
+        if signal == "SELL":
+            if low <= tp:
+                return "win"
+            if high >= sl:
+                return "lose"
+
+    return None  # まだ決着していない
+
+# ============================
+#  ランク別累積勝率
+# ============================
+def calculate_rank_stats(history):
+    stats = {"S": {"win": 0, "lose": 0},
+             "A": {"win": 0, "lose": 0},
+             "B": {"win": 0, "lose": 0}}
+
+    for e in history:
+        if e.get("resolved", False):
+            r = e["rank"]
+            if e["result"] == "win":
+                stats[r]["win"] += 1
+            elif e["result"] == "lose":
+                stats[r]["lose"] += 1
+
+    win_rates = {}
+    for r, v in stats.items():
+        total = v["win"] + v["lose"]
+        win_rates[r] = round((v["win"] / total) * 100, 1) if total > 0 else 0
+
+    return stats, win_rates
+
+
+# ============================
+#  追跡中件数 + 平均追跡日数
+# ============================
+def count_unresolved_by_rank_with_days(history):
+    counts = {"S": 0, "A": 0, "B": 0}
+    days_sum = {"S": 0, "A": 0, "B": 0}
+
+    for e in history:
+        if not e.get("resolved", False):
+            r = e["rank"]
+            counts[r] += 1
+            days_sum[r] += calculate_tracking_days(e)
+
+    avg_days = {}
+    for r in counts:
+        avg_days[r] = round(days_sum[r] / counts[r], 1) if counts[r] > 0 else 0
+
+    total = counts["S"] + counts["A"] + counts["B"]
+    return counts, avg_days, total
+
+
+# ============================
+#  本日決着した銘柄のテキスト生成
+# ============================
+def format_resolved_today(resolved_today):
+    if not resolved_today:
+        return "【本日決着したシグナル】\n本日は決着した銘柄はありませんでした。\n"
+
+    lines = ["【本日決着したシグナル】\n"]
+
+    for e in resolved_today:
+        days = calculate_tracking_days(e)
+        result_text = "勝ち（利確ラインにタッチ）" if e["result"] == "win" else "負け（損切りラインにタッチ）"
+
+        lines.append(
+            f"■ {e['ticker']} / {e.get('name','')}（{e['rank']}ランク）\n"
+            f"  シグナル: {e['signal']}\n"
+            f"  終値（シグナル時）: {e['close']}\n"
+            f"  利確ライン: {e['take_profit']}\n"
+            f"  損切りライン: {e['stop_loss']}\n"
+            f"  → 結果: {result_text}\n"
+            f"  → 追跡日数: {days}日\n"
+            "--------------------"
+        )
+
+    return "\n".join(lines)
+
+# ============================
+#  メイン：過去シグナルの評価
 # ============================
 def evaluate_past_signals():
-    print("evaluate_past_signals: START")
-
     history = load_signal_history()
-    updated = False
+    resolved_today = []
 
     for entry in history:
-
-        # ★ ① 旧データ（timestamp が無い）は最初に弾く
-        if "timestamp" not in entry:
+        if entry.get("resolved", False):
             continue
 
-        # ★ ② すでに評価済みならスキップ
-        if "result_1d" in entry and "result_3d" in entry:
-            continue
+        outcome = evaluate_signal_outcome(entry)
 
-        # ★ ③ ここから安全に参照できる
-        symbol = entry["ticker"]
-        signal = entry["signal"]
-        timestamp = entry["timestamp"]
+        if outcome in ["win", "lose"]:
+            entry["result"] = outcome
+            entry["resolved"] = True
+            entry["score"] = 1 if outcome == "win" else -1
+            resolved_today.append(entry)
 
-        try:
-            price_data = get_price(symbol)
-            if price_data.empty:
-                continue
+    save_signal_history(history)
 
-            # UTC → JST に変換
-            ts = datetime.fromisoformat(timestamp.replace("Z", ""))
-            ts_jst = ts + timedelta(hours=9)
-            base_date = ts_jst.date()
+    # ランク別累積勝率
+    stats, win_rates = calculate_rank_stats(history)
 
-            # index を日付だけに変換
-            idx_dates = price_data.index.date
+    # 追跡中件数
+    counts, avg_days, total = count_unresolved_by_rank_with_days(history)
 
-            # その日の終値を探す
-            if base_date not in idx_dates:
-                future_dates = [d for d in idx_dates if d > base_date]
-                if not future_dates:
-                    continue
-                base_date = future_dates[0]
+    # 本日決着した銘柄
+    resolved_text = format_resolved_today(resolved_today)
 
-            # 基準日の index
-            idx = list(idx_dates).index(base_date)
+    # ===== 出力テキスト =====
+    print("\n" + resolved_text)
 
-            # 翌営業日
-            future_dates = [d for d in idx_dates if d > base_date]
-            if len(future_dates) < 3:
-                continue
+    print("【ランク別累積成績】")
+    print(f"Sランク： +{stats['S']['win']} / -{stats['S']['lose']}  → 勝率 {win_rates['S']}%")
+    print(f"Aランク： +{stats['A']['win']} / -{stats['A']['lose']}  → 勝率 {win_rates['A']}%")
+    print(f"Bランク： +{stats['B']['win']} / -{stats['B']['lose']}  → 勝率 {win_rates['B']}%")
 
-            day1 = future_dates[0]
-            day3 = future_dates[2]
-
-            idx1 = list(idx_dates).index(day1)
-            idx3 = list(idx_dates).index(day3)
-
-            price_0d = price_data.iloc[idx]["close"]
-            price_1d = price_data.iloc[idx1]["close"]
-            price_3d = price_data.iloc[idx3]["close"]
-
-            # 勝敗判定
-            def judge(p0, pX, sig):
-                if sig == "BUY":
-                    return "WIN" if pX > p0 else "LOSE"
-                elif sig == "SELL":
-                    return "WIN" if pX < p0 else "LOSE"
-                return "N/A"
-
-            entry["result_1d"] = judge(price_0d, price_1d, signal)
-            entry["result_3d"] = judge(price_0d, price_3d, signal)
-
-            entry["price_1d"] = price_1d
-            entry["price_3d"] = price_3d
-
-            updated = True
-
-        except Exception as e:
-            print(f"[追跡エラー] {symbol}: {e}")
-            continue
-
-    # 保存
-    if updated:
-        try:
-            with open(HISTORY_FILE, "w", encoding="utf-8") as f:
-                json.dump(history, f, ensure_ascii=False, indent=2)
-            print("signal_history.json を更新しました（追跡結果付き）")
-        except Exception as e:
-            print(f"[保存エラー] signal_history.json: {e}")
+    print("\n【追跡中の銘柄数】")
+    print(f"Sランク： {counts['S']}件（平均 {avg_days['S']}日）")
+    print(f"Aランク： {counts['A']}件（平均 {avg_days['A']}日）")
+    print(f"Bランク： {counts['B']}件（平均 {avg_days['B']}日）")
+    print(f"計： {total}件\n")
 
     print("evaluate_past_signals: END")
 
@@ -521,7 +589,6 @@ def main():
     print("main: END")
 
     return email_body
-
 
 # ============================
 #  実行
