@@ -439,9 +439,8 @@ def format_alerts_for_email(signals):
 
     return body
 
-
 # ============================
-#  メイン処理
+#  メイン処理（完全版）
 # ============================
 def main():
     print("main: START")
@@ -468,6 +467,7 @@ def main():
             expected_value = calculate_expected_value(latest)
             rank = rank_signal(expected_value, signal)
 
+            # 履歴保存
             history_entry = {
                 "ticker": ticker,
                 "signal": signal,
@@ -479,6 +479,7 @@ def main():
             }
             append_signal_history(history_entry)
 
+            # 今日のシグナル保存
             signals[ticker] = {
                 "name": name,
                 "signal": signal,
@@ -496,23 +497,41 @@ def main():
             print(f"[エラー] {ticker}: {e}")
             continue
 
-    # BUY/SELL のみ抽出
-filtered = {t: s for t, s in signals.items() if s["signal"] in ["BUY", "SELL"]}
+    # ============================
+    #  BUY/SELL のみ抽出
+    # ============================
+    filtered = {t: s for t, s in signals.items() if s["signal"] in ["BUY", "SELL"]}
 
-if filtered:
-    # ★ 上位3件に絞らず、全件通知する
-    sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
-    email_body = format_alerts_for_email(dict(sorted_signals))
-else:
-    email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+    # ★ デバッグログ（今日のシグナル一覧）
+    print("\n[DEBUG] 今日の BUY/SELL シグナル一覧")
+    if filtered:
+        for t, s in filtered.items():
+            print(f"  {t}: {s['signal']} | EV={s['expected_value']:.2f} | Rank={s['rank']}")
+    else:
+        print("  BUY/SELL シグナルなし")
 
-# ★★★ ここが重要：print は if/else の外に置く ★★★
-print("===== AuroraSignal 通知内容 =====")
-print(email_body)
-print("================================")
+    # ============================
+    #  通知テキスト生成（全件通知）
+    # ============================
+    if filtered:
+        sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
+        email_body = format_alerts_for_email(dict(sorted_signals))
+    else:
+        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
 
-print("main: END")
+    # ============================
+    #  テキスト出力
+    # ============================
+    print("\n===== AuroraSignal 通知内容 =====")
+    print(email_body)
+    print("================================\n")
 
+    print("main: END")
+
+
+# ============================
+#  実行
+# ============================
 if __name__ == "__main__":
     main()
-    evaluate_past_signals()   # ← これが絶対に必要
+    evaluate_past_signals()
