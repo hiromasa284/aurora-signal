@@ -626,8 +626,11 @@ def main():
 # ============================
 if __name__ == "__main__":
     email_body = main()
-    evaluate_past_signals()
-
+    try:
+        evaluate_past_signals()
+    except Exception as e:
+        print(f"[evaluate_past_signals エラー] {e}")
+   
     # ★★★ 最後に通知内容を出す（ここが最終位置） ★★★
     print("\n===== AuroraSignal 通知内容 =====")
     print(email_body)
