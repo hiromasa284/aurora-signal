@@ -60,10 +60,6 @@ import numpy as np
 #  株価データ取得（日足）
 # ============================
 def get_price(symbol):
-    """
-    日足データを取得して AuroraSignal 用に整形する。
-    evaluate_past_signals() と完全互換。
-    """
     print(f"[取得開始] {symbol}")
 
     try:
@@ -73,16 +69,17 @@ def get_price(symbol):
             print(f"[データなし] {symbol}")
             return pd.DataFrame()
 
-        # カラム名を統一
-        df = df.rename(columns={
-            "Open": "open",
-            "High": "high",
-            "Low": "low",
-            "Close": "close",
-            "Volume": "volume"
-        })
+        # ★ MultiIndex を完全解除（決定打）
+        if isinstance(df.columns, pd.MultiIndex):
+            df.columns = df.columns.get_level_values(0)
 
-        # DatetimeIndex のまま使う（evaluate_past_signals と整合）
+        # ★ 列名を lower-case に統一
+        df.columns = [c.lower() for c in df.columns]
+
+        # 必要な列だけ残す
+        df = df[["open", "high", "low", "close", "volume"]]
+
+        # DatetimeIndex のまま使う
         df.index = pd.to_datetime(df.index)
 
         return df
