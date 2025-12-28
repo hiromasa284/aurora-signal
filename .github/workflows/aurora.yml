@@ -53,3 +53,12 @@ jobs:
       - name: Clean old backups
         run: |
           find backup/ -type f -mtime +7 -exec rm {} \;
+
+      - name: Send Slack Notification
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          payload=$(jq -n --arg text "$(cat signal.json)" '{text: $text}')
+          curl -X POST -H 'Content-type: application/json' \
+            --data "$payload" \
+            $SLACK_WEBHOOK_URL
