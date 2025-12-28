@@ -55,7 +55,6 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-
 # ============================
 #  株価データ取得（日足）
 # ============================
@@ -63,23 +62,27 @@ def get_price(symbol):
     print(f"[取得開始] {symbol}")
 
     try:
-        df = yf.download(symbol, period="90d", interval="1d")
+        # ★ yfinance のフリーズ対策として threads=False を追加
+        df = yf.download(
+            symbol,
+            period="90d",
+            interval="1d",
+            timeout=10,
+            threads=False  # ← これが超重要
+        )
 
-        if df.empty:
+        if df is None or df.empty:
             print(f"[データなし] {symbol}")
             return pd.DataFrame()
 
-        # ★ MultiIndex を完全解除（決定打）
+        # MultiIndex を解除
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
 
-        # ★ 列名を lower-case に統一
         df.columns = [c.lower() for c in df.columns]
 
-        # 必要な列だけ残す
         df = df[["open", "high", "low", "close", "volume"]]
 
-        # DatetimeIndex のまま使う
         df.index = pd.to_datetime(df.index)
 
         return df
