@@ -156,13 +156,12 @@ def rank_signal(expected_value, signal_type):
     else:
         return "B"
 
-  # ============================
-#  過去シグナルの翌日・3日後の勝敗を評価
-# ============================
-def evaluate_past_signals():
-    from datetime import datetime, timedelta
+from datetime import datetime, timedelta
 import pandas as pd
 
+# ============================
+#  過去シグナルの翌日・3日後の勝敗を評価
+# ============================
 def evaluate_past_signals():
     print("evaluate_past_signals: START")
 
@@ -170,10 +169,16 @@ def evaluate_past_signals():
     updated = False
 
     for entry in history:
-        # すでに評価済みならスキップ
+
+        # ★ ① 旧データ（timestamp が無い）は最初に弾く
+        if "timestamp" not in entry:
+            continue
+
+        # ★ ② すでに評価済みならスキップ
         if "result_1d" in entry and "result_3d" in entry:
             continue
 
+        # ★ ③ ここから安全に参照できる
         symbol = entry["ticker"]
         signal = entry["signal"]
         timestamp = entry["timestamp"]
@@ -193,7 +198,6 @@ def evaluate_past_signals():
 
             # その日の終値を探す
             if base_date not in idx_dates:
-                # その日が休日 → 次に存在する営業日を探す
                 future_dates = [d for d in idx_dates if d > base_date]
                 if not future_dates:
                     continue
