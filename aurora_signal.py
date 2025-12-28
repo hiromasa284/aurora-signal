@@ -332,16 +332,53 @@ def evaluate_past_signals():
     resolved_today = []
 
     for entry in history:
-    if entry.get("resolved", False):
-        continue
+        if entry.get("resolved", False):
+            continue
 
-    # ============================
-    # ★ 古い形式の履歴を自動アップグレード ★
-    # ============================
+        # ============================
+        # ★ 古い形式の履歴を自動アップグレード ★
+        # ============================
 
-    if "expected_value" not in entry:
-        entry["expected_value"] = 0
+        if "expected_value" not in entry:
+            entry["expected_value"] = 0
 
+        if "rank" not in entry:
+            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
+
+        if "take_profit" not in entry or "stop_loss" not in entry:
+            close = entry.get("close")
+            expected_value = entry.get("expected_value", 0)
+            signal = entry.get("signal")
+            tp, sl = calculate_exit_levels(close, expected_value, signal)
+            entry["take_profit"] = tp
+            entry["stop_loss"] = sl
+
+        if "timestamp" not in entry:
+            entry["timestamp"] = datetime.utcnow().isoformat()
+
+        # ============================
+        # ★ ここから本来の処理 ★
+        # ============================
+
+        outcome = evaluate_signal_outcome(entry)
+
+        if outcome in ["win", "lose", "expire"]:
+            entry["result"] = outcome
+            entry["resolved"] = True
+
+            if outcome in ["win", "lose"]:
+                entry["score"] = 1 if outcome == "win" else -1
+                resolved_today.append(entry)
+
+    save_signal_history(history)
+
+# ============================
+# ★ 古い形式の履歴を自動アップグレード ★
+# ============================
+
+if "expected_value" not in entry:
+    entry["expected_value"] = 0
+    
     if "rank" not in entry:
         entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
 
