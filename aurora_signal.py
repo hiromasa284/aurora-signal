@@ -326,6 +326,7 @@ def format_resolved_today(resolved_today):
 # ============================
 #  メイン：過去シグナルの評価
 # ============================
+
 def evaluate_past_signals():
     history = load_signal_history()
     resolved_today = []
@@ -334,14 +335,48 @@ def evaluate_past_signals():
         if entry.get("resolved", False):
             continue
 
+        # ============================
+        # ★ 古い形式の履歴を自動アップグレード ★
+        # ============================
+
+        # expected_value が無い → 0 として扱う
+        if "expected_value" not in entry:
+            entry["expected_value"] = 0
+
+        # rank が無い → 再計算
+        if "rank" not in entry:
+            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
+
+        # take_profit / stop_loss が無い → 再計算して追加
+        if "take_profit" not in entry or "stop_loss" not in entry:
+            close = entry.get("close")
+            expected_value = entry.get("expected_value", 0)
+            signal = entry.get("signal")
+            tp, sl = calculate_exit_levels(close, expected_value, signal)
+            entry["take_profit"] = tp
+            entry["stop_loss"] = sl
+
+        # timestamp が無い → 現在時刻で補完
+        if "timestamp" not in entry:
+            entry["timestamp"] = datetime.utcnow().isoformat()
+
+        # ============================
+        # ★ ここから本来の処理 ★
+        # ============================
+
         outcome = evaluate_signal_outcome(entry)
 
-        if outcome in ["win", "lose"]:
+        # win / lose / expire をすべて「決着」と扱う
+        if outcome in ["win", "lose", "expire"]:
             entry["result"] = outcome
             entry["resolved"] = True
-            entry["score"] = 1 if outcome == "win" else -1
-            resolved_today.append(entry)
 
+            # スコアは win / lose のみ
+            if outcome in ["win", "lose"]:
+                entry["score"] = 1 if outcome == "win" else -1
+                resolved_today.append(entry)
+
+    # 保存
     save_signal_history(history)
 
     # ランク別累積勝率
@@ -353,7 +388,71 @@ def evaluate_past_signals():
     # 本日決着した銘柄
     resolved_text = format_resolved_today(resolved_today)
 
-    # ===== 出力テキスト =====
+    print("\n" + resolved_text)
+
+    print("【ランク別累積成績】")
+    print(f"Sランク： +{stats['S']['win']} / -{stats['S']['lose']}  → 勝率 {win_rates['S']}%")
+    print(f"Aランク： +{stats['A']['win']} / -{stats['A']['lose']}  → 勝率 {win_rates['A']}%")
+    print(f"Bランク： +{stats['B']['win']} / -{stats['B']['lose']}  → 勝率 {win_rates['B']}%")
+
+    print("\n【追跡中の銘柄数】")
+    print(f"Sランク： {counts['S']}件（平均 {avg_days['S']}日）")
+    print(f"Aランク： {counts['A']}件（平均 {avg_days['A']}日）")
+    print(f"Bランク： {counts['B']}件（平均 {avg_days['B']}日）")
+    print(f"計： {total}件\n")
+
+    print("evaluate_past_signals: END")
+
+        # ============================
+        # ★ 古い形式の履歴を自動アップグレード ★
+        # ============================
+
+        # expected_value が無い → 0 として扱う
+        if "expected_value" not in entry:
+            entry["expected_value"] = 0
+
+        # rank が無い → 再計算
+        if "rank" not in entry:
+            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
+
+        # take_profit / stop_loss が無い → 再計算して追加
+        if "take_profit" not in entry or "stop_loss" not in entry:
+            close = entry.get("close")
+            expected_value = entry.get("expected_value", 0)
+            signal = entry.get("signal")
+            tp, sl = calculate_exit_levels(close, expected_value, signal)
+            entry["take_profit"] = tp
+            entry["stop_loss"] = sl
+
+        # timestamp が無い → 現在時刻で補完
+        if "timestamp" not in entry:
+            entry["timestamp"] = datetime.utcnow().isoformat()
+
+        # ============================
+        # ★ ここから本来の処理 ★
+        # ============================
+
+        outcome = evaluate_signal_outcome(entry)
+
+        if outcome in ["win", "lose"]:
+            entry["result"] = outcome
+            entry["resolved"] = True
+            entry["score"] = 1 if outcome == "win" else -1
+            resolved_today.append(entry)
+
+    # 保存
+    save_signal_history(history)
+
+    # ここから先の集計処理（あなたの元コードの続き）
+    # ランク別累積勝率
+    stats, win_rates = calculate_rank_stats(history)
+
+    # 追跡中件数
+    counts, avg_days, total = count_unresolved_by_rank_with_days(history)
+
+    # 本日決着した銘柄
+    resolved_text = format_resolved_today(resolved_today)
+
     print("\n" + resolved_text)
 
     print("【ランク別累積成績】")
