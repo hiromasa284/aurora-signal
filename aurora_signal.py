@@ -393,27 +393,20 @@ if "expected_value" not in entry:
     if "timestamp" not in entry:
         entry["timestamp"] = datetime.utcnow().isoformat()
 
-    # ============================
-    # ★ ここから本来の処理 ★
-    # ============================
-
-    outcome = evaluate_signal_outcome(entry)
-        # ============================
+　　    # ============================
         # ★ ここから本来の処理 ★
         # ============================
 
         outcome = evaluate_signal_outcome(entry)
 
-        # win / lose / expire をすべて「決着」と扱う
         if outcome in ["win", "lose", "expire"]:
             entry["result"] = outcome
             entry["resolved"] = True
 
-            # スコアは win / lose のみ
             if outcome in ["win", "lose"]:
                 entry["score"] = 1 if outcome == "win" else -1
                 resolved_today.append(entry)
-
+    
     # 保存
     save_signal_history(history)
 
