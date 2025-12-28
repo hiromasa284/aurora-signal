@@ -393,7 +393,7 @@ if "expected_value" not in entry:
     if "timestamp" not in entry:
         entry["timestamp"] = datetime.utcnow().isoformat()
 
-　　    # ============================
+        # ============================
         # ★ ここから本来の処理 ★
         # ============================
 
