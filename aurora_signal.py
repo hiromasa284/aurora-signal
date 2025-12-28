@@ -35,6 +35,15 @@ def append_signal_history(entry):
     except Exception as e:
         print(f"[保存エラー] signal_history.json: {e}")
 
+# ============================
+#  履歴の保存（上書き）
+# ============================
+def save_signal_history(history):
+    try:
+        with open(HISTORY_FILE, "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
+    except Exception as e:
+        print(f"[保存エラー] signal_history.json: {e}")
 
 # ============================
 #  CSV からティッカー読み込み
