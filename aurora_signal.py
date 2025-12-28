@@ -163,6 +163,10 @@ def rank_signal(expected_value, signal_type):
 #  過去シグナルの翌日・3日後の勝敗を評価
 # ============================
 def evaluate_past_signals():
+    from datetime import datetime, timedelta
+import pandas as pd
+
+def evaluate_past_signals():
     print("evaluate_past_signals: START")
 
     history = load_signal_history()
@@ -182,23 +186,39 @@ def evaluate_past_signals():
             if price_data.empty:
                 continue
 
-            # 日付（YYYY-MM-DD）
-            date_str = timestamp[:10]
+            # UTC → JST に変換
+            ts = datetime.fromisoformat(timestamp.replace("Z", ""))
+            ts_jst = ts + timedelta(hours=9)
+            base_date = ts_jst.date()
 
-            # DatetimeIndex のままなので一致する
-            if date_str not in price_data.index.strftime("%Y-%m-%d"):
+            # index を日付だけに変換
+            idx_dates = price_data.index.date
+
+            # その日の終値を探す
+            if base_date not in idx_dates:
+                # その日が休日 → 次に存在する営業日を探す
+                future_dates = [d for d in idx_dates if d > base_date]
+                if not future_dates:
+                    continue
+                base_date = future_dates[0]
+
+            # 基準日の index
+            idx = list(idx_dates).index(base_date)
+
+            # 翌営業日
+            future_dates = [d for d in idx_dates if d > base_date]
+            if len(future_dates) < 3:
                 continue
 
-            # インデックス番号を取得
-            idx = list(price_data.index.strftime("%Y-%m-%d")).index(date_str)
+            day1 = future_dates[0]
+            day3 = future_dates[2]
 
-            # 翌日・3日後が存在しない場合スキップ
-            if idx + 1 >= len(price_data) or idx + 3 >= len(price_data):
-                continue
+            idx1 = list(idx_dates).index(day1)
+            idx3 = list(idx_dates).index(day3)
 
             price_0d = price_data.iloc[idx]["close"]
-            price_1d = price_data.iloc[idx + 1]["close"]
-            price_3d = price_data.iloc[idx + 3]["close"]
+            price_1d = price_data.iloc[idx1]["close"]
+            price_3d = price_data.iloc[idx3]["close"]
 
             # 勝敗判定
             def judge(p0, pX, sig):
@@ -230,7 +250,6 @@ def evaluate_past_signals():
             print(f"[保存エラー] signal_history.json: {e}")
 
     print("evaluate_past_signals: END")
-
 
 # ============================
 #  全体勝率の集計
