@@ -125,23 +125,19 @@ def check_signal(row):
     bb_upper = row["bb_upper"]
     bb_lower = row["bb_lower"]
 
-    # ボリンジャーバンドが計算できていない序盤データの保険
     if pd.isna(bb_ma) or pd.isna(bb_upper) or pd.isna(bb_lower):
         return "HOLD"
 
-    # ① RSI 基準（最優先）
     if rsi > 85:
         return "SELL"
     if rsi < 15:
         return "BUY"
 
-    # ② ボリンジャーバンド基準
     if close > bb_upper:
         return "SELL"
     if close < bb_lower:
         return "BUY"
 
-    # ③ どちらにも当てはまらなければ様子見
     return "HOLD"
 
 # ============================
@@ -155,7 +151,6 @@ def calculate_expected_value(row):
     expected_value = edge * price
 
     return expected_value
-
 
 # ============================
 #  ランク判定
