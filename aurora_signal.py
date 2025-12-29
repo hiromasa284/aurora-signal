@@ -100,19 +100,22 @@ def get_price(symbol):
         print(f"[取得エラー] {symbol}: {e}")
         return pd.DataFrame()
 
-# ============================
-#  RSI 計算
-# ============================
-def calculate_rsi(df, window=14):
+============================
+RSI 計算
+============================
+def calculate_rsi(df, window=21):
     delta = df["close"].diff()
 
-    gain = delta.where(delta > 0, 0).rolling(window).mean()
-    loss = (-delta.where(delta < 0, 0)).rolling(window).mean()
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
 
-    rs = gain / loss
+    avg_gain = gain.rolling(window).mean()
+    avg_loss = loss.rolling(window).mean()
+
+    rs = avg_gain / avg_loss
     rsi = 100 - (100 / (1 + rs))
 
-    return rsi.iloc[-1]
+    return rsi
 
 # ============================
 #  シグナル判定（RSI85/15 + ボリンジャーバンド ±2σ）
