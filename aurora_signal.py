@@ -302,24 +302,29 @@ def count_unresolved_by_rank_with_days(history):
 # ============================
 def format_resolved_today(resolved_today):
     if not resolved_today:
-        return "【本日決着したシグナル】\n本日は決着した銘柄はありませんでした。\n"
+        return "【本日決着したシグナル】\n（なし）"
 
-    lines = ["【本日決着したシグナル】\n"]
+    lines = ["【本日決着したシグナル】"]
 
-    for e in resolved_today:
-        days = calculate_tracking_days(e)
-        result_text = "勝ち（利確ラインにタッチ）" if e["result"] == "win" else "負け（損切りラインにタッチ）"
+    for entry in resolved_today:
+        symbol = entry.get("symbol")
+        rank = entry.get("rank", "?")
+        name = entry.get("name", "")  # ← 銘柄名（日本語名）
 
-        lines.append(
-            f"■ {e['ticker']} / {e.get('name','')}（{e['rank']}ランク）\n"
-            f"  シグナル: {e['signal']}\n"
-            f"  終値（シグナル時）: {e['close']}\n"
-            f"  利確ライン: {e['take_profit']}\n"
-            f"  損切りライン: {e['stop_loss']}\n"
-            f"  → 結果: {result_text}\n"
-            f"  → 追跡日数: {days}日\n"
-            "--------------------"
-        )
+        # 銘柄名がある場合と無い場合で出力を変える
+        if name:
+            header = f"■ {symbol} / {name}（{rank}ランク）"
+        else:
+            header = f"■ {symbol} / （{rank}ランク）"
+
+        lines.append(header)
+        lines.append(f"  シグナル: {entry.get('signal')}")
+        lines.append(f"  終値（シグナル時）: {entry.get('close')}")
+        lines.append(f"  利確ライン: {entry.get('take_profit')}")
+        lines.append(f"  損切りライン: {entry.get('stop_loss')}")
+        lines.append(f"  → 結果: {entry.get('result')}")
+        lines.append(f"  → 追跡日数: {entry.get('days', 0)}日")
+        lines.append("--------------------")
 
     return "\n".join(lines)
 
@@ -654,6 +659,7 @@ def main():
             # 履歴保存
             history_entry = {
                 "ticker": ticker,
+                "name": name,
                 "signal": signal,
                 "rsi": rsi,
                 "close": close,
