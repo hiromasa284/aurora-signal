@@ -448,6 +448,38 @@ def evaluate_past_signals():
 
     print("evaluate_past_signals: END")
 
+def backtest_rsi21():
+    """RSI21 のバックテストを signal_history.json から計算する"""
+
+    history = load_signal_history()
+
+    buy_results = []
+    sell_results = []
+
+    for entry in history:
+        # 新ロジックのシグナルだけ対象
+        if entry.get("rsi") is None:
+            continue
+
+        signal = entry.get("signal")
+        result = entry.get("result")  # "win" or "lose"
+
+        if signal == "BUY":
+            buy_results.append(result)
+        elif signal == "SELL":
+            sell_results.append(result)
+
+    def win_rate(results):
+        if not results:
+            return 0
+        wins = sum(1 for r in results if r == "win")
+        return wins / len(results) * 100
+
+    print("===== RSI21 バックテスト結果 =====")
+    print(f"BUY 勝率:  {win_rate(buy_results):.2f}%  ({len(buy_results)}件)")
+    print(f"SELL 勝率: {win_rate(sell_results):.2f}%  ({len(sell_results)}件)")
+    print("================================")
+
 # ============================
 #  全体勝率の集計
 # ============================
@@ -650,10 +682,10 @@ def main():
                 print(f"{ticker} はデータ不足のためスキップ")
                 continue
 
-            # RSI
+            # RSI（21期間）
             df["rsi"] = calculate_rsi(df)
 
-            # ★ ボリンジャーバンド（20日, ±2σ）
+            # ボリンジャーバンド（20日, ±2σ）
             df["bb_ma"] = df["close"].rolling(20).mean()
             df["bb_std"] = df["close"].rolling(20).std()
             df["bb_upper"] = df["bb_ma"] + df["bb_std"] * 2
@@ -665,7 +697,7 @@ def main():
             rsi = latest["rsi"]
             moving_avg = df["close"].rolling(50).mean().iloc[-1]
 
-            # ★ 新基準シグナル判定（RSI85/15 + ボリバン±2σ）
+            # 新基準シグナル判定（RSI85/15 + ボリバン±2σ）
             signal = check_signal(latest)
 
             # 期待値スコア
@@ -674,7 +706,7 @@ def main():
             # ランク判定
             rank = rank_signal(expected_value, signal)
 
-            # ★ HOLD は保存しない
+            # HOLD は保存しない
             if signal == "HOLD":
                 continue
 
@@ -685,11 +717,11 @@ def main():
                 signal
             )
 
-            # ★ ノイズ除去：利確と損切りの差が終値の1%未満なら除外
+            # ノイズ除去：利確と損切りの差が終値の1%未満なら除外
             if abs(take_profit - stop_loss) < close * 0.01:
                 continue
 
-            # ★ 履歴保存（銘柄名も保存）
+            # 履歴保存
             history_entry = {
                 "ticker": ticker,
                 "name": name,
@@ -727,6 +759,11 @@ def main():
             print(f"[エラー] {ticker}: {e}")
             continue
 
+    # ============================
+    #  全銘柄処理後にバックテスト実行
+    # ============================
+    backtest_rsi21()
+    
     # ============================
     # BUY/SELL のみ抽出
     # ============================
