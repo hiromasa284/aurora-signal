@@ -494,15 +494,15 @@ def backtest_rsi21_periods():
 
     for entry in history:
 
-    # ★ 古い履歴（close が無い）はスキップ
-    if "close" not in entry:
-        continue
+        # ★ 古い履歴（close が無い）はスキップ
+        if "close" not in entry:
+            continue
 
-    ticker = entry["ticker"]
-    signal = entry["signal"]
-    close_price = entry["close"]
-    timestamp = entry["timestamp"]
-
+        ticker = entry["ticker"]
+        signal = entry["signal"]
+        close_price = entry["close"]
+        timestamp = entry["timestamp"]
+        
         # 過去チャートを取得
         df = get_price(ticker)
         if df.empty:
