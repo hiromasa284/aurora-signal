@@ -480,6 +480,65 @@ def backtest_rsi21():
     print(f"SELL 勝率: {win_rate(sell_results):.2f}%  ({len(sell_results)}件)")
     print("================================")
 
+def backtest_rsi21_periods():
+    """RSI21 シグナルの 1日後 / 3日後 / 5日後 の勝率を計算"""
+
+    history = load_signal_history()
+
+    # 期間別の結果を格納
+    periods = {
+        1: {"BUY": [], "SELL": []},
+        3: {"BUY": [], "SELL": []},
+        5: {"BUY": [], "SELL": []},
+    }
+
+    for entry in history:
+        ticker = entry["ticker"]
+        signal = entry["signal"]
+        close_price = entry["close"]
+        timestamp = entry["timestamp"]
+
+        # 過去チャートを取得
+        df = get_price(ticker)
+        if df.empty:
+            continue
+
+        # シグナル日のインデックスを探す
+        if timestamp not in df.index:
+            continue
+
+        idx = df.index.get_loc(timestamp)
+
+        for days in [1, 3, 5]:
+            if idx + days >= len(df):
+                continue
+
+            future_close = df.iloc[idx + days]["close"]
+
+            # BUY の場合
+            if signal == "BUY":
+                result = "win" if future_close > close_price else "lose"
+                periods[days]["BUY"].append(result)
+
+            # SELL の場合
+            elif signal == "SELL":
+                result = "win" if future_close < close_price else "lose"
+                periods[days]["SELL"].append(result)
+
+    # 勝率計算
+    def win_rate(results):
+        if not results:
+            return 0
+        wins = sum(1 for r in results if r == "win")
+        return wins / len(results) * 100
+
+    print("\n===== RSI21 期間別バックテスト =====")
+    for days in [1, 3, 5]:
+        print(f"\n--- {days}日後 ---")
+        print(f"BUY 勝率:  {win_rate(periods[days]['BUY']):.2f}%  ({len(periods[days]['BUY'])}件)")
+        print(f"SELL 勝率: {win_rate(periods[days]['SELL']):.2f}%  ({len(periods[days]['SELL'])}件)")
+    print("====================================\n")
+
 # ============================
 #  全体勝率の集計
 # ============================
@@ -758,11 +817,12 @@ def main():
         except Exception as e:
             print(f"[エラー] {ticker}: {e}")
             continue
-
+        
     # ============================
     #  全銘柄処理後にバックテスト実行
     # ============================
     backtest_rsi21()
+    backtest_rsi21_periods()
     
     # ============================
     # BUY/SELL のみ抽出
