@@ -5,6 +5,19 @@ from datetime import datetime
 
 HISTORY_FILE = "signal_history.json"
 
+# ============================
+#  Slack通知関数（ここに追加）
+# ============================
+import requests
+import os
+
+def send_slack_notification(message: str):
+    webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
+    if not webhook_url:
+        print("[Slack通知エラー] Webhook URL が設定されていません")
+        return
+    payload = {"text": message}
+    requests.post(webhook_url, json=payload)
 
 # ============================
 #  過去シグナル履歴の読み込み
