@@ -342,8 +342,8 @@ def evaluate_past_signals():
         if "expected_value" not in entry:
             entry["expected_value"] = 0
 
-        if "rank" not in entry:
-            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
+        if "rank" not in entry or entry["rank"] is None:
+            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])        
 
         if "take_profit" not in entry or "stop_loss" not in entry:
             close = entry.get("close")
