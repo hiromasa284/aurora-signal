@@ -144,13 +144,24 @@ def check_signal(row):
 #  期待値スコア
 # ============================
 def calculate_expected_value(row):
-    rsi = row["rsi"]
-    price = row["close"]
+    close = row["close"]
+    upper = row["bb_upper"]
+    lower = row["bb_lower"]
 
-    edge = (abs(50 - rsi) / 50) ** 2
-    expected_value = edge * price
+    # ボリンジャーバンドが計算できていない序盤データの保険
+    if pd.isna(upper) or pd.isna(lower):
+        return 0
 
-    return expected_value
+    # +2σ を超えている場合（SELL候補）
+    if close > upper:
+        return abs(close - upper)
+
+    # -2σ を割っている場合（BUY候補）
+    if close < lower:
+        return abs(close - lower)
+
+    # どちらでもない場合は期待値ゼロ（シグナル対象外）
+    return 0
 
 # ============================
 #  ランク判定
