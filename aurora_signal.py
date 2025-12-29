@@ -101,7 +101,7 @@ def get_price(symbol):
         return pd.DataFrame()
 
 # ============================
-RSI 計算
+# RSI 計算
 # ============================
 def calculate_rsi(df, window=21):
     delta = df["close"].diff()
