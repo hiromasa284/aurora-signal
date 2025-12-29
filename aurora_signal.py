@@ -323,6 +323,39 @@ def format_resolved_today(resolved_today):
 
     return "\n".join(lines)
 
+def upgrade_history_format():
+    history = load_signal_history()
+    changed = False
+
+    for entry in history:
+
+        if entry.get("close") is None:
+            continue
+
+        if "expected_value" not in entry or entry["expected_value"] is None:
+            entry["expected_value"] = 0
+            changed = True
+
+        if "rank" not in entry or entry["rank"] is None:
+            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
+            changed = True
+
+        if "take_profit" not in entry or "stop_loss" not in entry:
+            tp, sl = calculate_exit_levels(entry["close"], entry["expected_value"], entry["signal"])
+            entry["take_profit"] = tp
+            entry["stop_loss"] = sl
+            changed = True
+
+        if "timestamp" not in entry or entry["timestamp"] is None:
+            entry["timestamp"] = datetime.utcnow().isoformat()
+            changed = True
+
+    if changed:
+        save_signal_history(history)
+        print("[upgrade_history_format] 履歴をアップグレードしました")
+    else:
+        print("[upgrade_history_format] 変更なし")
+
 # ============================
 #  メイン：過去シグナルの評価
 # ============================
@@ -688,6 +721,7 @@ def main():
 #  実行
 # ============================
 if __name__ == "__main__":
+    upgrade_history_format()   # ← 一度だけ実行
     email_body = main()
     try:
         evaluate_past_signals()
