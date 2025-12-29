@@ -621,6 +621,7 @@ def format_alerts_for_email(signals):
 #  メイン処理（完全版）
 # ============================
 def main():
+    print("check_signal is:", check_signal)
     print("main: START")
 
     TICKERS = load_tickers()
