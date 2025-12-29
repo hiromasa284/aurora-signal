@@ -9,10 +9,11 @@ HISTORY_FILE = "signal_history.json"
 # ============================
 #  過去シグナル履歴の読み込み
 # ============================
+
 def load_signal_history():
     if not os.path.exists(HISTORY_FILE):
         return []
-for entry in history:
+
     try:
         with open(HISTORY_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -20,7 +21,6 @@ for entry in history:
     except Exception as e:
         print(f"[読み込みエラー] signal_history.json: {e}")
         return []
-
 
 # ============================
 #  履歴の追記保存
