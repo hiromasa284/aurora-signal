@@ -799,7 +799,7 @@ def reset_signal_history():
 #  実行
 # ============================
 if __name__ == "__main__":
-    reset_signal_history()   # ← 一度だけ実行したらコメントアウト！
+    # reset_signal_history()   # ← 一度だけ実行したらコメントアウト！
     email_body = main()
     try:
         evaluate_past_signals()
