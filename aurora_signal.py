@@ -307,15 +307,14 @@ def format_resolved_today(resolved_today):
     lines = ["【本日決着したシグナル】"]
 
     for entry in resolved_today:
-        symbol = entry.get("symbol")
+        ticker = entry.get("ticker")  # ← 修正ポイント！
         rank = entry.get("rank", "?")
-        name = entry.get("name", "")  # ← 銘柄名（日本語名）
+        name = entry.get("name", "")
 
-        # 銘柄名がある場合と無い場合で出力を変える
         if name:
-            header = f"■ {symbol} / {name}（{rank}ランク）"
+            header = f"■ {ticker} / {name}（{rank}ランク）"
         else:
-            header = f"■ {symbol} / （{rank}ランク）"
+            header = f"■ {ticker} / （{rank}ランク）"
 
         lines.append(header)
         lines.append(f"  シグナル: {entry.get('signal')}")
