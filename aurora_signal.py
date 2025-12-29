@@ -335,27 +335,32 @@ def evaluate_past_signals():
         if entry.get("resolved", False):
             continue
 
-# close が None の古いデータはスキップ
+        # close が None の古いデータはスキップ
         if entry.get("close") is None:
             continue
-        
-        if "expected_value" not in entry:
+
+        # expected_value が無い古いデータを補完
+        if "expected_value" not in entry or entry["expected_value"] is None:
             entry["expected_value"] = 0
 
+        # rank が無い or None の古いデータを補完
         if "rank" not in entry or entry["rank"] is None:
-            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])        
+            entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
 
+        # 利確・損切りラインが無い古いデータを補完
         if "take_profit" not in entry or "stop_loss" not in entry:
-            close = entry.get("close")
-            expected_value = entry.get("expected_value", 0)
-            signal = entry.get("signal")
+            close = entry["close"]
+            expected_value = entry["expected_value"]
+            signal = entry["signal"]
             tp, sl = calculate_exit_levels(close, expected_value, signal)
             entry["take_profit"] = tp
             entry["stop_loss"] = sl
 
-        if "timestamp" not in entry:
+        # timestamp が無い古いデータを補完
+        if "timestamp" not in entry or entry["timestamp"] is None:
             entry["timestamp"] = datetime.utcnow().isoformat()
 
+        # 本来の処理
         outcome = evaluate_signal_outcome(entry)
 
         if outcome in ["win", "lose", "expire"]:
@@ -366,8 +371,10 @@ def evaluate_past_signals():
                 entry["score"] = 1 if outcome == "win" else -1
                 resolved_today.append(entry)
 
+    # 保存
     save_signal_history(history)
 
+    # 集計
     stats, win_rates = calculate_rank_stats(history)
     counts, avg_days, total = count_unresolved_by_rank_with_days(history)
     resolved_text = format_resolved_today(resolved_today)
