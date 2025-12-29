@@ -793,7 +793,7 @@ def main():
 #  実行
 # ============================
 if __name__ == "__main__":
-    upgrade_history_format()   # ← 一度だけ実行
+    reset_signal_history()   # ← 一度だけ実行したらコメントアウト！
     email_body = main()
     try:
         evaluate_past_signals()
