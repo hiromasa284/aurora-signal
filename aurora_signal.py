@@ -12,7 +12,7 @@ HISTORY_FILE = "signal_history.json"
 def load_signal_history():
     if not os.path.exists(HISTORY_FILE):
         return []
-
+for entry in history:
     try:
         with open(HISTORY_FILE, "r", encoding="utf-8") as f:
             data = json.load(f)
@@ -332,8 +332,6 @@ def evaluate_past_signals():
     resolved_today = []
 
     for entry in history:
-        if entry.get("resolved", False):
-            continue
 
         # close が None の古いデータはスキップ
         if entry.get("close") is None:
@@ -343,7 +341,7 @@ def evaluate_past_signals():
         if "expected_value" not in entry or entry["expected_value"] is None:
             entry["expected_value"] = 0
 
-        # rank が無い or None の古いデータを補完
+        # rank が無い or None の古いデータを補完（最重要）
         if "rank" not in entry or entry["rank"] is None:
             entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
 
@@ -359,6 +357,10 @@ def evaluate_past_signals():
         # timestamp が無い古いデータを補完
         if "timestamp" not in entry or entry["timestamp"] is None:
             entry["timestamp"] = datetime.utcnow().isoformat()
+
+        # ★ ここで初めて resolved をチェック（順番が重要）
+        if entry.get("resolved", False):
+            continue
 
         # 本来の処理
         outcome = evaluate_signal_outcome(entry)
