@@ -789,6 +789,12 @@ def main():
 
     return email_body
 
+def reset_signal_history():
+    """signal_history.json を完全リセット（空配列にする）"""
+    with open("signal_history.json", "w") as f:
+        f.write("[]")
+    print("signal_history.json をリセットしました")
+
 # ============================
 #  実行
 # ============================
