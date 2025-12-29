@@ -366,12 +366,17 @@ def evaluate_past_signals():
 
     for entry in history:
 
-        # ★ close が None でも rank 補完だけは必ず行う
+        # expected_value が無い古いデータを補完
         if "expected_value" not in entry or entry["expected_value"] is None:
             entry["expected_value"] = 0
 
+        # rank が無い or None の古いデータを補完
         if "rank" not in entry or entry["rank"] is None:
             entry["rank"] = rank_signal(entry["expected_value"], entry["signal"])
+
+        # timestamp が無い古いデータを補完（close が None でも必ず実行）
+        if "timestamp" not in entry or entry["timestamp"] is None:
+            entry["timestamp"] = datetime.utcnow().isoformat()
 
         # close が None の古いデータはここでスキップ
         if entry.get("close") is None:
@@ -382,10 +387,6 @@ def evaluate_past_signals():
             tp, sl = calculate_exit_levels(entry["close"], entry["expected_value"], entry["signal"])
             entry["take_profit"] = tp
             entry["stop_loss"] = sl
-
-        # timestamp が無い古いデータを補完
-        if "timestamp" not in entry or entry["timestamp"] is None:
-            entry["timestamp"] = datetime.utcnow().isoformat()
 
         # resolved チェック
         if entry.get("resolved", False):
