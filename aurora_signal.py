@@ -114,23 +114,35 @@ def calculate_rsi(df, window=14):
 
     return rsi.iloc[-1]
 
-
 # ============================
-#  シグナル判定
+#  シグナル判定（RSI85/15 + ボリンジャーバンド ±2σ）
 # ============================
 def check_signal(row):
     rsi = row["rsi"]
-    price = row["close"]
-    moving_avg = row.get("moving_avg", 150)
+    close = row["close"]
 
-    if rsi <= 30 and price < moving_avg:
+    bb_ma = row["bb_ma"]
+    bb_upper = row["bb_upper"]
+    bb_lower = row["bb_lower"]
+
+    # ボリンジャーバンドが計算できていない序盤データの保険
+    if pd.isna(bb_ma) or pd.isna(bb_upper) or pd.isna(bb_lower):
+        return "HOLD"
+
+    # ① RSI 基準（最優先）
+    if rsi > 85:
+        return "SELL"
+    if rsi < 15:
         return "BUY"
 
-    if rsi >= 70 and price > moving_avg:
+    # ② ボリンジャーバンド基準
+    if close > bb_upper:
         return "SELL"
+    if close < bb_lower:
+        return "BUY"
 
+    # ③ どちらにも当てはまらなければ様子見
     return "HOLD"
-
 
 # ============================
 #  期待値スコア
@@ -624,38 +636,50 @@ def main():
         try:
             df = get_price(ticker)
 
-            if df.empty or len(df) < 15:
+            if df.empty or len(df) < 20:
                 print(f"{ticker} はデータ不足のためスキップ")
                 continue
 
+            # RSI
             df["rsi"] = calculate_rsi(df)
+
+            # ★ ボリンジャーバンド（20日, ±2σ）
+            df["bb_ma"] = df["close"].rolling(20).mean()
+            df["bb_std"] = df["close"].rolling(20).std()
+            df["bb_upper"] = df["bb_ma"] + df["bb_std"] * 2
+            df["bb_lower"] = df["bb_ma"] - df["bb_std"] * 2
+
             latest = df.iloc[-1]
 
             close = latest["close"]
             rsi = latest["rsi"]
             moving_avg = df["close"].rolling(50).mean().iloc[-1]
 
-            # シグナル判定
+            # ★ 新基準シグナル判定（RSI85/15 + ボリバン±2σ）
             signal = check_signal(latest)
+
+            # 期待値スコア
             expected_value = calculate_expected_value(latest)
+
+            # ランク判定
             rank = rank_signal(expected_value, signal)
 
-            # ★ HOLD は保存しない（重要）
+            # ★ HOLD は保存しない
             if signal == "HOLD":
                 continue
 
-            # 利確・損切りラインを計算
+            # 利確・損切りライン
             take_profit, stop_loss = calculate_exit_levels(
                 close,
                 expected_value,
                 signal
             )
 
-            # ★ 利確と損切りの差が終値の1%未満なら除外（ノイズ対策）
+            # ★ ノイズ除去：利確と損切りの差が終値の1%未満なら除外
             if abs(take_profit - stop_loss) < close * 0.01:
                 continue
 
-            # 履歴保存
+            # ★ 履歴保存（銘柄名も保存）
             history_entry = {
                 "ticker": ticker,
                 "name": name,
@@ -694,7 +718,7 @@ def main():
             continue
 
     # ============================
-    #  BUY/SELL のみ抽出
+    # BUY/SELL のみ抽出
     # ============================
     filtered = {t: s for t, s in signals.items() if s["signal"] in ["BUY", "SELL"]}
 
@@ -706,7 +730,7 @@ def main():
         print("  BUY/SELL シグナルなし")
 
     # ============================
-    #  通知テキスト生成
+    # 通知テキスト生成
     # ============================
     if filtered:
         sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
@@ -717,6 +741,7 @@ def main():
     print("main: END")
 
     return email_body
+
 # ============================
 #  実行
 # ============================
