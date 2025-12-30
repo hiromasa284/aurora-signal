@@ -58,7 +58,17 @@ jobs:
         env:
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         run: |
-          payload=$(jq -n --arg text "$(cat signal.json)" '{text: $text}')
-          curl -X POST -H 'Content-type: application/json' \
+          # signal.json → Slack用テキストに整形
+          text=$(jq -r '
+            .signals
+            | map("\(.ticker) (\(.signal))  RSI: \(.rsi)  Price: \(.price)")
+            | join("\n")
+          ' signal.json)
+
+          # Slackに送るJSONを生成
+          payload=$(jq -n --arg text "$text" '{text: $text}')
+
+          # Slackへ送信
+          curl -X POST -H "Content-type: application/json" \
             --data "$payload" \
             $SLACK_WEBHOOK_URL
