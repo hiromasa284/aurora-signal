@@ -1,10 +1,9 @@
-import os
+from dotenvimport os
 import json
 import shutil  # ← 追加
 
 import pandas as pd
 from datetime import datetime
-from dotenv import load_dotenv   # ← 追加
 
 HISTORY_FILE = "signal_history.json"
 
