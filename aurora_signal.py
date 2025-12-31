@@ -1,23 +1,25 @@
 import os
 import json
+import shutil  # ← 追加
+
 import pandas as pd
 from datetime import datetime
+from dotenv import load_dotenv   # ← 追加
 
 HISTORY_FILE = "signal_history.json"
 
 # ============================
-#  Slack通知関数（ここに追加）
+#  signal_history.json バックアップ関数
 # ============================
-import requests
-import os
+def backup_signal_history():
+    if not os.path.exists(HISTORY_FILE):
+        return  # ファイルがなければ何もしない
 
-def send_slack_notification(message: str):
-    webhook_url = os.environ.get("SLACK_WEBHOOK_URL")
-    if not webhook_url:
-        print("[Slack通知エラー] Webhook URL が設定されていません")
-        return
-    payload = {"text": message}
-    requests.post(webhook_url, json=payload)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = "history"
+    os.makedirs(backup_dir, exist_ok=True)
+    backup_path = os.path.join(backup_dir, f"signal_history_{timestamp}.json")
+    shutil.copy2(HISTORY_FILE, backup_path)
 
 # ============================
 #  過去シグナル履歴の読み込み
@@ -210,11 +212,13 @@ from datetime import datetime
 # ============================
 #  追跡日数を計算
 # ============================
+from datetime import datetime, timezone
+
 def calculate_tracking_days(entry):
     ts = entry["timestamp"]
     date_str = ts.split("T")[0]
-    signal_date = datetime.strptime(date_str, "%Y-%m-%d")
-    today = datetime.utcnow()
+    signal_date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+    today = datetime.now(timezone.utc)
     delta = today - signal_date
     return delta.days
 
@@ -243,11 +247,10 @@ def evaluate_signal_outcome(entry):
     try:
         entry_date = datetime.fromisoformat(timestamp)
     except Exception:
-        entry_date = datetime.utcnow()
-
+        entry_date = datetime.now(timezone.utc)
     # ★ 期限：最大 20 営業日（約1ヶ月）
     max_days = 20
-    today = datetime.utcnow()
+    today = datetime.now(timezone.utc)
     days_passed = (today - entry_date).days
 
     # ★ 期限切れ → 引き分け扱い（resolved=True だが result=None）
@@ -289,26 +292,47 @@ def evaluate_signal_outcome(entry):
 # ============================
 #  ランク別累積勝率
 # ============================
-def calculate_rank_stats(history):
-    stats = {"S": {"win": 0, "lose": 0},
-             "A": {"win": 0, "lose": 0},
-             "B": {"win": 0, "lose": 0}}
+def calculate_rank_stats():
+    history = load_signal_history()
 
-    for e in history:
-        if e.get("resolved", False):
-            r = e["rank"]
-            if e["result"] == "win":
-                stats[r]["win"] += 1
-            elif e["result"] == "lose":
-                stats[r]["lose"] += 1
+    stats = {
+        "S": {"win": 0, "loss": 0},
+        "A": {"win": 0, "loss": 0},
+        "B": {"win": 0, "loss": 0},
+    }
 
-    win_rates = {}
-    for r, v in stats.items():
-        total = v["win"] + v["lose"]
-        win_rates[r] = round((v["win"] / total) * 100, 1) if total > 0 else 0
+    for entry in history:
+        if not entry.get("resolved"):
+            continue
 
-    return stats, win_rates
+        rank = entry.get("rank")
+        result = entry.get("result")
 
+        if rank not in stats:
+            continue
+
+        # result が None や "" の場合はスキップ
+        if result is None or result == "":
+            continue
+
+        # 数値に変換（文字列でもOK）
+        try:
+            result = float(result)
+        except:
+            continue
+
+        if result > 0:
+            stats[rank]["win"] += 1
+        else:
+            stats[rank]["loss"] += 1
+
+    # 勝率計算
+    for rank in stats:
+        w = stats[rank]["win"]
+        l = stats[rank]["loss"]
+        stats[rank]["win_rate"] = round(w / (w + l) * 100, 1) if (w + l) > 0 else 0
+
+    return stats, {}  # win_rates は空でOK（互換性維持）
 
 # ============================
 #  追跡中件数 + 平均追跡日数
@@ -336,30 +360,22 @@ def count_unresolved_by_rank_with_days(history):
 # ============================
 def format_resolved_today(resolved_today):
     if not resolved_today:
-        return "【本日決着したシグナル】\n（なし）"
+        return "📈 決着したシグナル\n（なし）\n"
 
-    lines = ["【本日決着したシグナル】"]
+    lines = ["📈 決着したシグナル"]
 
     for entry in resolved_today:
-        ticker = entry.get("ticker")  # ← 修正ポイント！
-        rank = entry.get("rank", "?")
+        ticker = entry.get("ticker")
         name = entry.get("name", "")
+        signal_type = entry.get("signal")
+        result_pct = entry.get("result")
+        days = entry.get("days", 0)
 
-        if name:
-            header = f"■ {ticker} / {name}（{rank}ランク）"
-        else:
-            header = f"■ {ticker} / （{rank}ランク）"
+        # 例: ・ソフトバンク（9434）BUY → +3.2%（2日）
+        line = f"・{name}（{ticker}）{signal_type} → {result_pct}（{days}日）"
+        lines.append(line)
 
-        lines.append(header)
-        lines.append(f"  シグナル: {entry.get('signal')}")
-        lines.append(f"  終値（シグナル時）: {entry.get('close')}")
-        lines.append(f"  利確ライン: {entry.get('take_profit')}")
-        lines.append(f"  損切りライン: {entry.get('stop_loss')}")
-        lines.append(f"  → 結果: {entry.get('result')}")
-        lines.append(f"  → 追跡日数: {entry.get('days', 0)}日")
-        lines.append("--------------------")
-
-    return "\n".join(lines)
+    return "\n".join(lines) + "\n"
 
 def upgrade_history_format():
     history = load_signal_history()
@@ -385,12 +401,12 @@ def upgrade_history_format():
             changed = True
 
         if "timestamp" not in entry or entry["timestamp"] is None:
-            entry["timestamp"] = datetime.utcnow().isoformat()
+            entry["timestamp"] = datetime.now(timezone.utc).isoformat()
             changed = True
 
-    if changed:
-        save_signal_history(history)
-        print("[upgrade_history_format] 履歴をアップグレードしました")
+        if changed:
+            save_signal_history(history)
+            print("[upgrade_history_format] 履歴をアップグレードしました")
     else:
         print("[upgrade_history_format] 変更なし")
 
@@ -414,7 +430,7 @@ def evaluate_past_signals():
 
         # timestamp が無い古いデータを補完（close が None でも必ず実行）
         if "timestamp" not in entry or entry["timestamp"] is None:
-            entry["timestamp"] = datetime.utcnow().isoformat()
+            entry["timestamp"] = datetime.now(timezone.utc).isoformat()
 
         # close が None の古いデータはここでスキップ
         if entry.get("close") is None:
@@ -443,16 +459,17 @@ def evaluate_past_signals():
 
     save_signal_history(history)
 
-    stats, win_rates = calculate_rank_stats(history)
+    stats, win_rates = calculate_rank_stats()
     counts, avg_days, total = count_unresolved_by_rank_with_days(history)
     resolved_text = format_resolved_today(resolved_today)
 
     print("\n" + resolved_text)
     print("【ランク別累積成績】")
-    print(f"Sランク： +{stats['S']['win']} / -{stats['S']['lose']}  → 勝率 {win_rates['S']}%")
-    print(f"Aランク： +{stats['A']['win']} / -{stats['A']['lose']}  → 勝率 {win_rates['A']}%")
-    print(f"Bランク： +{stats['B']['win']} / -{stats['B']['lose']}  → 勝率 {win_rates['B']}%")
-
+    
+    print(f"Sランク： +{stats['S']['win']} / -{stats['S']['loss']}  → 勝率 {stats['S']['win_rate']}%")
+    print(f"Aランク： +{stats['A']['win']} / -{stats['A']['loss']}  → 勝率 {stats['A']['win_rate']}%")
+    print(f"Bランク： +{stats['B']['win']} / -{stats['B']['loss']}  → 勝率 {stats['B']['win_rate']}%")
+        
     print("\n【追跡中の銘柄数】")
     print(f"Sランク： {counts['S']}件（平均 {avg_days['S']}日）")
     print(f"Aランク： {counts['A']}件（平均 {avg_days['A']}日）")
@@ -684,72 +701,143 @@ def calculate_exit_levels(close, expected_value, signal):
 # ============================
 #  メール本文生成
 # ============================
-def format_alerts_for_email(signals):
-    body = "【Aurora Signal: ハイコンフィデンス・シグナル】\n\n"
+def format_alerts_for_email(signals, decided_signals, stats, tracking):
+    from datetime import datetime, timezone, timedelta
 
-    # 全体勝率
-    win_rates = calculate_win_rates()
-    buy_win = win_rates["buy_win_rate"]
-    sell_win = win_rates["sell_win_rate"]
+def format_alerts_for_email(signals, decided_signals, stats, tracking, run_timestamp=None):
+    def format_jst(ts):
+        dt = datetime.fromisoformat(ts)
+        jst = dt.astimezone(timezone(timedelta(hours=9)))
+        return jst.strftime("%m/%d %H:%M JST")
 
-    # 銘柄ごとの表示
-    for ticker, info in signals.items():
-        win_rate = buy_win if info["signal"] == "BUY" else sell_win
-        rank = info["rank"]
+    def format_score_line(rank):
+        win = stats[rank]["win"]
+        loss = stats[rank]["loss"]
+        score = stats[rank].get("score", 0)
+        total = win + loss
+        win_rate = f"{(win / total * 100):.1f}%" if total > 0 else "0%"
+        return f"+{win} / -{loss} → 勝率 {win_rate}（Score: {score:.2f}）"
 
-        take_profit, stop_loss = calculate_exit_levels(
-            info["close"],
-            info["expected_value"],
-            info["signal"]
-        )
+    jst_str = format_jst(run_timestamp) if run_timestamp else datetime.now().strftime("%m/%d")
+    body = f"🚀 **AuroraSignal 本日のシグナル速報**（{jst_str}）\n\n"
 
-        body += f"■ {ticker} / {info['name']}（{rank}ランク）\n"
-        body += f"  シグナル: {info['signal']}\n"
-        body += f"  RSI: {info['rsi']:.2f}\n"
-        body += f"  終値: {info['close']:.2f}\n"
-        body += f"  移動平均(50日): {info['moving_avg']:.2f}\n"
-        body += f"  期待値スコア: {info['expected_value']:.2f}\n"
+    # --- BUY シグナル ---
+    buy_list = {t: s for t, s in signals.items() if s["signal"] == "BUY"}
+    if buy_list:
+        body += "🎯 BUY シグナル\n"
+        for ticker, info in buy_list.items():
+            tp, sl = calculate_exit_levels(info["close"], info["expected_value"], "BUY")
+            body += (
+                f"・{info['name']}（{ticker}）\n"
+                f"　現在価格： {info['close']}円\n"
+                f"　RSI21： {info['rsi']:.2f}\n"
+                f"　シグナル：BUY\n"
+                f"　利確ポイント： {tp}円\n"
+                f"　損切ライン： {sl}円\n"
+                f"　スコア： {info['rank']}\n\n"
+            )
 
-        if rank == "B":
-            body += "  ※Bランクは信頼度が低いため、参考程度にご利用ください\n"
+    # --- SELL シグナル ---
+    sell_list = {t: s for t, s in signals.items() if s["signal"] == "SELL"}
+    if sell_list:
+        body += "🔻 SELL シグナル\n"
+        for ticker, info in sell_list.items():
+            tp, sl = calculate_exit_levels(info["close"], info["expected_value"], "SELL")
+            body += (
+                f"・{info['name']}（{ticker}）\n"
+                f"　現在価格： {info['close']}円\n"
+                f"　RSI21： {info['rsi']:.2f}\n"
+                f"　シグナル：SELL\n"
+                f"　利確ポイント： {tp}円\n"
+                f"　損切ライン： {sl}円\n"
+                f"　スコア： {info['rank']}\n\n"
+            )
 
-        body += "  ▶ 手じまいガイド（期待値ベース）\n"
-        body += f"     利確ライン: {take_profit}\n"
-        body += f"     損切りライン: {stop_loss}\n"
-        body += "--------------------\n\n"
+    if not buy_list and not sell_list:
+        body += "本日は高確度のシグナルは検出されませんでした。\n静観が最適解です。\n\n"
 
-    # 全体勝率
-    body += "【過去シグナルの成績（1日後）】\n"
-    body += f"BUY 勝率: {buy_win}%\n"
-    body += f"SELL 勝率: {sell_win}%\n"
-    body += f"平均反発率: +{win_rates['buy_avg_gain']}%\n"
-    body += f"平均下落率: {win_rates['sell_avg_drop']}%\n\n"
+    # --- 決着したシグナル ---
+    body += "📈 決済したシグナル\n"
+    if decided_signals:
+        for d in decided_signals:
+            body += f"・{d['name']}（{d['ticker']}）{d['signal']} → {d['result']}（{d['days']}日）\n"
+    else:
+        body += "（なし）\n"
+    body += "\n"
 
-    # ランク別勝率
-    ranked = calculate_ranked_win_rates()
+    # --- 累積成績 ---
+    body += "📊 累積成績（勝敗とスコア）\n"
+    for rank in ["S", "A", "B"]:
+        body += f"{rank}ランク： {format_score_line(rank)}\n"
+    body += "\n"
 
-    body += "【ランク別成績（1日後）】\n"
-    body += f"Sランク BUY勝率: {ranked['S']['buy_win_rate']}% / 平均反発率: +{ranked['S']['buy_avg_gain']}%\n"
-    body += f"Sランク SELL勝率: {ranked['S']['sell_win_rate']}% / 平均下落率: {ranked['S']['sell_avg_drop']}%\n\n"
-
-    body += f"Aランク BUY勝率: {ranked['A']['buy_win_rate']}% / 平均反発率: +{ranked['A']['buy_avg_gain']}%\n"
-    body += f"Aランク SELL勝率: {ranked['A']['sell_win_rate']}% / 平均下落率: {ranked['A']['sell_avg_drop']}%\n\n"
-
-    body += f"Bランク BUY勝率: {ranked['B']['buy_win_rate']}% / 平均反発率: +{ranked['B']['buy_avg_gain']}%\n"
-    body += f"Bランク SELL勝率: {ranked['B']['sell_win_rate']}% / 平均下落率: {ranked['B']['sell_avg_drop']}%\n"
+    # --- 追跡中の銘柄状況 ---
+    body += "📈 追跡中の銘柄状況\n"
+    for rank in ["S", "A", "B"]:
+        body += f"{rank}ランク： {tracking[rank]['count']}件（平均 {tracking[rank]['avg_days']}日）\n"
+    body += f"合計： {tracking['total']}件\n"
 
     return body
+
+def calculate_tracking_status():
+    history = load_signal_history()
+
+    tracking = {
+        "S": {"count": 0, "days": []},
+        "A": {"count": 0, "days": []},
+        "B": {"count": 0, "days": []},
+    }
+
+    for entry in history:
+        if entry.get("resolved"):
+            continue  # 決着済みは除外
+
+        rank = entry.get("rank")
+        if rank not in tracking:
+            continue
+
+        tracking[rank]["count"] += 1
+
+        # 経過日数を既存の calculate_tracking_days(entry) で計算
+        try:
+            days = calculate_tracking_days(entry)
+            tracking[rank]["days"].append(days)
+        except:
+            pass
+
+    # 平均日数を計算
+    result = {}
+    total = 0
+
+    for rank in ["S", "A", "B"]:
+        count = tracking[rank]["count"]
+        days_list = tracking[rank]["days"]
+
+        avg_days = round(sum(days_list) / len(days_list), 1) if days_list else 0
+
+        result[rank] = {
+            "count": count,
+            "avg_days": avg_days
+        }
+
+        total += count
+
+    result["total"] = total
+    return result
 
 # ============================
 #  メイン処理（完全版）
 # ============================
+
+from datetime import datetime, timezone
+
 def main():
     print("check_signal is:", check_signal)
     print("main: START")
 
     TICKERS = load_tickers()
     signals = {}
-    run_timestamp = datetime.utcnow().isoformat()
+    run_timestamp = datetime.now(timezone.utc).isoformat()
 
     for ticker, name in TICKERS.items():
         try:
@@ -774,7 +862,7 @@ def main():
             rsi = latest["rsi"]
             moving_avg = df["close"].rolling(50).mean().iloc[-1]
 
-            # 新基準シグナル判定（RSI85/15 + ボリバン±2σ）
+            # 新基準シグナル判定
             signal = check_signal(latest)
 
             # 期待値スコア
@@ -794,7 +882,7 @@ def main():
                 signal
             )
 
-            # ノイズ除去：利確と損切りの差が終値の1%未満なら除外
+            # ノイズ除去
             if abs(take_profit - stop_loss) < close * 0.01:
                 continue
 
@@ -835,13 +923,20 @@ def main():
         except Exception as e:
             print(f"[エラー] {ticker}: {e}")
             continue
-        
+
     # ============================
     #  全銘柄処理後にバックテスト実行
     # ============================
     backtest_rsi21()
     backtest_rsi21_periods()
-    
+
+    # ============================
+    # ここで決着・成績・追跡を作る（重要）
+    # ============================
+    decided_signals = evaluate_past_signals()
+    stats, win_rates = calculate_rank_stats()
+    tracking = calculate_tracking_status()
+
     # ============================
     # BUY/SELL のみ抽出
     # ============================
@@ -855,16 +950,27 @@ def main():
         print("  BUY/SELL シグナルなし")
 
     # ============================
-    # 通知テキスト生成
+    # 通知テキスト生成（新フォーマット）
     # ============================
     if filtered:
         sorted_signals = sorted(filtered.items(), key=lambda x: x[1]["expected_value"], reverse=True)
-        email_body = format_alerts_for_email(dict(sorted_signals))
+        email_body = format_alerts_for_email(
+            dict(sorted_signals) if filtered else {},
+            decided_signals,
+            stats,
+            tracking,
+            run_timestamp=run_timestamp  # ← ここを忘れずに！
+        )
+    
     else:
-        email_body = "本日は高確度のシグナルは検出されませんでした。焦らず、チャンスを待ちましょう。"
+        email_body = format_alerts_for_email(
+            {},  # シグナルなし
+            decided_signals,
+            stats,
+            tracking
+        )
 
     print("main: END")
-
     return email_body
 
 def reset_signal_history():
@@ -884,7 +990,13 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"[evaluate_past_signals エラー] {e}")
    
-    # ★★★ 最後に通知内容を出す（ここが最終位置） ★★★
-    print("\n===== AuroraSignal 通知内容 =====")
-    print(email_body)
-    print("================================\n")
+# ★★★ 最後に通知内容を出す（ここが最終位置） ★★★
+print("\n===== AuroraSignal 通知内容 =====")
+print(email_body)
+print("================================\n")
+
+# ★★★ Slack通知用メッセージを保存（GitHub Actions が送信する） ★★★
+with open("slack_message.txt", "w", encoding="utf-8") as f:
+    f.write(email_body)
+
+backup_signal_history()
