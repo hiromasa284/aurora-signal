@@ -1,4 +1,4 @@
-from dotenvimport os
+import os
 import json
 import shutil  # ← 追加
 
