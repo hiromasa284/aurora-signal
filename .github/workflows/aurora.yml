@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          persist-credentials: false   # ← これが超重要！
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -39,6 +41,7 @@ jobs:
         run: |
           git config --global user.name "Aurora Bot"
           git config --global user.email "aurora@example.com"
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/hiromasa284/aurora-signal.git
           git add signal.json
           git diff --cached --quiet && echo "No changes to commit" || (
             git commit -m "Update signal.json"
