@@ -2,7 +2,8 @@ name: Update Signal History
 
 on:
   schedule:
-    cron: "40 21 * * *"
+    # JST 6:40 → UTC 21:40
+    - cron: "40 21 * * *"
   workflow_dispatch:
 
 jobs:
